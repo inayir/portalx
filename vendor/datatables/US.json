@@ -1,0 +1,19 @@
+
+
+{
+	"sProcessing":   "Processing...",
+	"sLengthMenu":   "View _MENU_ Record(s)",
+	"sZeroRecords":  "Record NOT found!",
+	"sInfo":         "In  _TOTAL_ Records, Range: _START_ - _END_ ",
+	"sInfoEmpty":    "Record NOT Found!",
+	"sInfoFiltered": "(In _MAX_ Reords...)",
+	"sInfoPostFix":  "",
+	"sSearch":       "Search:",
+	"sUrl":          "",
+	"oPaginate": {
+		"sFirst":    "First",
+		"sPrevious": "Prior",
+		"sNext":     "Next",
+		"sLast":     "Last"
+	}
+}
