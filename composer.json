@@ -1,0 +1,11 @@
+{
+    "name": "mongodb/mongodb",
+    "description": "MongoDB",
+    "type": "library",
+    "autoload": {
+        "psr-4": {
+            "Mongodb\\Mongodb\\": "AUTOLOAD"
+        }
+    },
+    "require": {}
+}

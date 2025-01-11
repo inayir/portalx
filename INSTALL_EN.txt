@@ -1,0 +1,58 @@
+Install PortalX:
+
+Instractions for Windows Servers:
+
+1. Web Server: PortalX; runs with IIS or Apache. But IIS requires PHP settings. If you have not enough informations, you prefer Xampp web server pack. Please download xampp-windows-x64-8.2.12-0-VS16-installer.exe (this for 64bit) from Xampp site and install it. 
+NOTE: If an UAC error occurs while installing Xampp, warnings are turned off via msconfig/Tools/Change UAC.
+NOTE: PHP ver 8.06 is mandatory for MongoDB.
+
+2. Mongodb is downloaded and installed from it's site. Example Mongodb install file (for 64 bit OS): mongodb-windows-x86_64-7.0.4-signed.msi
+
+3. The following rows must added to C:\Xampp\Apache\conf\extra\httpd-vhosts.conf file:	
+	##---PORTAL
+	<VirtualHost *:80>
+		##ServerAdmin webmaster@dummy-host2.example.com
+		DocumentRoot "C:/PORTAL"
+		ServerName portal
+		##ErrorLog "logs/dummy-host2.example.com-error.log"
+		##CustomLog "logs/dummy-host2.example.com-access.log" common
+		<Directory "C:/PORTAL/">
+			Options Indexes FollowSymLinks MultiViews
+			AllowOverride none
+			Order Deny,Allow
+			Allow from all
+			Require all granted
+		</Directory>
+	</VirtualHost>
+	##---------------------------------
+	* "DocumentRoot C:\PORTAL" points to install directory, if you wish use other names. The SYSTEM user (if not authorized) must be given full permissions in this directory.
+	* "ServerName portal" is an URL for your site. 
+	* This name must add to DNS record. Example: http://portal.example.com 
+	Example for adding A record to DNS: Adding an A record, this record seen as; "portal A 192.168.0.100" in records list. Portal or other name for your choice.
+
+4. After the site runs, the PortalX files you downloaded are copied into the relevant folder.
+
+5. Firstly runs http://Install.php command. This command makes install. If the site does not open normally and without errors after installation, the installation must be done manually as follows.:
+	a) Check whether the Mongodb PHP Library file (php_mongodb.dll) is under the php\ext directory. This file will be copied during the first run. If not, copy these files to the php/ext directory under the directory where the server runs PHP.
+	b)After installation, if the following lines are not present in the php.ini file, they are added:
+		extension=ldap
+		extension=php_mongodb.dll   
+	c). Composer must installed. Please run install.bat for install composer. 
+
+6. Installation steps on the Install page: 
+	a) After the server settings are made, the web page address specified above is entered in the address line, and the installation process begins when the page is opened for the first time. Processing is done in the background.
+	b) Secondly, it is requested to create an authorized user. Attention! It is mandatory to open as an authorized user.
+	c) In the third stage, the settings page appears to enter the operating parameters of the system.
+	d) When these processes are completed, you can open the page normally and see that it is working.
+
+7. In order for users to perform their own operations, a user must be added to the system.
+	Note: This can be done by manually entering the user one by one from the Settings/Users page, or by transferring from LDAP in an organization that has a system using LDAP/Active Directory.
+	* Authorized User can make personnel records and unit definitions, can define the necessary authorizations for users in Portal transactions.. 
+	* A user registered in LDAP can be entered as an authorized user on the settings page. After the transfer, this user can perform transactions like the Portal authorized user.
+
+8. LDAP/Active Directory management can also be done via PortalX. Adding Personnel and Departments, closing personnel accounts, unlocking, assigning managers to departments, etc. transactions can be made. If the setting "User Authentication Source/User Authentication Source" is selected "LDAP", the opened user from site, will be saved in both LDAP and PortalX database.
+
+9. When the transactions are completed, news and information must be entered. A blank page will appear before entering news or information.
+
+10. Users_guide.pdf file has been prepared for the use of the system. (Documents are prepared in English and Turkish.)
+
