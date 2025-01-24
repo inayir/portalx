@@ -65,7 +65,8 @@ if(isset($_POST['ldap-username'])){
 			$_SESSION["user"]=$username;
 			$_SESSION["pass"]=$password; 
 			$_SESSION["name"]=$cursor->displayname;
-			$_SESSION["picture"]=$cursor->picture;
+			$avtr=$cursor->picture;
+			$_SESSION["picture"]=$avtr;
 			$userok=1;
 		}else{ //nok  //Tekrar deneyiniz.//Tekrar deneyiniz. ?> 
 			<script>
