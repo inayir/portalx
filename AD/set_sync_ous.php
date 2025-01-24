@@ -49,7 +49,8 @@ if($result){
 			$data['dp'] 		= $dp;
 			$data['ou'] 		= $entries[$ix]['ou'][0];
 			$data['company']	= $company;
-			$data['description']= $entries[$ix]['description'][0];
+			$data['distinguishedname']  = $entries[$ix]['distinguishedname'][0];
+			$data['description'] 		= $entries[$ix]['description'][0];
 			
 			$log.="managedby:";
 			$managedby=$entries[$ix]['managedby'][0];

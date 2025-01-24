@@ -5,7 +5,7 @@
 header('Content-Type:text/html; charset=utf8');
 $docroot=$_SERVER['DOCUMENT_ROOT'];
 include($docroot."/config/config.php");
-//include($docroot."/sess.php");
+include($docroot."/sess.php");
 if($_SESSION["user"]==""){
 	echo "login"; exit;
 //}

@@ -18,7 +18,7 @@ function group_add($group_ou,$groupname){
 	ldap_add($conn,$dn,$data);
 	return ldap_error($conn);
 }
-function group_add_user($group_dn,$user_dn,$action){
+function group_user_add_remove($group_dn,$user_dn,$action){
 	//Gruba üye ekleme-Add member to a group, $group_ou: grubun yeri(ou) $group: userin eklenecegi grup
 	global $conn, $ini, $log; 
 	header('Content-Type:text/html; charset=utf-8');
@@ -72,7 +72,7 @@ function addtogroupsfromini($user_dn){
 			}  //otherwise adding to the group in groups_point under base_ou 
 			$lmsg.=$gr."->";
 			$group_dn='CN='.$gr.','.$group_ou.','.$ini['base_dn'];
-			$lmsg.=group_add_user($group_dn,$user_dn,'A');				
+			$lmsg.=group_user_add_remove($group_dn,$user_dn,'A');				
 		}
 	}
 	return $lmsg;
@@ -105,7 +105,7 @@ function removefromgroups($user_dn){
 			}  //parametre gelmezse doğrudan base_ou altındaki Custom altındaki gruba eklenir...
 			$lmsg.=$gr."->";
 			$group_dn='CN='.$gr.','.$group_ou.','.$ini['base_dn'];
-			$lmsg.=group_add_user($group_dn,$user_dn,'D'); //silinecek...				
+			$lmsg.=group_user_add_remove($group_dn,$user_dn,'D'); //siliniyor			
 		}
 	}
 	return $lmsg;
@@ -133,7 +133,7 @@ function removefromallgroups($user_dn){
 		}  //parametre gelmezse doğrudan \base_ou altındaki Custom altındaki gruba eklenir...
 		$lmsg.=$gr." :";
 		$group_dn='CN='.$gr.$group_ou.','.$ini['base_dn'];
-		$lmsg.=group_add_user($group_dn,$user_dn,'D'); //silinecek...				
+		$lmsg.=group_user_add_remove($group_dn,$user_dn,'D'); //siliniyor				
 	}	
 } 
 ?>
