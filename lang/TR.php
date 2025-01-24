@@ -10,10 +10,10 @@ $gtext['clear']='Temizle';
 $gtext['empty']='Boşalt';
 $gtext['beingemptied']='Boşaltılıyor';
 $gtext['insert']='Ekle';
+$gtext['adding']='Ekleniyor';
 $gtext['edit']='Düzenle';
 $gtext['ins_edit']='Ekle/Değiştir';
 $gtext['change']='Değiştir';
-$gtext['copy']='Kopyala';
 $gtext['remove']='Çıkar';
 $gtext['send']='Gönder';
 $gtext['print']='Yazdır';
@@ -41,7 +41,6 @@ $gtext['profile']='Profil';
 $gtext['group']='Grup';
 $gtext['ldap_groups']='Gruplar (LDAP/AD)';
 $gtext['ldap_groups_point']='Grupların Yeri (LDAP/AD)';
-$gtext['adding']='Ekleniyor';
 $gtext['removing']='Çıkarılıyor';
 $gtext['type']='Tip';
 $gtext['yes']='Evet';
@@ -59,9 +58,8 @@ $gtext['valid']='Geçerli';
 $gtext['category']='Sınıf';
 $gtext['color']='Renk';
 $gtext['bgcolor']='Zemin Rengi';
-$gtext['search']='Ara';
 $gtext['order']='Sıra';
-$gtext['speed_dials']='Hızlı Aramalar';
+$gtext['rapid_call']='Hızlı Aramalar';
 $gtext['connection']='Bağlantı';
 $gtext['title']='Unvan';
 $gtext['get']='Getir';
@@ -71,13 +69,14 @@ $gtext['mandatory_field']='Mecburi Alan';
 $gtext['streetaddress']='Adres';
 $gtext['second']='sn.';
 $gtext['assign']='Ata';
+$gtext['assigning']='Atanıyor';
 $gtext['test']='Test';
 $gtext['row']='Satır';
-$gtext['asayrac']='Kullanıcı adı içinde Ad/Soyac Ayracı';
+$gtext['asayrac']='Kullanıcı Adı Ad/Soyac Ayracı';
 $gtext['usernameflow']='Kullanıcı Adı Akışı';
-$gtext['givenname_length']='Kullanıcı adı içinde isim uzunluğu';
-$gtext['sn_length']='Kullanıcı adı içinde soyad uzunluğu';
-$gtext['a_exclamation']='Dikkat!';
+$gtext['givenname_length']='Kullanıcı Adı Ad Uzunluk';
+$gtext['sn_length']='Kullanıcı Adı Soyad Uzunluk';
+
 $gtext['day1']='Pazar';
 $gtext['day2']='Pazartesi';
 $gtext['day3']='Salı';
@@ -97,6 +96,7 @@ $gtext['month9'] ='Eylül';
 $gtext['month10'] ='Ekim';
 $gtext['month11']='Kasım';
 $gtext['month12']='Aralık';
+
 $gtext['white']='Beyaz';
 $gtext['primary']='Mavi';
 $gtext['secondary']='Gri';
@@ -105,6 +105,7 @@ $gtext['danger']='Kırmızı';
 $gtext['warning']='Sarı';
 $gtext['info']='Açık Mavi';
 $gtext['dark']='Siyah';
+
 $gtext['settings']='Ayarlar';
 $gtext['s_psettings']='Portal Ayarları';
 $gtext['s_gsettings']='Genel Ayarlar';
@@ -138,7 +139,6 @@ $gtext['certs']='Sertifikalar';
 $gtext['s_certsdir']='Sertifika Klasörü';
 $gtext['quals']='Kalifikasyonlar';
 $gtext['s_qualsdir']='Kalifikasyon Klasörü';
-$gtext['form']='Form';
 $gtext['forms']='Formlar';
 $gtext['s_formsdir']='Form Klasörü';
 $gtext['s_formdesign']='Form Tasarımı';
@@ -165,12 +165,15 @@ $gtext['s_message']='***USER MESAJI';
 $gtext['s_message_ack']='Mesajlar içinde alanlardan bilgi almak gerekirse {} arasına alan adı yazılabilir. Örnek: {displayname}';
 $gtext['a_userinfo']='Kullanıcı Bilgileri';
 $gtext['a_ldaprules']='LDAP Kuralları';
+
 $gtext['disabledou']='Kapalı Kullanıcılar OUsu<br>(Örnek: AYRILANLAR)';
 $gtext['disabledname']='Kapalı Kullanıcı İsmi ön eki <br>(Örnek:Disabled_)';
+$gtext['disabledusername']='Kapalı Kullanıcı adı ön eki <br>(Örnek:dis_)';
 $gtext['disabledmailuser']='Kapalı Kullanıcı maili ön eki <br>(Örnek:d_)';
 $gtext['homedir']='Kullanıcı Dizini <br>(Örnek:\\fileserver\yuva\)';
 $gtext['homedrive']='Kullanıcı Sürücü Harfi <br>(Örnek:Z:)';
 $gtext['drive_permission']='Dosya Sunucusu yetkileri';
+
 $gtext['nothingdone']='Yapılamadı';
 $gtext['closed']='Kapalı';
 $gtext['changed']='Değiştirildi';
@@ -208,8 +211,8 @@ $gtext['save']='Kaydet';
 $gtext['saved']='Kaydedildi';
 $gtext['notsaved']='KaydedileMEdi';
 $gtext['u_falsepass']='Geçerli şifreniz yanlış!';
-$gtext['u_passchanged']='Şifre Değiştirildi';
-$gtext['u_passnotchanged']='Şifre DeğiştirileMEdi';
+$gtext['u_passchanged']='Şifre Değiştirildi.';
+$gtext['u_passnotchanged']='Şifre DeğiştirileMEdi!';
 $gtext['u_firstpass']='Ayarlar sayfasına ilk sefer girişte bu şifre kullanılacaktır.';
 $gtext['write_user']='Kullanıcı Giriniz';
 $gtext['write_user_placeholder']='Kullanıcı adınız...';
@@ -220,9 +223,11 @@ $gtext['user_pairing']='Kullanıcı Eşleştirme';
 $gtext['a_dep_ins_edit']='Birim Ekle/Değiştir';
 $gtext['sdate']='Başlayış Tarihi';
 $gtext['resigndate']='Ayrılış Tarihi';
+
 $gtext['q_logout']='Çıkmak İstiyor musunuz?';
 $gtext['q_rusure']='Emin Misiniz?';
 $gtext['q_save']='Kaydediliyor?';
+
 $gtext['u_fieldisnotblank']='Alanlar boş olamaz';
 $gtext['u_passnotsame']='Şifreler uyuşmuyor!';
 $gtext['u_passnotacceptable']='Şifre uygun değil!';
@@ -236,9 +241,9 @@ $gtext['u_errlogin']='Kullanıcı adı ve/veya şifre hatalı, tekrar deneyiniz!
 $gtext['u_pgnotfound']='Sayfa Bulunamadı!';
 $gtext['u_ldatefromfdate']='Son tarih ilk tarihten sonra olmalıdır.';
 $gtext['u_usernameused']='Bu kullanıcı adı kullanılmış';
-$gtext['u_nochange']='Değişiklik yapamazsınız.';
 $gtext['q_userinfos']='Bilgileri görmek ister misiniz?';
 $gtext['free']='Uygun';
+
 $gtext['first']='İlk';
 $gtext['previous']='Önceki';
 $gtext['next']='Sonraki';
@@ -247,6 +252,7 @@ $gtext['all']='Tüm';
 $gtext['district']='İlçe'; 
 $gtext['st']='Şehir'; 
 $gtext['country']='Ülke'; 
+
 $gtext['shuttles']='Personel Servisleri';
 $gtext['shuttleroutes']='Servis Güzergahları';
 $gtext['sh_route']='Güzergah';
@@ -261,6 +267,7 @@ $gtext['capacity']='Kapasite';
 $gtext['res_person']='Sorumlu Personel';
 $gtext['res_person_phone']='Sorumlu Personel Tel';
 $gtext['shuttle_firm']='Servis Firması';
+
 $gtext['menu']='Menü';
 $gtext['addmenu']='Menü Ekle';
 $gtext['menuofday']='Günün Menüsü';
@@ -273,11 +280,13 @@ $gtext['announcements']='Duyurular';
 $gtext['announce_date']='Duyuru Tarihi';
 $gtext['announce_and_news']='Duyuru ve Haberler';
 $gtext['more']='Devam';
+
 $gtext['file']='Dosya';
 $gtext['upload']='Yükle';
 $gtext['uploader']='Yükleyen';
 $gtext['uploaded']='Yüklendi';
 $gtext['err_upload']='Yükleme hatası';
+
 $gtext['sb_mainpage']='Ana Sayfa';
 $gtext['sb_guides']='Rehberler';
 $gtext['sb_phonebook']='Telefon Rehberi';
@@ -286,6 +295,7 @@ $gtext['sb_qdocs']='Kalite Belgeleri';
 $gtext['sb_siteman']='Site Yönetimi';
 $gtext['sb_datafeed']='Bilgi Girişi';
 $gtext['sb_ldap']='LDAP-AD İşlemleri';
+
 $gtext['new_data']='Yeni Bilgi';
 $gtext['pano_rules']='Dikkat edilecek <b>Pano Kuralları:</b> Gayri ahlaki yazışmalar yapılmayacaktır. Bilgi güvenliğine dikkat edilmelidir. Başkalarını ilgilendiren yazışmalar yazışmalar yapılmayacaktır.';
 $gtext['pano_messages']='Gönderiler';
@@ -297,6 +307,7 @@ $gtext['pano_reply']='Cevap Ver';
 $gtext['pano_msgchange']='Mesaj Değiştirme';
 $gtext['pano_subject']='Konu';
 $gtext['pano_message']='Mesaj';
+
 $gtext['a_perm']='Yetki İşlemleri';
 $gtext['a_permview']='Yetki Göster';
 $gtext['a_department']='Birim';
@@ -317,12 +328,14 @@ $gtext['a_enter_date']='Giriş Tarihi';
 $gtext['a_prereqbq']='Kalite Belgeleri Ekle/Değiştir';
 $gtext['a_prereqbo']='Kurumsal Belgeler Ekle/Değiştir';
 $gtext['a_rcall']='Hızlı Arama  Numarası Ekle/Değiştir';
+
 $gtext['a_orgschememan']='Org.Şema Yönetimi';
 $gtext['a_orgschemes']='Organizasyon Şemaları';
 $gtext['a_neworgscheme']='Yeni Şema Ekle';
 $gtext['u_neworgscheme']='Yalnızca PDF türünde dosyalar yüklenebilir. Şema boyutu sayfa ile uyumlu olmalıdır.';
 $gtext['pubdate']='Yayım Tarihi';
 $gtext['pubdate_short']='Y.Tarihi';
+
 $gtext['a_title']='Başlık';
 $gtext['lvdate']='Son Gösterim Tarihi'; //Son Gösterim Tarihi';
 $gtext['lvdate_short']='S.G.Tar'; //Son Gösterim Tarihi';
@@ -330,7 +343,6 @@ $gtext['content']='İçerik';
 $gtext['contentsummary']='İçerik Özeti'; 
 $gtext['a_more']='Devamı Var'; 
 $gtext['a_publishing']='Yayında'; 
-$gtext['a_end']='Bitti'; 
 $gtext['a_end']='Bitti'; 
 $gtext['visible']='Görünür'; 
 $gtext['hidden']='Gizli'; 
@@ -347,7 +359,7 @@ $gtext['a_creator']='Oluşturan';
 $gtext['create']='Oluştur'; 
 $gtext['a_lastediting']='Son Düzenleyen'; 
 $gtext['u_setup']='Yönlendiriliyorsunuz...'; 
-$gtext['u_companymustbechosen']='Üst Birim Seçilmeli.'; 
+
 $gtext['a_pserpassengers']='Personel Servis Yolcuları'; 
 $gtext['a_pseraddpassengers']='Yolcu Ekleme'; 
 $gtext['pernumber']='Sicil';
@@ -358,6 +370,7 @@ $gtext['percompanys']='Üst Birimler';
 $gtext['mobile']='Telefon(GSM)';
 $gtext['number']='Numara';
 $gtext['ack']='Açıklama';
+
 $gtext['perlist']='Personel Listesi';
 $gtext['closedaccs']='Kapalı Hesaplar?';
 $gtext['pairing']='Eşleştirme';
@@ -379,8 +392,12 @@ $gtext['a_unlocked']='Açılmıştır';
 $gtext['a_notunlocked']='AçılaMAdı';
 $gtext['a_mustchange']='Değiştirilmeli';
 $gtext['usercanedit']='Kullanıcı kendi bilgilerini değiştirebilsin';
+
 $gtext['pb_phone']='Telefon';
 $gtext['pb_listed']='Kişi Bulundu.';
+
 $gtext['help']='Destek';
 $gtext['helpdesk']='Yardım Masası';
+
+
 ?>
