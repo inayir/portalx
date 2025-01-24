@@ -27,6 +27,7 @@ if($company==""){
 					'dp' => 1,
 					'ou' => 1,
 					'description' => 1,
+					'distinguishedname' => 1,
 					'managedby' => 1,
 					'manager' => 1,
 				],
@@ -39,6 +40,7 @@ if($company==""){
 				if($ksay>0){ $js1.=','; }
 				$js1.='{"ou":"'.$dformsatir->ou.'",';
 				$js1.='"description":"'.$dformsatir->description.'",';
+				$js1.='"distinguishedname":"'.$dformsatir->distinguishedname.'",';
 				$js1.='"company":"'.$dformsatir->company.'",';
 				$js1.='"managedby":"'.$dformsatir->managedby.'"';
 				$js1.='}';

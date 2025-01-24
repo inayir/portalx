@@ -15,16 +15,18 @@ $logfile='personel';
 @$collection=$db->personel;
 @$collectiondep=$db->departments;
   
-$username=$_POST['username']; //if($username==""){ $username="*cclear"; }
-$department=$_POST['department']; //if($department==""){ $department="DHAD"; }
+$username=$_POST['username']; 
+$department=$_POST['department']; 
 
-echo $gtext['a_department'].":".$department."->".$gtext['manager']." "; 
+echo $department."->".$gtext['manager']." "; 
 $log=$department."->Manager:".$gtext['manager'].";";
-
-if($username==""){ echo $gtext['beingemptied']."..."; /*Boşaltılıyor*/ } 
-$managedby=Array();
+if($username==""){ 
+	echo $gtext['beingemptied']."..."; /*Boşaltılıyor*/ 
+}else{ 
+	echo $gtext['assigning']; /*Atanıyor*/	
+} 
 $displayname="";
-$data=[];
+$data=Array();
 //kullanıcıyı db de bul, dn al.
 if($username!=""){
 	try{
@@ -43,18 +45,20 @@ if($username!=""){
 		if(!isset($cursor)){ 
 			echo $gtext['user']." ".$gtext['notfound']."!"; exit; 
 		}else{ 
-			echo "\n"; 
-			$managedby="";
-			$managedby=$cursor->distinguishedname;
+			$managedby=$cursor->distinguishedname; //personel dn -> ou->managedby
 			$displayname=$cursor->displayname;
 		}
 	}catch(Exception $e){
 		echo $gtext['notupdated']."!!"; exit;
 	}
+	echo ": ".$displayname;
 }
+echo "\n";
 //
 if($ini['usersource']=='LDAP'){
-	$data['managedby']=$managedby; //personel dn -> ou->managedby
+	echo "*LDAP: ";
+	if($username!=''){ $data['managedby']=$managedby; }
+	else{ $data['managedby']=[]; }
 	//dep_dn almak için ldap'a bakıyoruz.
 	$ldap_result = ldap_search($conn, $base_dn, "(ou=$department)");
 	if($ldap_result){ //MODIFY department
@@ -62,8 +66,8 @@ if($ini['usersource']=='LDAP'){
 		$dep_dn=$infodep[0]['distinguishedname'][0]; //department dn
 		$son=ldap_mod_replace($conn, $dep_dn, $data);  //update manager
 		if($son){
-			echo $gtext['updated']." by:".$displayname; //department updated.
-			$log.=$gtext['updated'].":".$displayname.";"
+			echo $gtext['a_department']." ".$gtext['updated'];//department updated.
+			$log.=$gtext['a_department']." ".$gtext['updated'].':'.$displayname.';';
 			//finding al person... to update managers
 			$ldap_resultp = ldap_search($conn, $dep_dn, "(samaccountname=*)");
 			if($ldap_resultp){ 
@@ -78,24 +82,24 @@ if($ini['usersource']=='LDAP'){
 						}
 					}
 				}
-				echo "\n".$up." ".$gtext['s_personel']." ".$gtext['updated']; 
+				echo " ->".$up." ".$gtext['s_personel']." ".$gtext['updated']."\n"; 
 				$log.=$up." person(s) ".$gtext['updated'].";";
+				echo "*DB: ";
 			}
 		}else{ 
 			echo $gtext['notupdated']." "; 
 			$log.=$gtext['notupdated'].";";
+			echo ldap_error($conn);
+			exit; //usersource=LDAP için 
 		}
 	}else{ 
-		echo $gtext['updated']." "; 
+		echo $gtext['updated']."/"; 
 		exit; 
 	}  
 }
 //DB
 $log.="DB;";
-if($displayname==""){
-	$displayname=substr($managedby, 3, strpos($managedby,'OU='));
-}
-$data['managedby']=$displayname; //personel displayname -> departments->managedby
+if($username==''){ $data['managedby']=""; }
 $data['manager']=$username; //personel username
 $data['son_deg_per']=$_SESSION['user'];
 $data['son_deg_tar']=datem(date("Y-m-d", strtotime("now")).'T'.date("H:i:s", strtotime("now")).'.000+00:00');
@@ -106,7 +110,7 @@ $data['son_deg_tar']=datem(date("Y-m-d", strtotime("now")).'T'.date("H:i:s", str
 	[ '$set' => $data]
 );
 if($cursorup->getModifiedCount()>0){ //"Güncellendi."; 
-	echo "/".$gtext['updated'];  
+	echo $gtext['updated'];  
 	//tüm bağlı personelin yöneticisi değiştirilir.
 	@$cursordep = $collectiondep->find(
 		[

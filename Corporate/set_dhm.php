@@ -127,7 +127,7 @@ if($sil==1){
 				if($cursord->getModifiedCount()>0){ echo $gtext['uploaded']; $r=true; }else{ echo $gtext['notuploaded']."!"; }
 			} else {
 				echo $gtext['notuploaded']."!";
-				$log.=",{'".$gtext['notuploaded']".'},{'tempname':".$_FILES['dh_resim']['tmp_name']."};";
+				$log.=",{'".$gtext['notuploaded']."'},{'tempname':".$_FILES['dh_resim']['tmp_name']."};";
 			}
 		}
 	}

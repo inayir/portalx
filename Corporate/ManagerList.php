@@ -262,7 +262,8 @@ body {
 								<tr class="newmanager">
 									<td class="w-25"><?php echo $gtext['new']." ".$gtext['manager'];/*Yönetici*/?>: </td>
 									<td class="w-75">
-										<input class="form-control-sm" type="text" name="manager" id="manager" onkeyup="searchp();" placeholder="<?php echo $gtext['search'];?>..." />
+										<input class="form-control-sm" type="text" name="manager" id="manager" onkeyup="searchper();" placeholder="<?php echo $gtext['search'];?>..." />
+										<input type="hidden" name="username" id="username" value=""/>
 										<ul id="perlist">
 										  
 										</ul>
@@ -300,7 +301,7 @@ var domain="<?php echo $ini['domain']; ?>";
 var dturl="<?php echo $_SESSION['lang'];?>"; 
 var lang_row='<?php echo $gtext['row'];?>';
 const objc=JSON.parse('<?php echo json_encode($fsatir); ?>'); 
-var objper="", keys="", assman="";
+var objper="", keys="";
 $('#description').on("blur", function(){
 	if($('#description').val()!=''){	
 		var dep=crea_name($('#description').val(), 99, '', 0, '',0);
@@ -374,6 +375,7 @@ $(document).ready(function() {
 		}
 	});	
 	$('.cupdate').on('click', function(e){ 
+		listegetir();
 		var c=$(this).attr('id'); 
 		c=c.replace('c-',''); 
 		$('#ou').val(objc[c]['ou']);  
@@ -393,7 +395,7 @@ $(document).ready(function() {
 		$('#ou').val(objc[c]['ou']);  
 		$('#c_desc').html(objc[c]['description']); 
 		$('#department').val(objc[c]['ou']); 
-		assman="";
+		$('#username').val("");
 		$('#manager').val(''); 
 		$('.newmanager').css('display','none'); 
 		$('#dmanager').html(objc[c]['manager']); 
@@ -408,7 +410,6 @@ $(document).ready(function() {
 			type:	'POST',
 			url : 'set_manager.php',
 			contentType: 'application/x-www-form-urlencoded;charset=utf-8',
-			data: { username: assman},
 			beforeSubmit : function(){
 				confirm('<?php echo $gtext['q_rusure'];?>');
 			},
@@ -422,7 +423,7 @@ $(document).ready(function() {
 		$('#myForm').submit();
 	});
 });
-function searchp() {
+function searchper() {
 	$('#perlist').css('display', 'inline');
     var input, filter, ul, li, a, i, txtValue;
     input = document.getElementById("manager"); 
@@ -439,10 +440,11 @@ function searchp() {
 		}); 
 	}
 }
-function sec(username, displayname){
+function sec(username, displayname){ 
 	$('#manager').val(displayname);
-	assman=username;
+	$('#username').val(username);
 	$('#perlist').css('display', 'none');
+	$('#record').prop("disabled", false );
 }
 function listegetir(){
 	var yol="get_per_list.php"; 
@@ -460,8 +462,7 @@ function listegetir(){
 		error: function(response){ alert('Hata!'); }
 	});
 }
-listegetir();
-$('form').find(':input').change(function(){ $('#record').prop("disabled", false ); });
+//$('form').find(':input').change(function(){ $('#record').prop("disabled", false ); });
 $('#cancel').on('click', function(){ $('#record').prop("disabled", true ); });
 
 </script>
