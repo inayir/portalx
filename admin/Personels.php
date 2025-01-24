@@ -355,7 +355,13 @@ $(document).ready(function() {
 					_: ' %d '+lang_row,
 					'-1': 'Tümü'
 				}
-			}
+			},
+			"columnDefs": [
+				{
+					"targets": 1,
+					"type": "num",
+				}
+			]
 		},
 		dom: 'Bfrtip',
 		buttons: [

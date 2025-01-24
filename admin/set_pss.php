@@ -18,7 +18,7 @@ include("../set_mng.php");
 //error_reporting(0);
 header('Content-Type:text/html; charset=utf8');
 include($docroot."/sess.php");
-include($docroot."/ldap.php");
+//include($docroot."/ldap.php");
 if($_SESSION["user"]==""){ echo "login"; exit; }
 //
 $log="";
