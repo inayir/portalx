@@ -84,16 +84,22 @@ $liste=Array('samaccountname','displayname','givenname','sn','mail','description
 $filter = '(|(objectCategory=person)(objectCategory=contact))';
 $ldap_search_result = ldap_search($conn, $dn, $filter, $liste);  //
 if ($ldap_search_result){
-	$entries = ldap_get_entries($conn, $ldap_search_result); //var_dump($entries);
-	//$sorted = array_orderby($entries, 'order', SORT_ASC, 'displayname', SORT_ASC);	
+	$entries = ldap_get_entries($conn, $ldap_search_result); //var_dump($entries);	
 	$sorted = array_orderby($entries, 'displayname', SORT_ASC);	
 	$json='[';
 	$s=0;
 	for($i=0; $i<$sorted['count']; $i++){	
 		$js1="";	//(!empty($sorted[$i]['mobile'][0]))&&  telefonu olmayanları göstermiyordu
-		if ((str_contains($sorted[$i]['givenname'][0],$ini['disabledname'])==false)&&((str_contains($sorted[$i]['title'][0],'Phone')==false)||(str_contains($sorted[$i]['title'][0],'')==false))){	
+		$dis=str_contains($sorted[$i]['displayname'][0],$ini['disabledname']); 
+		$dis=str_contains($sorted[$i]['title'][0],'Phone');
+		$dis=str_contains($sorted[$i]['title'][0],'Admin');
+		if($sorted[$i]['title'][0]==''){ $dis=true;} 
+		if($sorted[$i]['description'][0]==''){ $dis=true; } 
+		//if ((($dis==true))){ echo $sorted[$i]['displayname'][0].":".$sorted[$i]['title'][0]." ".$dis."\n"; }
+		if($dis==''){ $dis=false;  } 
+		if ((($dis==false))){ 
 			//aranan searched içindeki metin name ile karşılaştırılacak. strtolowersız olmadı.
-			$r=false;
+			$r=false; 
 			if($dp=="P"){ 
 				$name=strtolower($sorted[$i]['givenname'][0]." ".$sorted[$i]['sn'][0]); 
 				$r=str_contains($name,$searched); 
@@ -103,17 +109,20 @@ if ($ldap_search_result){
 			}
 			if($r!=false){ //bulunduysa eklenir.
 				if($s>0){ $json.=","; }	
-				$js1='{';
+				$js1='{'; $jsx='';
 				for($ii=0; $ii<count($liste); $ii++){
 					if($ii>0){ $js1.=','; }
 					$tag=$liste[$ii];
+					$jsx='"'.$tag.'":"'.$sorted[$i][$tag][0].'"';
 					if($tag=='company'||$tag=='department'){ 
 						$arr=searchSubArray($ouarr, 0, $sorted[$i][$tag][0]);
-						//$log.="\nBulunan OU:".$arr[0]." ".$arr[1];
-						$js1.='"'.$tag.'":"'.$arr[1].'"';
-					}else{
-						$js1.='"'.$tag.'":"'.$sorted[$i][$tag][0].'"';
+						$jsx='"'.$tag.'":"'.$arr[1].'"';
 					}
+					if($tag=='manager'){
+						$v=substr($sorted[$i][$tag][0],3,strpos($sorted[$i][$tag][0],',OU=')-3);
+						$jsx='"'.$tag.'":"'.$v.'"';
+					}
+					$js1.=$jsx;
 				}
 				$js1.='}';
 				$s++;
@@ -124,10 +133,4 @@ if ($ldap_search_result){
 	$json.=']';
 }else{ $json='[{"givenname":"Giriş", "sn":"Bulunamadı"}]';}
 echo $json;  
-/*/$log.="\n".$json; 
-$dosya="get_user_tel_list.log"; 
-	touch($dosya);
-	$dosya = fopen($dosya, 'a');
-	fwrite($dosya, $log);
-	fclose($dosya); //*/
 ?>

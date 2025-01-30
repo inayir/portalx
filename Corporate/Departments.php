@@ -3,6 +3,32 @@
 	Departments 
 	From DB. if use LDAP, must Sync LDAP to DB.
 */
+function percount($ou, $disname){
+	global $db;
+	$xsay=0;
+	@$xcollection = $db->personel; 
+	$xcursor = $xcollection->find(
+		[
+			'department'=>$ou
+		],
+		[
+			'limit' => 0,
+			'projection' => [
+				'givenname'=>1,
+			]
+		]
+	);
+	if(isset($xcursor)){	 
+		foreach ($xcursor as $xsatir) {
+			$yer="";
+			$yer=strpos($xsatir->givenname, $disname);
+			if($yer==''||$yer<0){ $xsay++; };
+		}
+	}
+	echo $ou." ".$xsay."<br>";
+	return $xsay;
+}
+//------------------------------------
 include('../set_mng.php');
 //error_reporting(0);
 include($docroot."/sess.php");
@@ -19,13 +45,13 @@ if(!$exists){
 		$db->createCollection('personel',[
 	]);
 }
-$ksay=0; 
+$csay=0; 
 $csatir=Array(); $dsatir=Array(); 
-@$collection = $db->departments; //
+@$collection = $db->departments; 
 try{
 	$cursor = $collection->find(
 		[
-			'dp'=>'C'
+			'dp'=>'C', 'status'=>['$ne'=>'C']
 		],
 		[
 			'limit' => 0,
@@ -35,12 +61,14 @@ try{
 				'description' => 1,
 				'distinguishedname' => 1,
 				'managedby' => 1,
+				'manager' => 1,
+				'status' => 1,
 			],
 			'sort'=>['order'=>1, 'description'=>1],
 		]
 	);
 	if(isset($cursor)){	
-		$ksay=0;
+		$csay=0;
 		foreach ($cursor as $formsatir) {
 			$satir=[];
 			$satir['dp']=$formsatir->dp;
@@ -48,9 +76,12 @@ try{
 			$satir['description']=$formsatir->description;
 			$satir['distinguishedname']=$formsatir->distinguishedname;
 			$satir['managedby']=$formsatir->managedby;
-			if($ksay==0){ $company=$satir['ou'];}
+			$satir['manager']=substr($formsatir->managedby,3,strpos($formsatir->managedby,',OU')-3);
+			$satir['status']=$formsatir->status;
+			$satir['percount']=percount($formsatir->ou, $ini['disabledname']);
 			$csatir[]=$satir;
-			$ksay++;
+			if($csay==0){ $company=$satir['ou'];}
+			$csay++;
 		} 
 	}
 }catch(Exception $e){
@@ -60,7 +91,7 @@ $dsay=0;
 try{
 	$dcursor = $collection->find(
 		[
-			'dp'=>'D', 'company'=>$company,
+			'dp'=>'D', 'company'=>$company, 'status'=>['$ne'=>'C']
 		],
 		[
 			'limit' => 0,
@@ -71,6 +102,8 @@ try{
 				'description' => 1,
 				'distinguishedname' => 1,
 				'managedby' => 1,
+				'manager' => 1,
+				'status' => 1,
 			],
 			'sort'=>['order'=>1, 'description'=>1],
 		]
@@ -84,6 +117,9 @@ try{
 			$satir['description']=$dformsatir->description;
 			$satir['distinguishedname']=$dformsatir->distinguishedname;
 			$satir['managedby']=$dformsatir->managedby;
+			$satir['manager']=substr($dformsatir->managedby,3,strpos($dformsatir->managedby,',OU')-3);
+			$satir['status']=$dformsatir->status;
+			$satir['percount']=percount($dformsatir->ou, $ini['disabledname']);
 			$dsatir[]=$satir;	
 			$dsay++;
 		} 
@@ -172,9 +208,9 @@ try{
 									</tr>
 									</tfoot>
 									<tbody><?php 
-									for($b=0;$b<$ksay;$b++){ 
+									for($b=0;$b<$csay;$b++){
 									?><tr class="<?php if($b==0){ echo "selected"; $secimou=$csatir[$b]['ou']; $secimdesc=$csatir[$b]['description']; }?>" id="<?php echo $csatir[$b]['ou']; ?>">
-										<td><?php echo $csatir[$b]['description']; ?></td>
+										<td><?php echo $csatir[$b]['description']." (".$csatir[$b]['percount'].")"; ?></td>
 										<td><button class="btn btn-info cupdate" id="c-<?php echo $b; ?>"><?php echo $gtext['change'];/*Değiştir*/?></button></td>
 									</tr>
 									<?php } ?>
@@ -185,7 +221,7 @@ try{
 							</div>
 						</div>
 						<script>
-							secimou="<?php echo $secimou;?>";
+							secimou="<?php echo $secimou;?>"; 
 							secimdesc="<?php echo $secimdesc;?>";
 						</script>
 						<div class="col-xl-6 col-lg-6 p-1">
@@ -211,12 +247,12 @@ try{
 									</tr>
 									</tfoot>
 									<tbody><?php 
-									for($d=0;$d<$dsay;$d++){ ?>
-									<tr>
-										<td><?php echo $dsatir[$d]['description']; ?></td>
+									for($d=0;$d<$dsay;$d++){ 
+									?><tr>
+										<td><?php echo $dsatir[$d]['description']." (".$dsatir[$d]['percount'].")"; ?></td>
 										<td>
 											<button class="btn btn-outline-info" onClick="javascript:dupdate('<?php echo $d;?>');"><?php echo $gtext['change'];/*Değiştir*/?></button>
-											<button class="btn btn-outline-danger" onclick="javascript:move(<?php echo $d;?>);"><?php echo $gtext['move'];/*Taşı*/?></button>
+											<button class="btn btn-outline-danger" onclick="javascript:move('<?php echo $d;?>');"><?php echo $gtext['move'];/*Taşı*/?></button>
 										</td>
 									</tr>
 									<?php } ?>
@@ -258,21 +294,18 @@ try{
 							<input type="hidden" name="dp" id="dp" value="C"/>
 							<input type="hidden" name="o_dp" id="o_dp"/>
 							<div class="modal-header">
-								<h5 class="modal-title" id="exampleModalLabel"><?php echo $gtext['a_dep_ins_edit'];/*Birim Ekleme/Değiştirme*/?></h5>
+								<h5 class="modal-title" id="exampleModalLabel"><span class="text-bold" id="dp_desc"></span> <?php echo $gtext['ins_edit'];/*Birim Ekleme/Değiştirme*/?></h5>
 								<button class="close" type="button" data-dismiss="modal" aria-label="<?php echo $gtext['close'];?>">
 									<span aria-hidden="true">×</span>
 								</button>
 							</div>
 							<div class="modal-body">
 								<table class="table table-bordered">
-								<tr>
-									<td colspan="2" align="center" class="text-bold" id="dp_desc"></td>
-								</tr>
 								<tr id="comsat">
 									<td><?php echo $gtext['percompany'];/*Company*/?>: </td>
 									<td>
 										<SELECT name="company" id="company" style="display:none"><?php
-								for ($i=0; $i < $ksay; $i++){
+								for ($i=0; $i < $csay; $i++){
 									$a=$csatir[$i]["ou"];
 									if($a[0]!="_"&&$csatir[$i]["description"]!=""){ 
 										echo "<option value='".$a."'>";
@@ -287,7 +320,8 @@ try{
 								<tr id="descsat">
 									<td><?php echo $gtext['description'];/*Tanım*/?>: </td>
 									<td>
-										<input type="text" name="description" id="description" value="" style="width:100%;"/>
+										<div id="d_desc"></div>
+										<input type="text" name="description" id="description" style="width:100%;"/>
 										<input type="hidden" name="o_description" id="o_description"/>
 									</td>
 								</tr>
@@ -301,9 +335,20 @@ try{
 								<tr>
 									<td><?php echo $gtext['manager'];/*Yönetici*/?>: </td>
 									<td>
+										<span id="dmanager"></span>
 										<input type="hidden" name="manager" id="manager" value=""/>
-										<input type="hidden" name="managedby" id="managedby" value=""/>
-										<input type="hidden" name="o_manager" id="o_manager" value=""/>
+										<input type="hidden" name="managedby" id="managedby" />
+										<input type="hidden" name="o_manager" id="o_manager" />
+									</td>
+								</tr>
+								<tr>
+									<td><?php echo $gtext['status'];/*Durum*/?>: </td>
+									<td>
+										<span id="dmanager"></span>
+										<select name="manager" id="manager">
+											<option value="A"><?php echo $gtext['active'];/*Aktif*/?></option>
+											<option value="C"><?php echo $gtext['closed'];/*Kapalı*/?></option>
+										</select>
 									</td>
 								</tr>
 								</table>
@@ -336,25 +381,23 @@ var dsatir='<?php if(count($dsatir)>0){ echo json_encode($dsatir); }else{ echo '
 const objd=JSON.parse(dsatir); 
 var btn="";
 var isl='';
-function dupdate(kd){ //
-console.log('dupdate:'+kd);
+function dupdate(kd){ 
 	isl='update';
 	$('#dp').val('D');
-	var d='<?php echo $gtext['a_department'];//Department?>';
+	var d='<?php echo $gtext['a_department'];/*Department*/ ?>';
 	$('#dp_desc').html(d);
-	$('#comsat').show();
-	$('#o_dn').val(objd[kd]['distinguishedname']); 
-	$('#ou').val(objd[kd]['ou']); 
-	$('#o_ou').val(objd[kd]['ou']); 
+	$('#comsat').show(); 
+	$('#o_dn').val(objd[kd]['distinguishedname']);
+	$('#ou').val(objd[kd]['ou']);
+	$('#o_ou').val(objd[kd]['ou']);
 	$('#company').val(secimou); 
 	$('#o_company').val(secimou); 
 	$('#c_desc').html(secimdesc); 
 	$('#company').css('display', 'none'); 
-	$('#description').val(objd[kd]['description']); 
-	$('#o_description').val(objd[kd]['description']); 
-	$('#dmanager').val(objd[kd]['managedby']); 
-	$('#manager').val(objd[kd]['managedby']); 
-	$('#o_manager').val(objd[kd]['managedby']); 
+	$('#description').val(objd[kd]['description']);
+	$('#dmanager').html(objd[kd]['manager']);
+	$('#manager').val(objd[kd]['managedby']);
+	$('#o_manager').val(objd[kd]['managedby']);
 	$('#record').html('<?php echo $gtext['change'];//Değiştir?>');
 	jQuery.noConflict();
 	$("#depModal").modal('show');
@@ -363,13 +406,16 @@ function move(kd){
 	isl='move';
 	$('#dp').val('D');
 	$('#comsat').show();
+	$('#o_dn').val(objd[kd]['distinguishedname']); //distinguishedname
 	$('#ou').val(objd[kd]['ou']); 
 	$('#company').val(secimou); 
+	$('#o_company').val(secimou); 
 	$('#c_desc').css('display', 'none');
-	$('#description').val(objd[kd]['description']); 
+	$('#d_desc').html(objd[kd]['description']);
 	$('#company').css('display', 'inline'); 
 	$('#ou').attr('disabled', true); 
-	$('#description').attr('disabled', true); 
+	$('#description').val(objd[kd]['description']);
+	$('#description').css('display', 'none'); 
 	$('#record').html('<?php echo $gtext['move'];//Taşı?>');
 	jQuery.noConflict();
 	$("#depModal").modal('show');
@@ -385,20 +431,17 @@ $(document).ready(function() {
 			type: 'POST',
 			url: './get_depsbyc.php',
 			data: { company: cou },
-			success: function (response){ //console.log('response:'+response);
+			success: function (response){ //console.log(response);
 				if(response==''){ alert('You must login!'); location.reload(); }
 				if(response.indexOf('!')>=0){ alert(response); location.reload(); }
-				else{					
+				else{			
 					var dep=JSON.parse(response);
 					var uz=dep.length; 
 					$('#deplist tr').remove();
 					if(uz>0){
 						var bas='<tr><th style="text-align: center"><?php echo $gtext['a_department'];?></th><th>...</th></tr>';
 						$('#deplist > tbody:last-child').append(bas); 
-						for(var od=0;od<objd.length;od++){ objd.splice(od); }						
-						for(var odp=0;odp<uz;odp++){ 
-							objd.push(dep[odp]['ou'],dep[odp]['description'],dep[odp]['distinguishedname'],dep[odp]['company'],dep[odp]['managedby']);
-						} 
+						for(var od=0;od<objd.length;od++){ objd.splice(od); }
 						for(var i=0; i<uz; i++){
 							var uinf=dep[i]; 
 							var tab1='<tr><td>'
@@ -408,7 +451,9 @@ $(document).ready(function() {
 							+'<button class="btn btn-outline-danger" onclick="javascript:move('+i+');"><?php echo $gtext['move']; ?></button>'
 							+'</td>'
 							+'</tr>';
-							$('#deplist > tbody:last-child').append(tab1); 
+							$('#deplist > tbody:last-child').append(tab1);  
+							//for other processes
+							objd.push(dep[i]);
 						}
 						$('#deplist > tbody:last-child').append(bas); 
 					}
@@ -423,7 +468,7 @@ $(document).ready(function() {
 			classList.add('selected');
 		}
 		//get depatments 
-		secimou=ctable.row('.selected').id();
+		secimou=ctable.row('.selected').id(); 
 		secimdesc=ctable.row('.selected').data()[0];
 		$('#c_desc').html(secimdesc); 
 		getdepartments(secimou);
@@ -487,7 +532,7 @@ $(document).ready(function() {
 		$('#ou').val(objc[c]['ou']);  
 		$('#description').val(objc[c]['description']); 
 		$('#o_dn').val(objc[c]['distinguishedname']); 
-		$('#dmanager').val(objc[c]['managedby']); 
+		$('#dmanager').html(objc[c]['manager']); 
 		$('#manager').val(objc[c]['managedby']); 
 		$('#record').html('<?php echo $gtext['change'];//Değiştir?>');
 		jQuery.noConflict();

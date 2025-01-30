@@ -62,7 +62,7 @@ if($o_dn==''){
 	$data["objectclass"][0]= "top";
 	$data["objectclass"][1]= "organizationalUnit";
 }
-if($db_ou==''||$ou!=$db_ou){ 
+if($o_dn==''){ 
 	$data["ou"] = $ou; 
 	$data["name"]	= $ou;
 }
@@ -76,12 +76,12 @@ if($ini['usersource']=='LDAP'){  //LDAP işlemleri
 	if($ldap_result){ //echo " ldap_result+";
 		$info = ldap_get_entries($conn, $ldap_result); 
 		echo "\n* LDAP: ";
-		if($info["count"]>0){ //echo " info+ o_dn:".$o_dn; //var_dump($data);
+		if($info["count"]>0){ //var_dump($data);
 			$sonuc=ldap_mod_replace($conn, $o_dn, $data);
 			if($sonuc){ echo $gtext['updated']; }//" Güncellendi.";
 			else{ 
 				echo $gtext['notupdated']." -> ";
-				echo ldap_error($conn);
+				$log.=$db_ou.":".$gtext['notupdated']."->".ldap_error($conn);
 				echo $msg; exit;  
 			} 
 		}else{ //ou null-> save. echo " info-";
@@ -102,7 +102,7 @@ if($ini['usersource']=='LDAP'){  //LDAP işlemleri
 					$datagp['distinguishedname']=$group_ou;
 					$sonucgp=ldap_add($conn, $group_ou, $datagp);
 					if(!$sonucgp){ echo $gtext['group']." ".$gtext['notinserted']; 
-					}else{	echo "<br>".$gtext['group']." ".$gtext['inserted']; }
+					}else{	echo "\n".$gtext['group']." ".$gtext['inserted']; }
 				}
 				//gruop lar eklenir... içinde department olanlar...
 				$grs=explode(',', $ini['group']);
@@ -126,22 +126,7 @@ if($ini['usersource']=='LDAP'){  //LDAP işlemleri
 							else{ echo $gtext['group']." ".$gtext['notinserted']."->".$gr_res; }
 						}						
 					}
-				}
-				//personel changing...
-				$data=array();
-				$data['department']=$ou;
-				$data['company']=$_POST['company'];
-				$ldap_result = ldap_search($conn, $ini['base_dn'], "(department=$ou)");
-				$info = ldap_get_entries($conn, $ldap_result); 
-				echo " - Personel: ";
-				if($info["count"]>0){	//var_dump($info);
-					for($i==0; $i<$info["count"]; $i++){
-						echo "<br>".$i." ".$info[$i]['displayname'][0]." ";
-						$sonuc=ldap_mod_replace($conn, $info[$i]['distinguishedname'][0], $data);
-						if($sonuc){ $rec++;	}
-					}
-					echo "<br>".$gtext['updated']." #".$rec." records.";
-				}else{ echo $gtext['notupdated']; $log.="{'update error':''}"; }
+				}//*/
 			}else{ //echo " add-";
 				echo $gtext['notinserted']."->";
 				echo ldap_error($conn);
@@ -154,6 +139,7 @@ if($ini['usersource']=='LDAP'){  //LDAP işlemleri
 echo "\n* DB: ";
 $data["dp"]		= $dp; 
 $data["company"]= $_POST['company'];
+$data["status"]= $_POST['status'];
 if($_POST['dp']=='C'||$_POST['company']==''){ //department=company ise root ou yazılır.
 	$data["company"] = $baseou; //from config
 }
@@ -178,14 +164,29 @@ if($ksay>0){  //update
 if($upd==1){
 	//değişen birimin ousu ise bu oudaki tüm personelin department veya company kayıtları değiştirilmelidir.
 	@$pcollection = $db->personel;
-	$pcursor = $pcollection->updateOne(
-		[
-			'department'=>$ou
-		],
-		[ '$set' => $dataper ]
-	); 
-	if($pcursor->getModifiedCount()>0){ echo $gtext['updated'];  }
-	else{ echo $gtext['notupdated']; $log.="{'update error':''}"; }		
+	$data=array();
+	$data['department']=$ou;
+	$data['company']=$_POST['company'];
+	$ldap_result = ldap_search($conn, $ini['base_dn'], "(department=$ou)");
+	$info = ldap_get_entries($conn, $ldap_result); 
+	echo " - Personel: ";
+	if($info["count"]>0){
+		//var_dump($info);
+		for($i==0; $i<$info["count"]; $i++){
+			echo "\n".$i." ".$info[$i]['displayname'][0]." ";
+			$sonuc=ldap_mod_replace($conn, $info[$i]['distinguishedname'][0], $data);
+			if($sonuc){ //echo "OK"; 
+				$pcursor = $pcollection->updateOne(
+					[
+						'displayname'=>$info[$i]['displayname'][0]
+					],
+					[ '$set' => $dataper ]
+				); 
+				if($pcursor->getModifiedCount()>0){ echo $gtext['updated']; $rec++; }
+				else{ echo $gtext['notupdated']; $log.="{'update error':''}"; }			
+			}
+		}
+		echo "\n".$gtext['updated']." #".$rec." records.";
 	}else{ echo $gtext['notupdated']; $log.="{'update error':''}"; }
 }
 logger("department",$log);

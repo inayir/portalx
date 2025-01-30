@@ -26,7 +26,7 @@ if($username==""){
 	echo $gtext['assigning']; /*Atanıyor*/	
 } 
 $displayname="";
-$data=Array();
+$data=Array(); $datap=Array(); $cmanager=Array();
 //kullanıcıyı db de bul, dn al.
 if($username!=""){
 	try{
@@ -52,6 +52,42 @@ if($username!=""){
 		echo $gtext['notupdated']."!!"; exit;
 	}
 	echo ": ".$displayname;
+	//department type
+	@$cursordep = $collectiondep->findOne(
+		[
+			'ou'=>$department,
+		],
+		[
+			'limit' => 1,
+			'projection' => [
+				'dp'=>1,
+				'company'=>1,
+			],
+		]
+	);
+	
+	if(!isset($cursordep)){ 
+		echo $gtext['department']." ".$gtext['notfound']."!"; exit; 
+	}else{ //company manager finding...
+		if($cursordep->dp=='D'){
+			@$cursorc = $collectiondep->findOne(
+				[
+					'ou'=>$cursordep->company,
+				],
+				[
+					'limit' => 1,
+					'projection' => [
+						'managedby'=>1,
+					],
+				]
+			);
+			if($cursorc->managedby!=''){ $cmanager['manager']=$cursorc->managedby; }
+			else{ $cmanager['manager']=[]; }
+		}
+	}
+}else{
+	echo $gtext['u_fieldisnotblank']; //boş olamaz
+	exit;
 }
 echo "\n";
 //
@@ -76,9 +112,14 @@ if($ini['usersource']=='LDAP'){
 				$datap['manager']=$managedby;
 				for($x=0;$x<$info["count"];$x++){
 					if($info[$x]['department'][0]==$department){ //sadece o department. 
-						if($managedby!=$info[$x]['distinguishedname'][0]){
+						if($managedby!=$info[$x]['distinguishedname'][0]){  //out of manager
 							$sonuc=ldap_mod_replace($conn, $info[$x]['distinguishedname'][0], $datap);
 							if($sonuc){ $up++; }
+						}else{ //D manager's C manager
+							if($cursordep->dp=='D'){
+								$sonuc=ldap_mod_replace($conn, $info[$x]['distinguishedname'][0], $cmanager);
+								if($sonuc){ $up++; }
+							}
 						}
 					}
 				}
@@ -123,6 +164,21 @@ if($cursorup->getModifiedCount()>0){ //"Güncellendi.";
 	if($cursordep->getModifiedCount()>0){ 
 		echo " Personel records".$gtext['updated']; 
 		$log.=" records ".$gtext['updated'].";";
+	}
+	//D personel's C manager
+	if($cursordep->dp=='D'){  //$cmanager['manager'];
+		@$cursor = $collection->updateOne(
+			[
+				'username'=>$username
+			],
+			[
+				'$set'=>$cmanager
+			]
+		);
+		if($cursor->getModifiedCount()>0){ 
+			echo " Personel manager ".$gtext['updated']; 
+			$log.=" personel manager ".$gtext['updated'].";";
+		}
 	}
 }else{ //"GüncelleneMEdi."; 
 	echo "/".$gtext['notupdated'];  
