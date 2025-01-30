@@ -18,7 +18,7 @@ $logfile='personel';
 $username=$_POST['username']; 
 if($username==''){ @$username=$_GET['username']; } 
 if($username!=''){
-	echo $gtext['a_reopen'].", ".$gtext['user']." ".$username.":\n";
+	echo $gtext['a_reopening']."\n ".$gtext['user']." ".$username.":\n";
 	if($ini['usersource']=='LDAP'){
 		$ldap_result1 = ldap_search($conn, $ini['dom_dn'], "(samaccountname=$username)");	
 		if($ldap_result1){
@@ -35,8 +35,8 @@ if($username!=''){
 				}else{ 
 					$data["givenname"]=$info[0]['givenname'][0]; 
 				}
-				$sn=strtouppertr($info[0]['sn'][0]);				
-				$sn=str_return($info[0]['sn'][0]);	
+				$sn=strtouppertr($info[0]['sn'][0]);		
+				$sn=str_return($info[0]['sn'][0],'');
 				$data['sn']=$sn;
 				$data["displayname"]	= $data["givenname"]." ".$sn;
 				//mail
@@ -49,7 +49,7 @@ if($username!=''){
 				if($info[0]['manager'][0]!=""){
 					$data["manager"]=array(); //yönetici ile alakası kesilir...
 					$log.="<br>manager:deleted;";
-				}//*/
+				}
 				//telephones //Atribute Editor 
 				if($info[0]['pager'][0]!=""){
 					$data["telephoneNumber"]=$info[0]['pager'][0]; 
@@ -66,7 +66,7 @@ if($username!=''){
 				}//*/
 				//Disable the user
 				$data["useraccountcontrol"]="544";
-				$log.=" user reopen;";
+				$log.=" user reopen;"; 
 				//-------------------------
 				$log.="<br>".$gtext['user']." ";
 				$sonuc=ldap_mod_replace($conn, $o_user_dn, $data);

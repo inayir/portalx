@@ -56,6 +56,9 @@ if($username!=''){
 					$data["useraccountcontrol"]="514";
 					$log.="useraccountcontrol 514 disabled;";
 				}
+				/*if($info[0]['accountExpires'][0]!="(never)"){					
+					$data['accountExpires']=date("Y-m-d H:i:s", strtotime("now"));
+				}//*/
 				//removing from mail groups-Önce gruplardan çıkarılır...
 				$data["o_department"]=$info[0]['department'][0];
 				$data["o_company"]=$info[0]['company'][0];
@@ -102,7 +105,7 @@ if($username!=''){
 		echo "\n".$gtext['s_database']."-> ";
 	}else{
 		//DBden gelecek bilgiler
-		$ksay=0;		
+		$ksay=0;
 		@$collection = $db->personel;
 		@$cursor = $collection->findOne(
 			[

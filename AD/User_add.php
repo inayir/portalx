@@ -314,7 +314,7 @@ var dis='';
 						<tr>
 							<td colspan="4" align="center">
 								<input type="submit" id="record" value="<?php echo $gtext['save'];/*Kaydet*/?>" width=50 disabled />
-								<input type="button" id="clear" value="<?php echo $gtext['clear'];/*Temizle*/?>" width=50/>
+								<input type="button" id="close" value="<?php echo $gtext['close'];/*Kapat*/?>" width=50/>
 							</td>
 						</tr>
 						</table>
@@ -388,11 +388,8 @@ $(document).ready(function() {
 		}	
 	});
 	$('#username').on("blur", function(){ $('#usrkont').click(); });
-	$('#clear').on("click", function(){
-		$('#record').attr("disabled", false);
-		$('#company').change();
-		//$('#department').change();
-		$('#rp').html("");
+	$('#close').on("click", function(){
+		window.close();
 	});
 	var kontt=0; var dep='';
 	$('#usrkont').on("click", function(){ 
@@ -433,8 +430,7 @@ $(document).ready(function() {
 			datatype: 'json',
 			async: false,
 			data: { u: username, keys: keys },
-			success: function(response){  //
-			console.log(response);				
+			success: function(response){  //console.log(response);				
 				var obj=JSON.parse(response);
 				kontt=obj.length; 
 				$.each(obj, function(i, key, value){ 
@@ -465,14 +461,22 @@ $(document).ready(function() {
 						}
 						if(k=='department'){ 
 							dep=v; 
+							$('#o_department').val(v);
 						}
-						if(k=='manager'){ //
+						if(k=='company'){ 
+							$('#o_company').val(v);
+						}
+						if(k=='manager'){ 
 							var x=v.indexOf(',OU');
-							$('#dmanager').html(x.substring(3, x)); 
+							if(x>=0){ v=v.substring(3,x); }
+							$('#dmanager').html(v); 
 						}
 						if(k=='givenname'){
 							var y=v.indexOf('<?php echo $ini['disabledname'];?>');
 							if(y>=0){ dis=1; }
+						}
+						if(k=='streetaddress'){
+							$('#'+k).html(v);
 						}
 					}				
 				}); 
@@ -547,7 +551,7 @@ $(document).ready(function() {
 			$('#title').val('<?php echo $gtext['s_intern']; ?>'); 
 		}
 	});
-	$('#clear').on('click', function(){
+	$('#close').on('click', function(){
 		location.reload();
 	});
 	$('#company').change();  

@@ -100,16 +100,18 @@ try{
 //General
 $o_user_dn=$_POST['distinguishedname'];
 $baseou=substr($base_dn,3, strpos($base_dn,',')-3); //ASELSANKONYA
-if($_POST['givenname']!=$_POST['o_givenname']){ $data["givenname"]=$_POST['givenname']; $displayname=$_POST['givenname']." ".$_POST['sn']; }
-if($_POST['sn']!=$_POST['o_sn']){ 
+$data["givenname"]=$_POST['givenname']; 
 	$sn=strtouppertr($_POST['sn'],1);
-	$data["sn"]=$sn; 
-	$displayname=$_POST['givenname']." ".$_POST['sn']; 
-}
-$displayname=$data['givenname']." ".$sn; 
+$data["sn"]=$sn; 
+$displayname=$data['givenname']." ".$data["sn"];  
 if($displayname!=""&&$displayname!=" "){ $data["displayname"]= $displayname; }
 //Türkçe karakterler sorun çıkarmaması için değiştirilir.
 $displayname=str_return($displayname,1);
+//
+$department=$_POST['department'];
+if($department==''){ $department=$_POST['o_department']; }
+$company=$_POST['company'];
+if($company==''){ $company=$_POST['o_company']; }
 //
 if($_POST['o_username']==''){ //Insert
 	$data["objectclass"][0]= "top";
@@ -120,22 +122,22 @@ if($_POST['o_username']==''){ //Insert
 	$data["userprincipalname"]= $username."@".$ini['domain']; //user logon name 
 }
 if($o_user_dn==""){ //Insert
-	if($_POST['company']!=$_POST['o_company']||$_POST['department']!=$_POST['o_department']){ 
-		if($_POST['department']==$_POST['company']){ 
+	if($company!=$_POST['o_company']||$department!=$_POST['o_department']){ 
+		if($department==$company){ 
 			$data["department"]	= $_POST['company'];
 			$data["company"]	= $baseou; 
 		} else {  
-			$data["department"]	= $_POST['department'];
+			$data["department"]	= $department;
 			$data["company"]	= $_POST['company']; 
 		}	
 	}
-	//
-	$distinguishedname="CN=".$displayname.",OU=";
-	if($_POST['department']!=$_POST['company']||$_POST['company']!=$ini['domshort']){ 
-		$distinguishedname.=$data['department'].",OU=";  
-	}
-	$distinguishedname.=$data['company'].",".$base_dn;
 }
+//
+$distinguishedname="CN=".$displayname.",OU=";
+if($department!=$company||$company!=$ini['domshort']){ 
+	$distinguishedname.=$data['department'].",OU=";  
+}
+$distinguishedname.=$data['company'].",".$base_dn;
 //Profile 
 if($o_user_dn==""&&$ini['homedir']!=""){ //configden gelir.
 	$data["homedrive"]= $ini['homedrive'];  //configden gelir
@@ -187,6 +189,10 @@ if($_POST['st']!=''){ //st : State
 if($_POST['co']!=''){  //co Country -> seçimli hale gelince değiştirilsin.
 	$data['co']=$_POST['co'];
 }
+if($_POST['resigndate']!=''){
+	echo "expdate:".date("Y-m-d H:i:s", strtotime($_POST['resigndate']));
+	$data['accountExpires']=date("d/m/Y H:i:s", strtotime($_POST['resigndate']));
+}
 $ins=false; 
 echo $gtext['user'].": ".$username;
 //işlem yapılıyor*********************************************************/
@@ -198,28 +204,40 @@ if($ini['usersource']=='LDAP'&&$data!=''){  //LDAP'a ***************************
 		$info = ldap_get_entries($conn, $ldap_result); 
 		if($info["count"]>0){ //MODIFY -- sadece bilgiler güncellenir, user taşınmaz
 			$sonuc=ldap_mod_replace($conn, $o_user_dn, $data); //o_user_dn!
-			if(!$sonuc){ 				
-				echo $gtext['notupdated']; 
-				echo " --->".$o_user_dn." (".ldap_error($conn).") ";
-				$log.=$gtext['notupdated'].";dn:".$o_user_dn.";data:".implode(';',$data).";";
-				logger($logfile,$log);
-				exit;
-			}else{ //" Güncellendi.";
+			if($sonuc){ //" Güncellendi.";
 				echo $gtext['updated']." "; 
 				$log.=$gtext['updated'].";".implode('; ',$data).";";
-				logger($logfile,$log);
+				//moving for distinguishedname -if givenname or sn is changed-
+				if($_POST['givenname']!=$_POST['o_givenname']||$_POST['sn']!=$_POST['o_sn']){					
+					$newdn='CN='.$displayname;
+					$newparent='OU='.$department; 
+					if($company!=$department){ $newparent.=',OU='.$company; $department=$company; }
+					$newparent.=','.$ini['base_dn'];
+					//echo " newparent:".$newparent;
+					$sonuc=ldap_rename($conn, $o_userdn, $newdn, $newparent, true);
+					if($sonuc){
+						$log.="dn changed!;";
+					}
+				}
+				//
 				if($newPassword!=''){ //şifre değiştiriliyorsa...
 					$s=change_pass($distinguishedname,$newPassword, $_SESSION['user'],$_SESSION['pass']);	
 					if(strpos($s,'!')>=0){	$pwdset=1; }
 					echo " Pass:".$s;
-				}
+				}				
+			}else{ 
+				echo $gtext['notupdated']; 
+				//echo " --->".$o_user_dn." (".ldap_error($conn).") ";
+				$log.=$gtext['notupdated'].";dn:".$o_user_dn.";data:".implode(';',$data).";";
+				logger($logfile,$log);
+				exit;
 			}
 		}else{ //no user -> insert------------------------------------------------------------
 			$data["distinguishedname"]=$distinguishedname;
 			$sonuc=ldap_add($conn, $distinguishedname, $data); 
 			if(!$sonuc){  //"EkleneMEdi!"; 
 				echo $gtext['notinserted']."! ".$sonuc; 
-				echo " --->".ldap_error($conn)." ";
+				//echo " --->".ldap_error($conn)." ";
 				$log.=$gtext['notinserted']."; ".implode('; ',$data).";";
 				//logger($logfile,$log);
 				//exit;
@@ -270,8 +288,7 @@ if($ini['usersource']=='LDAP'&&$data!=''){  //LDAP'a ***************************
 echo "\n<br>".$gtext['s_database']."-> ";
 //Databasede kullanıcı var mı, bakılır...
 if($ini['usersource']!=1||$pwdset==1){
-	$data["userPassword"]= $newPassword; 
-	//$data["pwdLastSet"]= 0; 
+	$data["userPassword"]= $newPassword;
 }
 if($_POST['ptype']!=''){
 	$data['ptype']=$_POST['ptype'];
@@ -294,6 +311,7 @@ if($_POST['useraccountcontrol']!=$_POST['o_useraccountcontrol']){
 }
 //
 if($ksay>0){ //güncellenir
+	$data["distinguishedname"]=$distinguishedname;
 	@$acursor = $collection->updateOne(
 		[
 			'distinguishedname'=>$o_user_dn

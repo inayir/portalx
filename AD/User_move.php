@@ -376,7 +376,7 @@ $(document).ready(function() {
 						}
 						if(k=='manager'){ 
 							$('#dmanager').html(v);  
-							$('#newdmanager').html(v); 
+							$('#newdmanager').html(getoudesc(v,'managedby')); 
 						}
 					}				
 				}); 
@@ -425,7 +425,6 @@ $(document).ready(function() {
 					if(dp==''){ $('#o_companydesc').html(obj[0].value); }
 					else{ 
 						$('#o_departmentdesc').html(obj[0].value); 
-						$('#dmanager').html(obj[i].manager); 
 						$('#o_manager').val(obj[i].manager); 
 					}
 				});
