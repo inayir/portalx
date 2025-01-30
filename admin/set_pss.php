@@ -27,9 +27,9 @@ $logfile='personel';
 //
 @$trace=$_POST['t']; if($trace==''){ $trace=1; } 
 @$username=$_POST['u']; 
-if($username==''){ @$username=$_POST['username']; } if($username==""){ $username="dsayiner"; }
+if($username==''){ @$username=$_POST['username']; } if($username==""){ $username="yyilmaz"; }
 @$gpass=$_POST['gpass'];
-@$newPassword=$_POST['pass'];  if($newPassword==""){ $newPassword="Akss2025.."; }
+@$newPassword=$_POST['pass'];  if($newPassword==""){ $newPassword="Akss2024.."; }
 @$renewPassword=$_POST['repass']; 
 //@$distinguishedName=$_POST['dn'];  
 //
@@ -77,11 +77,12 @@ echo $gtext['user'].": ".$username."\n";
 $log.="username:".$username.";";
 //LDAP
 if($ini['usersource']=='LDAP'){ 
+	echo "LDAP:";
 	try{
 		$ADSI = new COM("LDAP:");
+		echo "Connected!";
 		$adsidn="LDAP://".$ini['ldap_server']."/".$distinguishedname; if($trace==1){ echo "<br>".$adsidn."<br>"; }
 		try{
-			echo "LDAP:";
 			$user = $ADSI->OpenDSObject($adsidn, $_SESSION['user'], $_SESSION['pass'], 1); if($trace==1){ echo "<br> user OK<br>"; }
 			if($user){ 
 				$user->SetPassword($newPassword);
@@ -107,9 +108,10 @@ if($ini['usersource']=='LDAP'){
 			logger($logfile,$log);
 			exit;
 		}
+		$ADSI->Release();
 		echo "/DB:";
-	}catch(Exception $e){ //ADSI not connect.
-		echo $gtext['u_passnotchanged']."!";/*"Şifre değiştirileMEdi.";*/ 
+	}catch (adLDAPException $e) { //ADSI not connect.
+		echo "->".$gtext['u_passnotchanged']."!";/*"Şifre değiştirileMEdi.";*/ 
 		$log.="passnotchanged->ADSI nok;";
 		logger($logfile,$log);
 		$rawErr = $e->getCode();

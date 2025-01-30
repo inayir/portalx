@@ -549,7 +549,8 @@ $("#userpbtn").on('click', function(){ //upwModal
 				var c=confirm('<?php echo $gtext['u_passnotsame'];?>'); 
 			}
 		},
-		success: function (data){ //console.log('donen:'+data);
+		success: function (data){ //
+		console.log('donen:'+data);
 			if(data=='login'){ alert('Please Login!'); location.href('../login.php');}
 			if(data.indexOf('!')>-1||data.indexOf('error')>-1){ alert('Bir hata oluştu!\n'+data); return false; }
 			if(data!=''){ alert(data); $('#upwModal').modal('hide'); }
