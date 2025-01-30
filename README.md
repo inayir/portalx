@@ -5,7 +5,7 @@ Kurum dokümanlarının paylaşılabildiği bir ortam olarak hizmet verebilir.
 PortalX içinde LDAP/Active Directory işlemlerini yapmak üzere basitleştirilmiş bir yönetim arayüzü eklenmiştir.
 PortalX kurulumdan hemen sonrasında kullanılabilir halde tasarlanmıştır. Kurulum ve işletmeye alma aşamalarında minimum destek ihtiyacı olacak şekildedir.
 Tamamen açık kaynak kodlu bir yazılımdır. Yaygın bir dille kodlanmış olması sebebiyle daha sonra üstünde değişiklik yapılmaya uygundur. 
-PortalX açık kaynak lisansı (MIT) ile lisanslanmıştır ve tamamen ücretsizdir. Bunun için kodun içindeki 3.LICENSE belgesine bakılmalıdır.
+PortalX açık kaynak lisansı (MIT) ile lisanslanmıştır ve tamamen ücretsizdir. Bunun için kodun içindeki LICENSE belgesine bakılmalıdır.
 Kurulum
 install.txt belgesinde anlatılan sıra izlenerek kurulacaktır. 
 Diğer konularda  bilgi için User Guide belgesine bakınız.
@@ -16,7 +16,7 @@ Diğer konularda  bilgi için User Guide belgesine bakınız.
     • There are manageable news, announcement pages, food menus, service lists and communication boards. It can serve as an environment where institutional documents can be shared.
     • The PortalX is designed to be usable immediately after installation. It requires minimum support during the installation and commissioning phases.
     • It is a completely open source software. Since it is coded in a common language, it is suitable for modifications later.
-    • PortalX is licensed under an open source license (MIT) and is completely free. For this, please refer to the 3. LICENSE document in the code.
+    • PortalX is licensed under an open source license (MIT) and is completely free. For this, please refer to the LICENSE document in the code.
 Installing
 It will be installed by following the order described in the install.txt document. 
 For other information, see the User Guide.
