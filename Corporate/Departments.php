@@ -25,7 +25,6 @@ function percount($ou, $disname){
 			if($yer==''||$yer<0){ $xsay++; };
 		}
 	}
-	echo $ou." ".$xsay."<br>";
 	return $xsay;
 }
 //------------------------------------

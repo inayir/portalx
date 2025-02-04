@@ -54,7 +54,7 @@ $fisay=count($fsatir);
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title<?php echo $gtext['pb_phone']." ".$gtext['ins_edit'];/*Phone number Insert/Edit*/?></title>
+    <title><?php echo $gtext['speed_dial']." ".$gtext['ins_edit'];/*Phone number Insert/Edit*/?></title>
 
     <!-- Custom fonts for this template-->
     <link href="/vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
@@ -95,9 +95,9 @@ $fisay=count($fsatir);
 
                     <!-- Page Heading -->
                     <div class="d-sm-flex align-items-center justify-content-between mb-4">
-                        <h1 class="h3 mb-0 text-gray-800"><?php echo $gtext['pb_phone']." ".$gtext['insert']."/".$gtext['change'];/*Phone number Ekle/Değiştir*/?></h1>
+                        <h1 class="h3 mb-0 text-gray-800"><?php echo $gtext['speed_dial']." ".$gtext['insert']."/".$gtext['change'];/*Phone number Ekle/Değiştir*/?></h1>
                         <a id="eklebtn" href="#" data-toggle="modal" data-target="#ymModal" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i
-                                class="fas fa-download fa-sm text-white-50"></i> <?php echo $gtext['pb_phone']." ".$gtext['insert'];/*Birim Ekle*/?></a>
+                                class="fas fa-download fa-sm text-white-50"></i> <?php echo $gtext['speed_dial']." ".$gtext['insert'];/*Hızlı arama Ekle*/?></a>
                     </div>
 
                     <!-- Content Row -->
@@ -106,7 +106,7 @@ $fisay=count($fsatir);
 							<!-- DataTables Example -->
 							<div class="card shadow mb-4">
 							  <div class="card-header py-3">
-								<h6 class="m-0 font-weight-bold text-primary"><?php echo $gtext['speed_dials'];/*Hızlı Aramalar*/?></h6>
+								<h6 class="m-0 font-weight-bold text-primary">* <?php echo $gtext['speed_dials_note'];/*Not*/?></h6>
 								<span id='ret'><small></small></span>
 							  </div>
 							  <div class="card-body">
@@ -126,7 +126,7 @@ $fisay=count($fsatir);
 										<td><?php echo $fsatir[$b]['telephonenumber']; ?></td>
 										<td><?php echo $fsatir[$b]['displayname']; ?></td>
 										<td><div class="dropdown">
-											  <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton<?php echo $fsatir[$b]['telephonenumber']; ?>" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><?php echo $gtext['procs'];/*İşlemler*/?></button>
+											  <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton<?php echo $fsatir[$b]['telephonenumber']; ?>" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><?php echo $gtext['menu'];/*Menu*/?></button>
 											  <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
 												<a class="dropdown-item" onClick="javascript:updatenumber('<?php echo $fsatir[$b]['telephonenumber']; ?>');"><?php echo $gtext['change'];/*Değiştir*/?></a>
 												<a class="dropdown-item" onClick="javascript:deletenumber('<?php echo $fsatir[$b]['telephonenumber']; ?>');"><?php echo $gtext['delete'];/*Hesabı Kapat*/?></a>
@@ -310,7 +310,7 @@ $(document).ready(function() {
 			url : './set_phone.php',
 			contentType: 'application/x-www-form-urlencoded;charset=utf-8',
 			beforeSubmit : function(){
-				confirm('Emin misiniz?');
+				return confirm('<?php echo $gtext['q_rusure'];/*Emin Misiniz?*/?>');
 			},
 			success: function(data){
 				$('#record').attr("disabled", true); 

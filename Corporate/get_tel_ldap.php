@@ -91,11 +91,10 @@ if ($ldap_search_result){
 	for($i=0; $i<$sorted['count']; $i++){	
 		$js1="";	//(!empty($sorted[$i]['mobile'][0]))&&  telefonu olmayanları göstermiyordu
 		$dis=str_contains($sorted[$i]['displayname'][0],$ini['disabledname']); 
-		$dis=str_contains($sorted[$i]['title'][0],'Phone');
-		$dis=str_contains($sorted[$i]['title'][0],'Admin');
+		if(str_contains($sorted[$i]['title'][0],'Phone')!=''){ $dis=true; }
+		if(str_contains($sorted[$i]['title'][0],'Admin')!=''){ $dis=true; }
 		if($sorted[$i]['title'][0]==''){ $dis=true;} 
 		if($sorted[$i]['description'][0]==''){ $dis=true; } 
-		//if ((($dis==true))){ echo $sorted[$i]['displayname'][0].":".$sorted[$i]['title'][0]." ".$dis."\n"; }
 		if($dis==''){ $dis=false;  } 
 		if ((($dis==false))){ 
 			//aranan searched içindeki metin name ile karşılaştırılacak. strtolowersız olmadı.
