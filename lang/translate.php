@@ -4,7 +4,8 @@
 */
 $docroot=$_SERVER['DOCUMENT_ROOT'];
 include($docroot."/config/config.php");
-//if($user==""){ header('Location: /login.php');}
+include($docroot."/sess.php");
+if($_SESSION['user']==""){ header('Location: /login.php');}
 //
 $lang=explode(',', $_SERVER['HTTP_ACCEPT_LANGUAGE']);
 $dila=explode('-', $lang[0]); 
@@ -35,7 +36,9 @@ if(isset($_POST['savebtn'])){
 	for($p=0;$p<count($keyso);$p++){
 		if($keyso[$p]=='lang'||$keyso[$p]=='tolang'||$keyso[$p]=='savebtn'){
 		}else{
-			$s.="$"."gtext['".$keyso[$p]."']='".$valso[$p]."'; \n";
+			$v=$valso[$p];
+			$v=str_replace("'","\'",$v);
+			$s.="$"."gtext['".$keyso[$p]."']='".$v."'; \n";
 		}
 	}
 	if(fwrite($tolangfil, $s) == FALSE){ echo "Can NOT Save!"; }else{ echo "Saved.";  }

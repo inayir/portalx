@@ -59,7 +59,8 @@ $gtext['category']='Sınıf';
 $gtext['color']='Renk';
 $gtext['bgcolor']='Zemin Rengi';
 $gtext['order']='Sıra';
-$gtext['rapid_call']='Hızlı Aramalar';
+$gtext['speed_dial']='Hızlı Arama';
+$gtext['speed_dials']='Hızlı Aramalar';
 $gtext['connection']='Bağlantı';
 $gtext['title']='Unvan';
 $gtext['get']='Getir';
@@ -383,6 +384,7 @@ $gtext['a_close']='Hesabı Kapat';
 $gtext['a_close_ask']='Kullanıcı Kapatılacak, Emin misiniz?';
 $gtext['a_closing']='Kapatılıyor...';
 $gtext['a_reopen']='Hesabı Yeniden Aç';
+$gtext['a_reopening']='Hesabı Yeniden Açılıyor';
 $gtext['a_reopened']='Hesap Yeniden Açıldı';
 $gtext['a_delete']='Hesabı Sil';
 $gtext['a_delete_ask']='Kullanıcı Kalıcı olarak Silinecek, Emin misiniz?';
@@ -394,6 +396,8 @@ $gtext['a_mustchange']='Değiştirilmeli';
 $gtext['usercanedit']='Kullanıcı kendi bilgilerini değiştirebilsin';
 
 $gtext['pb_phone']='Telefon';
+$gtext['pb_phones']='Telefonlar';
+$gtext['speed_dials_note']='Sadece Hızlı Arama Numaraları girilecektir. Personele ait telefon numaraları Personel kaydından getirilecektir.';
 $gtext['pb_listed']='Kişi Bulundu.';
 
 $gtext['help']='Destek';

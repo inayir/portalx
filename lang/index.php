@@ -4,7 +4,8 @@
 */
 $docroot=$_SERVER['DOCUMENT_ROOT'];
 include($docroot."/config/config.php");
-//if($user==""){ header('Location: /login.php');}
+include($docroot."/sess.php");
+if($_SESSION['user']==""){ header('Location: /login.php');}
 //
 $get_lang=explode(',', $_SERVER['HTTP_ACCEPT_LANGUAGE']);
 $dila=explode('-', $get_lang[0]); 
