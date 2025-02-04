@@ -162,11 +162,15 @@ if(@$_SESSION['y_admin']==1||@$_SESSION['y_ayar01']==1||@$_SESSION['y_addinfoduy
                         <a class="collapse-item" href="/Corporate/ManagerList.php">
 							<i class="fas fa-fw fa-user-tie"></i>
 							<span><?php echo $gtext['a_managerlist'];/*Yönetici Listesi*/?></span>
+						</a>
+                        <a class="collapse-item" href="/Corporate/Phone_add.php">
+							<i class="fas fa-fw fa-phone"></i>
+							<span><?php echo $gtext['speed_dials'];/*Hızlı Aramalar*/?></span>
 						</a><?php	
 					if(@$ini['usersource']=='LDAP'){ ?>
 						<a class="collapse-item" href="/AD/Sync_AD.php">
 							<i class="fas fa-fw fa-users"></i>
-							<span><?php echo "*LDAP ".$gtext['pairing'];/*Eşleştirme*/?></span>
+							<span><?php echo "LDAP/AD ".$gtext['pairing'];/*Eşleştirme*/?></span>
 						</a>
 					<?php }	?>
                     </div>
