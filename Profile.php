@@ -53,6 +53,7 @@ if($_SESSION['user']==""){
 					'st' => 1,
 					'co' => 1,
 					'distinguishedname' => 1,
+					'picture' => 1,
 				],
 			],
 		]);
@@ -204,6 +205,13 @@ if($_SESSION['user']==""){
 							echo "<div>".$formsatir->city."</div>"; 
 							echo "<div>".$formsatir->co."</div>"; }?>
 								</td>
+							</tr>
+							<tr>
+								<td><?php echo $gtext['profilepicture']; ?>:</td>
+								<td>
+									<img src="<?php echo $formsatir->picture; ?>" style="width: 100px;">
+									<button class="btn btn-outline-info"><?php echo $gtext['ch_picture'];/*Resim Değiştir*/?></button>
+								</td>
 							</tr><?php if($ini['usercanedit']==1){ ?>
 							<tr>
 								<td class="text-right" colspan="2">
@@ -291,15 +299,15 @@ if($_SESSION['user']==""){
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">Ready to Leave?</h5>
+                    <h5 class="modal-title" id="exampleModalLabel"><?php echo $gtext['q_rusure'];/*Ready to Leave?*/?></h5>
                     <button class="close" type="button" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">×</span>
                     </button>
                 </div>
-                <div class="modal-body">Select "Logout" below if you are ready to end your current session.</div>
+                <div class="modal-body"><?php echo $gtext['u_logout'];/*Select "Logout" below if you are ready to end your current session.*/?></div>
                 <div class="modal-footer">
-                    <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
-                    <a class="btn btn-primary" href="login.html">Logout</a>
+                    <button class="btn btn-secondary" type="button" data-dismiss="modal"><?php echo $gtext['cancel']; ?></button>
+                    <a class="btn btn-primary" href="login.html"><?php echo $gtext['logout']; /*Logout*/?></a>
                 </div>
             </div>
         </div>

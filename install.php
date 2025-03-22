@@ -54,17 +54,13 @@ if(@$_POST['go']!=""){
 			}
 		}
 		$msg.="</div>";
-		//writing settings to php.ini ...
+		//writing settings to ******* php.ini ...
 		$php_ini_file=php_ini_loaded_file();
 		$contents = file_get_contents($php_ini_file);
 		$ayar="";
-		$s=searchtext($contents,'extension=ldap');
-		if($s==''){ 
-			$s=searchtext($contents,';extension=ldap'); 
-			if($s!=''){ $s="extension=ldap\n"; }
-		}
-		$ayar.=$s;
+		$ayar.=searchtext($contents,'extension=ldap');
 		$ayar.=searchtext($contents,'extension=php_mongodb.dll'); 
+		$ayar.=searchtext($contents,'extension=php_com_dotnet.dll'); 
 		$ayar="\n".$ayar;
 		//writing to php.ini:  extension=ldap extension=php_mongodb.dll
 		if($ayar!=""){
