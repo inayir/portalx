@@ -3,40 +3,14 @@
 	Departments 
 	From DB. if use LDAP, must Sync LDAP to DB.
 */
-function percount($ou, $disname){
-	global $db;
-	$xsay=0;
-	@$xcollection = $db->personel; 
-	$xcursor = $xcollection->find(
-		[
-			'department'=>$ou
-		],
-		[
-			'limit' => 0,
-			'projection' => [
-				'givenname'=>1,
-			]
-		]
-	);
-	if(isset($xcursor)){	 
-		foreach ($xcursor as $xsatir) {
-			$yer="";
-			$yer=strpos($xsatir->givenname, $disname);
-			if($yer==''||$yer<0){ $xsay++; };
-		}
-	}
-	return $xsay;
-}
-//------------------------------------
 include('../set_mng.php');
-//error_reporting(0);
 include($docroot."/sess.php");
 if($_SESSION['user']==""&&$_SESSION['y_admin']!=1){
 	header('Location: \login.php');
-}//*/
-if($ini['usersource']=='LDAP'){ require($docroot."/ldap.php"); }
+}
+//error_reporting(E_ALL);
 $collectionNames = [];
-foreach ($collections as $collection) {
+foreach (@$collections as $collection) {
   $collectionNames[] = $collection->getName();
 }
 $exists = in_array('departments', $collectionNames);
@@ -44,69 +18,41 @@ if(!$exists){
 		$db->createCollection('personel',[
 	]);
 }
-$csay=0; 
-$csatir=Array(); $dsatir=Array(); 
+$csay=0; $company="";
+$fsatir=Array(); $dsatir=Array(); 
+include($docroot."/app/php_functions.php");
 @$collection = $db->departments; 
-try{
-	$cursor = $collection->find(
+	$cursor = $collection->aggregate([
 		[
-			'dp'=>'C', 'status'=>['$ne'=>'C']
-		],
-		[
-			'limit' => 0,
-			'projection' => [
-				'dp' => 1,
-				'ou' => 1,
-				'description' => 1,
-				'distinguishedname' => 1,
-				'managedby' => 1,
-				'manager' => 1,
-				'status' => 1,
+			'$match'=>[
+				'$and'=>[['dp'=>['$eq'=>'C']],['status'=>['$ne'=>'C']]]
 			],
-			'sort'=>['order'=>1, 'description'=>1],
-		]
-	);
-	if(isset($cursor)){	
-		$csay=0;
-		foreach ($cursor as $formsatir) {
-			$satir=[];
-			$satir['dp']=$formsatir->dp;
-			$satir['ou']=$formsatir->ou;
-			$satir['description']=$formsatir->description;
-			$satir['distinguishedname']=$formsatir->distinguishedname;
-			$satir['managedby']=$formsatir->managedby;
-			$satir['manager']=substr($formsatir->managedby,3,strpos($formsatir->managedby,',OU')-3);
-			$satir['status']=$formsatir->status;
-			$satir['percount']=percount($formsatir->ou, $ini['disabledname']);
-			$csatir[]=$satir;
-			if($csay==0){ $company=$satir['ou'];}
-			$csay++;
-		} 
+		],
+		['$sort'=>['description'=>1]],
+	]);	
+	foreach ($cursor as $formsatir) {	
+		$satir=[];
+		$satir['dp']=$formsatir->dp;
+		$satir['ou']=$formsatir->ou;
+		$satir['description']=$formsatir->description;
+		$satir['distinguishedname']=$formsatir->distinguishedname;
+		$satir['managedby']=$formsatir->managedby;
+		$satir['manager']=substr($formsatir->managedby,3,strpos($formsatir->managedby,',OU')-3);
+		$satir['status']=$formsatir->status;
+		$satir['percount']=percount('C',$formsatir->ou, $ini['disabledname']);
+		$csatir[]=$satir;
+		if($csay==0){ $company=$satir['ou'];}
+		$csay++;
 	}
-}catch(Exception $e){
-	echo 'Caught exception: ',  $e->getMessage(), "\n";
-}	
+
 $dsay=0;
-try{
-	$dcursor = $collection->find(
+	$dcursor = $collection->aggregate([
 		[
-			'dp'=>'D', 'company'=>$company, 'status'=>['$ne'=>'C']
-		],
-		[
-			'limit' => 0,
-			'projection' => [
-				'dp' => 1,
-				'ou' => 1,
-				'company' => 1,
-				'description' => 1,
-				'distinguishedname' => 1,
-				'managedby' => 1,
-				'manager' => 1,
-				'status' => 1,
+			'$match'=>[
+				'$and'=>[['dp'=>['$ne'=>'']],['status'=>['$ne'=>'C']],['company' => $company]]
 			],
-			'sort'=>['order'=>1, 'description'=>1],
-		]
-	);
+		],
+	]);
 	if(isset($dcursor)){	
 		foreach ($dcursor as $dformsatir) {
 			$satir=[];
@@ -118,14 +64,11 @@ try{
 			$satir['managedby']=$dformsatir->managedby;
 			$satir['manager']=substr($dformsatir->managedby,3,strpos($dformsatir->managedby,',OU')-3);
 			$satir['status']=$dformsatir->status;
-			$satir['percount']=percount($dformsatir->ou, $ini['disabledname']);
+			$satir['percount']=percount('D',$dformsatir->ou, $ini['disabledname']);
 			$dsatir[]=$satir;	
 			$dsay++;
 		} 
 	}
-}catch(Exception $e){
-	echo 'Caught exception: ',  $e->getMessage(), "\n";
-}
 ?>
 <!DOCTYPE html>
 <html lang="<?php echo $dil;?>">
@@ -196,20 +139,20 @@ try{
 									<table id="clist" class="table table-striped" width="100%" cellspacing="0">
 									<thead>
 									<tr>
-										<td><b><?php echo $gtext['percompany'];/*Üst Birim*/?></b></td>
+										<td class="text-center"><b><?php echo $gtext['percompany'];/*Üst Birim*/?></b></td>
 										<td></td>
 									</tr>
 									</thead>
 									<tfoot>
 									<tr>
-										<td><b><?php echo $gtext['percompany'];/*Üst Birim*/?></b></td>
+										<td class="text-center"><b><?php echo $gtext['percompany'];/*Üst Birim*/?></b></td>
 										<td></td>
 									</tr>
 									</tfoot>
 									<tbody><?php 
 									for($b=0;$b<$csay;$b++){
 									?><tr class="<?php if($b==0){ echo "selected"; $secimou=$csatir[$b]['ou']; $secimdesc=$csatir[$b]['description']; }?>" id="<?php echo $csatir[$b]['ou']; ?>">
-										<td><?php echo $csatir[$b]['description']." (".$csatir[$b]['percount'].")"; ?></td>
+										<td><?php echo $csatir[$b]['description'];?> <span class="border border-solid border-dark rounded text-success p-1" title="<?php echo $gtext['s_percount'];?>"><?php echo $csatir[$b]['percount']; ?> </span></td>
 										<td><button class="btn btn-info cupdate" id="c-<?php echo $b; ?>"><?php echo $gtext['change'];/*Değiştir*/?></button></td>
 									</tr>
 									<?php } ?>
@@ -235,23 +178,25 @@ try{
 									<table id="deplist" class="table table-striped" width="100%" cellspacing="0">
 									<thead>
 									<tr>
-										<td  style="text-align:center;"><b><?php echo $gtext['a_department'];/*Birim*/?></b></td>
+										<td class="text-center"><b><?php echo $gtext['a_department'];/*Birim*/?></b></td>
 										<td></td>
 									</tr>
 									</thead>
 									<tfoot>
 									<tr>
-										<td style="text-align: center"><b><?php echo $gtext['a_department'];/*Birim*/?></b></td>
+										<td class="text-center"><b><?php echo $gtext['a_department'];/*Birim*/?></b></td>
 										<td></td>
 									</tr>
 									</tfoot>
 									<tbody><?php 
 									for($d=0;$d<$dsay;$d++){ 
 									?><tr>
-										<td><?php echo $dsatir[$d]['description']." (".$dsatir[$d]['percount'].")"; ?></td>
+										<td><?php echo $dsatir[$d]['description'];?> <a href="/admin/Personels.php?sea=<?php echo $dsatir[$d]['description'];?>" target="_blank"> <span class="border border-solid border-info rounded text-primary p-1" title="<?php echo $gtext['s_percount'];?>"><?php echo $dsatir[$d]['percount'];?></span></a></td>
 										<td>
 											<button class="btn btn-outline-info" onClick="javascript:dupdate('<?php echo $d;?>');"><?php echo $gtext['change'];/*Değiştir*/?></button>
-											<button class="btn btn-outline-danger" onclick="javascript:move('<?php echo $d;?>');"><?php echo $gtext['move'];/*Taşı*/?></button>
+											<button class="btn btn-outline-danger" onclick="javascript:move('<?php echo $d;?>');"><?php echo $gtext['move'];/*Taşı*/?></button><?php
+											if($dsatir[$d]['percount']<=0){ ?>
+											<button class="btn btn-outline-dark" onclick="javascript:ddelete('<?php echo $d;?>');"><?php echo $gtext['delete'];/*Sil*/?></button><?php } ?>
 										</td>
 									</tr>
 									<?php } ?>
@@ -344,7 +289,7 @@ try{
 									<td><?php echo $gtext['status'];/*Durum*/?>: </td>
 									<td>
 										<span id="dmanager"></span>
-										<select name="manager" id="manager">
+										<select name="status" id="status">
 											<option value="A"><?php echo $gtext['active'];/*Aktif*/?></option>
 											<option value="C"><?php echo $gtext['closed'];/*Kapalı*/?></option>
 										</select>
@@ -374,12 +319,13 @@ try{
 
 <script>
 var domain="<?php echo $ini['domain']; ?>";
-var dturl="<?php echo $_SESSION['lang'];?>"; 
+var dturl="<?php echo $dil;?>"; 
 const objc=JSON.parse('<?php echo json_encode($csatir); ?>'); 
 var dsatir='<?php if(count($dsatir)>0){ echo json_encode($dsatir); }else{ echo '""'; } ?>'; 
 const objd=JSON.parse(dsatir); 
 var btn="";
 var isl='';
+var s_percount='<?php echo $gtext['s_percount'];?>';
 function dupdate(kd){ 
 	isl='update';
 	$('#dp').val('D');
@@ -419,6 +365,11 @@ function move(kd){
 	jQuery.noConflict();
 	$("#depModal").modal('show');
 };
+function ddelete(kd){
+	if(confirm(kd+' silinecek?')){
+		alert('Dikkat!');
+	}
+};
 $(document).ready(function() {
 	var ctable=$('#clist').DataTable( {
         language: {
@@ -431,7 +382,7 @@ $(document).ready(function() {
 			url: './get_depsbyc.php',
 			data: { company: cou },
 			success: function (response){ //console.log(response);
-				if(response==''){ alert('You must login!'); location.reload(); }
+				if(response=='login'){ alert('<?php echo $gtext['u_mustlogin'];?>'); location.reload(); }
 				if(response.indexOf('!')>=0){ alert(response); location.reload(); }
 				else{			
 					var dep=JSON.parse(response);
@@ -443,12 +394,13 @@ $(document).ready(function() {
 						for(var od=0;od<objd.length;od++){ objd.splice(od); }
 						for(var i=0; i<uz; i++){
 							var uinf=dep[i]; 
-							var tab1='<tr><td>'
-							+uinf['description']+'</td>'
+							var tab1='<tr>'
+							+'<td>'+uinf['description']+' <a href="/admin/Personels.php?sea='+uinf['description']+'" target="_blank"><span class="border border-solid rounded text-success" title="'+s_percount+'">'+uinf['percount']+'</span></a></td>'
 							+'<td>'
-							+'<button class="btn btn-outline-info" onclick="javascript:dupdate('+i+');"><?php echo $gtext['change']; ?></button>'
-							+'<button class="btn btn-outline-danger" onclick="javascript:move('+i+');"><?php echo $gtext['move']; ?></button>'
-							+'</td>'
+							+' <button class="btn btn-outline-info" onclick="javascript:dupdate('+i+');"><?php echo $gtext['change']; ?></button>'
+							+' <button class="btn btn-outline-danger" onclick="javascript:move('+i+');"><?php echo $gtext['move']; ?></button>';
+							if(uinf['percount']<=0){ tab1+='<button class="btn btn-outline-dark" onclick="javascript:ddelete('+i+');"><?php echo $gtext['delete'];?></button>'; }
+							tab1+='</td>'
 							+'</tr>';
 							$('#deplist > tbody:last-child').append(tab1);  
 							//for other processes
@@ -485,7 +437,7 @@ $(document).ready(function() {
 			url : durl,
 			contentType: 'application/x-www-form-urlencoded;charset=utf-8',
 			beforeSubmit : function(){
-				confirm('Emin misiniz?');
+				return confirm('Emin misiniz?');
 			},
 			success: function(data){ console.log(data);
 				$('#record').attr("disabled", true);

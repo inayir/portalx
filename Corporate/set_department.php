@@ -134,16 +134,15 @@ if($ini['usersource']=='LDAP'){  //LDAP işlemleri
 			} 
 		}
 	}
+	echo "\n* DB: ";
 } //LDAP işlemleri sonu-----------------------------------------
-//DB işlemleri...................................................
-echo "\n* DB: ";
+//DB işlemleri..................................................
 $data["dp"]		= $dp; 
 $data["company"]= $_POST['company'];
-$data["status"]= $_POST['status'];
+$data["status"] = $_POST['status'];
 if($_POST['dp']=='C'||$_POST['company']==''){ //department=company ise root ou yazılır.
 	$data["company"] = $baseou; //from config
 }
-
 if($ksay>0){  //update
 	@$cursor = $collection->updateOne(
 		[

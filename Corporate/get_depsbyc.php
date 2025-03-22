@@ -1,36 +1,14 @@
 <?php
 /*
-	Compnay'ye bağlı Departmentları getirir.
+	Company'ye bağlı Departmentları getirir.
+	Gets departments in a company
 */
-function percount($ou, $disname){
-	global $db;
-	$xsay=0;
-	@$xcollection = $db->personel; 
-	$xcursor = $xcollection->find(
-		[
-			'department'=>$ou
-		],
-		[
-			'limit' => 0,
-			'projection' => [
-				'givenname'=>1,
-			]
-		]
-	);
-	if(isset($xcursor)){	 
-		foreach ($xcursor as $xsatir) {
-			$yer="";
-			$yer=strpos($xsatir->givenname, $disname);
-			if($yer==''||$yer<0){ $xsay++; };
-		}
-	}
-	return $xsay;
-}
 error_reporting(0);
 $docroot=$_SERVER['DOCUMENT_ROOT'];
 include($docroot."/set_mng.php");
 include($docroot."/sess.php");
-if($_SESSION['user']==""){ echo gtext['u_mustlogin']."!"; exit; }
+include($docroot."/app/php_functions.php");
+if($_SESSION['user']==""){ echo "login"; exit; }
 if($ini['usersource']=='LDAP'){ require($docroot."/ldap.php"); }
 $base_dn=$ini['base_dn'];
 $vd=0;
@@ -42,32 +20,28 @@ $dsatir=Array();
 //MongoDB'den getirilir...
 @$collection = $db->departments; //
 try{
-	$dcursor = $collection->find(
+	$dcursor = $collection->aggregate([
 		[
-			'dp'=>'D', 'company'=>$company,'status'=>['$ne'=>'C']
+			'$match'=>[
+				'$and'=>[['dp'=>['$ne'=>'']],['status'=>['$ne'=>'C']],['company' => $company]]
+			],
 		],
 		[
-			'limit' => 0,
-			'projection' => [
-				'dp' => 1,
-				'ou' => 1,
-				'description' => 1,
-				'distinguishedname' => 1,
-				'company' => 1,
-				'managedby' => 1,
-				'status' => 1,
-			],
-			'sort'=>['order'=>1, 'description'=>1],
+			'$sort'=>[
+				'dp'=>1,
+				'description'=>1,
+			]
 		]
-	);
+	]);
 	if(isset($dcursor)){
 		$ksay=0; 
 		foreach ($dcursor as $dformsatir) {
 			$satir=[];
 			$satir['ou']=$dformsatir->ou; //echo "<br>".$dformsatir->ou; 
 			$satir['company']=$dformsatir->company;
-			$percount=percount($dformsatir->ou, $ini['disabledname']);
-			$satir['description']=$dformsatir->description." (".$percount.")";
+			$percount=percount('D', $dformsatir->ou, $ini['disabledname']);
+			$satir['description']=$dformsatir->description;
+			$satir['percount']=$percount;
 			$satir['distinguishedname']=$dformsatir->distinguishedname;
 			$satir['managedby']=$dformsatir->managedby;
 			$satir['manager']=substr($dformsatir->managedby,3,strpos($dformsatir->managedby,',OU')-3);
@@ -75,7 +49,6 @@ try{
 			$dsatir[]=$satir;	
 			$ksay++;
 		} 
-		$js1.="]";
 	}else{
 		echo gtext['u_error']; //"Hata oluştu!"
 	}
