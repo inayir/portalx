@@ -404,9 +404,9 @@ $(document).ready(function() {
 					if(i==0){ s+=' selected '; }
 					s+='>'+obj[i].value+'</option>'; 
 					$select.append(s); 
-					if(dep==''&&i==0){ 
+					if(i==0){ 
 						$('#manager').val(obj[i].manager); 
-						$('#newdmanager').html(obj[i].manager); 
+						$('#newdmanager').html(obj[i].dmanager); 
 					}
 				});
 			}

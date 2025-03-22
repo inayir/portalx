@@ -40,7 +40,7 @@ if(!$exists){
 }
 //
 $options = []; $insert=[]; $update=[];
-$liste=Array("displayname", "givenname", "sn", "sAMAccountName", "mail", "description", "physicalDeliveryOfficeName", "telephoneNumber", "mobile", "company", "department", "distinguishedname","manager", "title",'useraccountcontrol','msDS-cloudExtensionAttribute10');
+$liste=Array("displayname", "givenname", "sn", "sAMAccountName", "mail", "description", "physicalDeliveryOfficeName", "telephoneNumber", "mobile", "company", "department", "distinguishedname","manager", "title",'useraccountcontrol','msDS-cloudExtensionAttribute10','streetaddress','l','st','co',);
 $upd=0; $ins=0;
 $filter = '(&(objectCategory=person)(samaccountname=*))'; 
 $result = ldap_search($conn, $dn, $filter, $liste);  
@@ -126,6 +126,24 @@ if($result){
 				$data['physicaldeliveryofficename'] = $entries[$ix]['physicaldeliveryofficename'][0];
 				$log.="office:".$entries[$ix]['physicaldeliveryofficename'][0].";";
 			}else{ $log.="office:-;";}
+			//
+			if(isset($entries[$ix]['streetaddress'][0])){
+				$data['streetaddress'] = $entries[$ix]['streetaddress'][0];
+				$log.="streetaddress:".$entries[$ix]['streetaddress'][0].";";
+			}else{ $log.="streetaddress:-;";}
+			if(isset($entries[$ix]['l'][0])){
+				$data['l'] = $entries[$ix]['l'][0];
+				$log.="district:".$entries[$ix]['l'][0].";";
+			}else{ $log.="district:-;";}
+			if(isset($entries[$ix]['st'][0])){
+				$data['st'] = $entries[$ix]['st'][0];
+				$log.="city:".$entries[$ix]['st'][0].";";
+			}else{ $log.="city:-;";}
+			if(isset($entries[$ix]['co'][0])){
+				$data['co'] = $entries[$ix]['co'][0];
+				$log.="country:".$entries[$ix]['co'][0].";";
+			}else{ $log.="country:-;";}
+			//
 			if(isset($entries[$ix]['useraccountcontrol'][0])){
 				$data['useraccountcontrol'] = $entries[$ix]['useraccountcontrol'][0];
 				$log.="enable:".$entries[$ix]['useraccountcontrol'][0].";";
@@ -162,7 +180,9 @@ if($result){
 				if($acursor->getModifiedCount()>0){ 
 					$msg.="->".$gtext['updated']; $upd++; $log.="->".$gtext['updated'].";"; 
 					$act=1;
-				}else{ $msg.="->".$gtext['notupdated']; $log.=";->".$gtext['notupdated']." {'update error':''}"; }
+				}else{ 
+					$msg.="->".$gtext['notupdated']; $log.=";->".$gtext['notupdated']." {'update error':''}";
+				}
 			}else{  //Yeni kayıt
 				$data['pass']=$newpass;
 				@$acursor = $collection->insertOne(

@@ -172,16 +172,17 @@ if($_POST['mobile']!=$_POST['o_mobile']){
 	$data["msDS-cloudExtensionAttribute10"]= $vpntel; 
 }//*/
 //Enable the user
-if($_POST['useraccountcontrol']!=$_POST['o_useraccountcontrol']){
-	if($_POST['useraccountcontrol']=='on'){  $data["useraccountcontrol"]="544"; }
-	else{ $data["useraccountcontrol"]= "546"; }
-}
+$data["useraccountcontrol"]="544";
+if(strpos($displayname,$ini['disabledname'])>-1){ $data["useraccountcontrol"]= "514"; }
 if($_POST['password']!=''){ //şifre değiştiriliyorsa...
 	$newPassword=$_POST['password']; //şifre içeriği denetlenir...
 }
 
 if($_POST['streetaddress']!=''){
 	$data['streetaddress']=$_POST['streetaddress'];
+}
+if($_POST['district']!=''){ //l : District
+	$data['l']=$_POST['district'];
 }
 if($_POST['st']!=''){ //st : State
 	$data['st']=$_POST['st'];
@@ -195,6 +196,7 @@ if($_POST['resigndate']!=''){
 }
 $ins=false; 
 echo $gtext['user'].": ".$username;
+if(strpos($_POST['givenname'], $ini['disabledname'])>-1){ $dis=1; }
 //işlem yapılıyor*********************************************************/
 if($ini['usersource']=='LDAP'&&$data!=''){  //LDAP'a **********************************************************  
 	echo "<br>LDAP->"; 
@@ -229,8 +231,6 @@ if($ini['usersource']=='LDAP'&&$data!=''){  //LDAP'a ***************************
 				echo $gtext['notupdated']; 
 				//echo " --->".$o_user_dn." (".ldap_error($conn).") ";
 				$log.=$gtext['notupdated'].";dn:".$o_user_dn.";data:".implode(';',$data).";";
-				logger($logfile,$log);
-				exit;
 			}
 		}else{ //no user -> insert------------------------------------------------------------
 			$data["distinguishedname"]=$distinguishedname;
@@ -287,6 +287,9 @@ if($ini['usersource']=='LDAP'&&$data!=''){  //LDAP'a ***************************
 //DB e yazılır...
 echo "\n<br>".$gtext['s_database']."-> ";
 //Databasede kullanıcı var mı, bakılır...
+unset($data['objectclass']);
+unset($data['samaccountname']);
+unset($data['userprincipalname']);
 if($ini['usersource']!=1||$pwdset==1){
 	$data["userPassword"]= $newPassword;
 }
@@ -296,7 +299,8 @@ if($_POST['ptype']!=''){
 if($_POST['note']!=''){
 	$data['note']=$_POST['note'];
 }
-if($_POST['district']!=''){ //I ? city
+if($_POST['district']!=''){ //l : district
+	unset($data['l']);
 	$data['district']=$_POST['district'];
 }
 if($_POST['sdate']!=''){
@@ -305,10 +309,7 @@ if($_POST['sdate']!=''){
 if($_POST['resigndate']){
 	$data['resigndate']=$_POST['resigndate'];
 }
-if($_POST['useraccountcontrol']!=$_POST['o_useraccountcontrol']){
-	if($_POST['useraccountcontrol']=='on'){  $data['aktif']=1; }
-	else{ $data['aktif']=0;}
-}
+if($data["useraccountcontrol"]=='544'){  $data['aktif']=1; }else{ $data['aktif']=0;}
 //
 if($ksay>0){ //güncellenir
 	$data["distinguishedname"]=$distinguishedname;
@@ -319,7 +320,7 @@ if($ksay>0){ //güncellenir
 		[ '$set' => $data ]
 	);
 	if($acursor->getModifiedCount()>0){ echo $gtext['updated']; $prop_act=1; $act='update'; }
-	else{ echo $gtext['notupdated']."->"; $log.="{'update error':''};"; }
+	else{ echo $gtext['notupdated']."->".$o_user_dn; $log.="{'update error':''};"; }
 }else{
 	$data["username"]= $username;
 	@$acursor = $collection->insertOne(
@@ -363,9 +364,6 @@ if($ksay>0){ //güncellenir
 }
 if($act!=""){ //personel activity
 	$act_collection = $db->personel_act;
-	unset($data['objectclass']);
-	unset($data['samaccountname']);
-	unset($data['userprincipalname']);
 	$data['act']=$act;
 	$data["actdate"]=datem(date("Y-m-d H:i:s", strtotime("now")));
 	$act_cursor = $act_collection->insertOne(

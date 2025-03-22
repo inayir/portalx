@@ -28,7 +28,7 @@ if($username!=''){
 				$o_user_dn=$info[0]['distinguishedname'][0];
 				//-------------------------------------------------------------------
 				$data=array(); 
-				$y=strpos($info[0]['givenname'][0], $ini['disabledname']);
+				$y=strpos($info[0]['givenname'][0], $ini['disabledname']); //echo $o_user_dn;
 				if($y!=''&&$y>=0){
 					$s=substr($info[0]['givenname'][0],($y+strlen($ini['disabledname'])));
 					$data["givenname"] = $s; 
@@ -45,11 +45,11 @@ if($username!=''){
 					$sm=substr($info[0]['mail'][0],($ym+strlen($ini['disabledmailuser'])));
 					$data["mail"] = $sm; 
 				}
-				//Organization 
+				/*/Organization 
 				if($info[0]['manager'][0]!=""){
 					$data["manager"]=array(); //yönetici ile alakası kesilir...
 					$log.="<br>manager:deleted;";
-				}
+				}//*/
 				//telephones //Atribute Editor 
 				if($info[0]['pager'][0]!=""){
 					$data["telephoneNumber"]=$info[0]['pager'][0]; 
@@ -63,9 +63,9 @@ if($username!=''){
 						$data["msDS-cloudExtensionAttribute10"]=$data["mobile"]; //vpn iptal
 					}
 					$log.=" user vpn set;";
-				}//*/
+				}
 				//Disable the user
-				$data["useraccountcontrol"]="544";
+				$data["useraccountcontrol"]="544";//*/
 				$log.=" user reopen;"; 
 				//-------------------------
 				$log.="<br>".$gtext['user']." ";
@@ -89,7 +89,7 @@ if($username!=''){
 				$newparent.=",".$ini['base_dn'];
 				$log.="o_user_dn:".$o_user_dn.";newdn:".$newdn.";newparent:".$newparent.";";
 				try{
-					$sonucs=ldap_rename($conn, $o_user_dn, $newdn, $newparent,true); 
+					$sonucs=ldap_rename($conn,$o_user_dn,$newdn,$newparent,true); 
 					if($sonucs){
 						echo "\n* ".$gtext['moved']."->".$gtext['a_department'].":".$data['department']; //" taşındı."; 
 						$log.=$gtext['moved']."; ";

@@ -8,15 +8,6 @@ header('Content-Type: text/html; charset=utf-8');
 include($docroot."/config/config.php");
 include($docroot."/sess.php");
 include($docroot."/ldap.php");
-/*define('LDAP_SERVER', $ini['ldap_server']);  
-$conn=ldap_connect('ldap://'.LDAP_SERVER); 
-if($conn){ // OK
-	$domuser=$ini['domshort'].'\\'.$ini['una'];
-	ldap_set_option($conn, LDAP_OPT_PROTOCOL_VERSION,3);
-	ldap_set_option($conn, LDAP_OPT_REFERRALS,0);
-	$bind=ldap_bind($conn, $domuser, $ini['upw']); 
-	//if($bind){ echo "Binded";}else{ echo "------------No BIND!----------"; echo "User: ".$_SESSION['user']." ".$_SESSION['pass'];}
-} //*/
 $base_dn=$ini['base_dn']; //echo $base_dn;
 $sea=$_GET['o']; echo " -> Aranan:".$sea."  "." <br>";
 $ouliste=Array("ou", "description");

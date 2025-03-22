@@ -299,11 +299,10 @@ var dis='';
 									<button class="form-control" type="button" id="createpss" title="Create new Password"><?php echo $gtext['create'];/*Oluştur*/?></button>
 								</div>
 							</td>
-							<td class="w-25 text-right m-1"><?php echo $gtext['status'];/*Durumu*/?>: <span id='uac'></span></td>
+							<td class="w-25 text-right m-1"></td>
 							<td class="w-25">
 								<div class="m-1">
-									<input type="checkbox" data-toggle="toggle" name="useraccountcontrol" id="useraccountcontrol" data-on="Aktif" data-off="Kapalı"/>
-									<input type="hidden" name="o_useraccountcontrol" id="o_useraccountcontrol" value=""/>
+									
 								</div>
 							</td>
 						</tr>
@@ -398,7 +397,7 @@ $(document).ready(function() {
 			type: 'POST',
 			url: 'user_kont.php',
 			data: { u: $('#username').val() },
-			beforeSubmit : function(){ console.log('userkont');
+			beforeSubmit : function(){ 
 				if($('#givenname').val()==''||$('#sn').val()==''||$('#username').val()==''){ alert('<?php echo $gtext['u_fieldisnotblank'];/*boş olamaz.*/?>!');  return false; }
 			},
 			success: function (data){ //console.log(data);
@@ -436,8 +435,10 @@ $(document).ready(function() {
 				$.each(obj, function(i, key, value){ 
 					var k=obj[i].key, v=obj[i].value; 
 					if(keys.find(k=>k)) { 
-						$('#'+k).val(v); 
-						$('#o_'+k).val(v);
+						if(k!='useraccountcontrol'){ 
+							$('#'+k).val(v); 
+							$('#o_'+k).val(v);
+						}
 						if(k=='samaccountname'){ 
 							if(u!=''){ $('#username').html(v); }else{ $('#username').val(v); }
 							$('#o_username').val(v);
@@ -452,11 +453,9 @@ $(document).ready(function() {
 							else{ $('#record').attr("disabled", true); /*İşlem yapılmaz*/ }
 						}
 						if(k=='useraccountcontrol'){ 
-							var d=false; 
-							$('#o_useraccountcontrol').val('off');  
+							$('#useraccountcontrol').prop("checked",false); 
 							if(v==512||v==544||v==66048){ 
-								$('#useraccountcontrol').prop("checked",true);  								
-								$('#o_useraccountcontrol').val('on');  
+								$('#useraccountcontrol').prop("checked",true);
 							}
 						}
 						if(k=='department'){ 
@@ -558,6 +557,9 @@ $(document).ready(function() {
 $('form').find(':input').change(function(){ 
 	if(dis==''||dis<0){ $('#record').prop("disabled", false ); } 
 	else{ alert('<?php echo $gtext['u_nochange'];?>'); }
+});
+$('#sn').on('keyup', function(){
+	$(this).val($(this).val().toUpperCase());
 });
 $('#cancel').on('click', function(){ $('#record').prop("disabled", true ); });
 });

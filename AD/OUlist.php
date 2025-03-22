@@ -6,9 +6,9 @@ include('../set_mng.php');
 //error_reporting(0);
 header('Content-Type:text/html; charset=utf-8');
 include($docroot."/sess.php");
-/*if($user==""){
-	header('Location: \login.php');
-}//*/
+if($user==""){
+	header('Location: /login.php');
+}
 $log=date("Y-m-d H:i:s", strtotime("now")).";";
 $base_dn=$ini['base_dn']; 
 require($docroot."/ldap.php");
@@ -18,23 +18,6 @@ $log.="ou:".$ou.";";
 //DB
 @$collection = $db->departments;
 try{
-	/*@$cursor = $collection->find(
-		[
-			'dp' => ['$ne'=>''],
-			$dp => ['$eq'=>$ou],
-		],
-		[
-			'limit' => 0,
-			'projection' => [
-				'ou' => 1,
-				'company' => 1,
-				'description' => 1,
-				'managedby' => 1,
-				'manager' => 1,
-			],
-			'sort'=>['dp'=>-1,'description'=>1],
-		]
-	);//*/
 	$cursor = $collection->aggregate([
 		[
 			'$match'=>[
