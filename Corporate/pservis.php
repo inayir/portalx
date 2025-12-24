@@ -102,10 +102,18 @@ $fisay=count($fsatir); //echo "fisay:".$fisay."<br>"; //for($ii=0; $ii<$fisay-1;
     <link
         href="/vendor/googleapis/Nunito.css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
         rel="stylesheet">
+    <!-- Bootstrap core JavaScript-->
+    <script src="/vendor/jquery/jquery.js"></script>
+	<link href="/vendor/bootstrap/bootstrap.min.css" rel="stylesheet">
+    <script src="/vendor/form-master/dist/jquery.form.min.js"></script>
 
-    <!-- Custom styles for this template-->
+
+    <!-- Custom scripts for all pages-->
     <link href="/css/sb-admin-2.css" rel="stylesheet">
+    <!-- Page level plugins -->
     <link href="/vendor/datatables/dataTables.bootstrap4.min.css" rel="stylesheet">
+    <script src="/vendor/datatables/jquery.dataTables.min.js"></script>
+    <script src="/vendor/datatables/dataTables.bootstrap4.min.js"></script>
 <?php include($docroot."/set_page.php"); ?>
 </head>
 
@@ -135,7 +143,7 @@ $fisay=count($fsatir); //echo "fisay:".$fisay."<br>"; //for($ii=0; $ii<$fisay-1;
                     <!-- Page Heading -->
                     <div class="d-sm-flex align-items-center justify-content-between mb-4">
                         <h1 class="h3 mb-0 text-gray-800"><i class="fas fa-fw fa-route"></i> Personel Servis Güzergahları <?php if($_SESSION['y_addinfoser']==1){ "Girişi"; } ?></h1>
-						<?php if($_SESSION['y_addinfoser']==1){ ?><a id="eklebtn" href="#" data-toggle="modal" data-target="#servisekleModal" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i
+						<?php if($_SESSION['y_addinfoser']==1){ ?><a id="eklebtn" href="#" data-bs-toggle="modal" data-bs-target="#servisekleModal" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i
 						class="fas fa-shuttle-van fa-sm text-white-50"></i> Servis Ekle </a><?php } ?>
                     </div>
 
@@ -175,7 +183,7 @@ $fisay=count($fsatir); //echo "fisay:".$fisay."<br>"; //for($ii=0; $ii<$fisay-1;
 											<td><?php echo $fsatir[$i]['pser_sofor'];?></td>
 											<td>
 												<div class='btn-group btn-group-md'><?php if($_SESSION['y_addinfoser']==1){ ?>
-													<button class="btn btn-primary" onClick="javascript:pseredit('<?php echo $fsatir[$i]['_id']; ?>');"><i class="fas fa-edit fa-sm text-white-50"></i> Düzenle</button>
+													<button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#servisekleModal" onClick="javascript:pseredit('<?php echo $fsatir[$i]['_id']; ?>');"><i class="fas fa-edit fa-sm text-white-50"></i> Düzenle</button>
 													<a class="btn btn-secondary" href="javascript:yolcu('<?php echo $fsatir[$i]['_id']; ?>');"><i class="fas fa-user fa-sm text-white-50"></i> Yolcu</a><?php } ?>
 												</div>
 											</td>
@@ -212,14 +220,14 @@ $fisay=count($fsatir); //echo "fisay:".$fisay."<br>"; //for($ii=0; $ii<$fisay-1;
     </a>
 
 <!-- servisekle Modal-->
-				<div class="modal fade" id="servisekleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+				<div class="modal fade" id="servisekleModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"  aria-labelledby="servisekleModalLabel"
 					aria-hidden="true">
-					<div class="modal-dialog modal-xl" role="document">
+					<div class="modal-dialog modal-dialog centered modal-xl">
 						<div class="modal-content">
 							<form id="form_servisekle" method="POST" action="set_pser.php">
 							<div class="modal-header">
-								<h5 class="modal-title" id="exampleModalLabel">Servis Ekleme</h5>
-								<button class="close" type="button" data-dismiss="modal" aria-label="<?php echo $gtext['close'];?>">
+								<h5 class="modal-title" id="servisekleModalLabel">Servis Ekleme</h5>
+								<button class="close" type="button" data-bs-dismiss="modal" aria-label="<?php echo $gtext['close'];?>">
 									<span aria-hidden="true">×</span>
 								</button>
 							</div>
@@ -289,7 +297,7 @@ $fisay=count($fsatir); //echo "fisay:".$fisay."<br>"; //for($ii=0; $ii<$fisay-1;
 							<input type="hidden" name="son_deg_tar" id="son_deg_tar" value="" />
 							</div>
 							<div class="modal-footer">
-								<button class="btn btn-secondary" type="reset" id="cancel" data-dismiss="modal"><?php echo $gtext['cancel']; ?></button>
+								<button class="btn btn-secondary" type="reset" id="cancel" data-bs-dismiss="modal"><?php echo $gtext['cancel']; ?></button>
 								<button class="btn btn-primary" id="servisekle" disabled type="submit"><?php echo $gtext['insert']; ?></button>
 							</div>
 							</form>
@@ -297,19 +305,10 @@ $fisay=count($fsatir); //echo "fisay:".$fisay."<br>"; //for($ii=0; $ii<$fisay-1;
 					</div>
 				</div>
 			<!--servisekle modal sonu-->
-    <!-- Bootstrap core JavaScript-->
-    <script src="/vendor/jquery/jquery.min.js"></script>
-    <script src="/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
-    <script src="/vendor/form-master/dist/jquery.form.min.js"></script>
-
     <!-- Core plugin JavaScript-->
+    <script src="/vendor/bootstrap/bootstrap.bundle.min.js"></script>
     <script src="/vendor/jquery-easing/jquery.easing.min.js"></script>
-
-    <!-- Custom scripts for all pages-->
-    <script src="/js/sb-admin-2.min.js"></script>
-    <!-- Page level plugins -->
-    <script src="/vendor/datatables/jquery.dataTables.min.js"></script>
-    <script src="/vendor/datatables/dataTables.bootstrap4.min.js"></script>
+    <script src="/js/sb-admin-2.js"></script>
 
     <!-- Page level custom scripts -->
     <script src="/js/demo/datatables-demo.js"></script>
@@ -320,7 +319,7 @@ const obj=JSON.parse('<?php echo json_encode($fsatir); ?>'); //console.log(obj);
 $(document).ready(function(){
 	var table=$('#list').DataTable( {
         "language": {
-			url :"../vendor/datatables/"+dturl+".json",
+			url :"../vendor/datatables.net/"+dturl+".json",
 		}
 	});
 	$('#servisekle').on("click", function(){ //ekle/değiştir ajaxform
@@ -368,7 +367,7 @@ $(document).ready(function(){
 		$('#aktif_'+result['aktif']).attr('checked', true); 
 		$('#servisekle').html('Değiştir');//*/
 		isl='E';
-		$('#eklebtn').click();
+		//$('#eklebtn').click();
 	}
 	$('#eklebtn').on('click',function(){
 		if(isl==''){ $('#cancel').click(); }

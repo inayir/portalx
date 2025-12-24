@@ -1,7 +1,6 @@
 <?php
-//error_reporting(0);
-$docroot=$_SERVER['DOCUMENT_ROOT'];
-include($docroot.'/set_mng.php');
+include('../set_mng.php');
+error_reporting(0);
 include($docroot."/sess.php");
 if($ini['usersource']=='LDAP'){ require($docroot."/ldap.php"); }
 if($_SESSION['user']==""&&$_SESSION['y_admin']!=1){
@@ -13,15 +12,18 @@ $fsatir=[];
 try{
 	$cursor = $collection->find(
 		[
-			'title' => ['$eq'=>'Phone']
+			'title' => 'Phone'
 		],
 		[
 			'limit' => 0,
 			'projection' => [
-				'displayname' => 1,
+				'_id' => 1,
 				'telephonenumber' => 1,
+				'displayname' => 1,
 				'bgcolor' => 1,
 				'color' => 1,
+				'order' => 1,
+				'state' => 1,
 			],
 		],
 		[
@@ -36,6 +38,8 @@ try{
 			$satir['displayname']=$formsatir->displayname;
 			$satir['color']=$formsatir->color;
 			$satir['bgcolor']=$formsatir->bgcolor;
+			$satir['order']=$formsatir->order;
+			$satir['state']=$formsatir->state;
 			$fsatir[]=$satir;
 		} //*/	
 	
@@ -61,12 +65,16 @@ $fisay=count($fsatir);
     <link
         href="/vendor/googleapis/Nunito.css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
         rel="stylesheet">
-
+	<!--JQuery-->
+    <script src="/vendor/jquery/jquery.js"></script>
+    <!-- Bootstrap core JavaScript-->
+	<link href="/vendor/bootstrap/bootstrap.min.css" rel="stylesheet">
     <!-- Custom styles for this template-->
-    <link href="/css/sb-admin-2.min.css" rel="stylesheet">
+    <link href="/css/sb-admin-2.css" rel="stylesheet">
+	<script src="/vendor/form-master/dist/jquery.form.min.js"></script>
     <link href="/vendor/datatables/dataTables.bootstrap4.min.css" rel="stylesheet">
 	<link href="/vendor/bootstrap-toggle/css/bootstrap-toggle.min.css" rel="stylesheet">
-    <script src="/vendor/jquery/jquery.min.js"></script>
+	<script src="/vendor/bootstrap-toggle/js/bootstrap-toggle.min.js"></script>
 <?php include($docroot."/set_page.php"); ?>
 
 </head>
@@ -96,7 +104,7 @@ $fisay=count($fsatir);
                     <!-- Page Heading -->
                     <div class="d-sm-flex align-items-center justify-content-between mb-4">
                         <h1 class="h3 mb-0 text-gray-800"><?php echo $gtext['speed_dial']." ".$gtext['insert']."/".$gtext['change'];/*Phone number Ekle/Değiştir*/?></h1>
-                        <a id="eklebtn" href="#" data-toggle="modal" data-target="#ymModal" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i
+                        <a id="eklebtn" href="#" type="button" data-bs-toggle="modal" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i
                                 class="fas fa-download fa-sm text-white-50"></i> <?php echo $gtext['speed_dial']." ".$gtext['insert'];/*Hızlı arama Ekle*/?></a>
                     </div>
 
@@ -116,6 +124,7 @@ $fisay=count($fsatir);
 										<tr>
 											<th><?php echo $gtext['number'];/*Numara*/?></th>
 											<th><?php echo $gtext['ack'];/*Açıklama*/?></th>
+											<th><?php echo $gtext['order'];/*Sıra*/?></th>
 											<th><?php echo $gtext['procs'];/*İşlemler*/?></th>
 										</tr>
 									</thead>
@@ -125,8 +134,9 @@ $fisay=count($fsatir);
 									<tr class="bg-<?php echo $fsatir[$b]['bgcolor']." text-".$fsatir[$b]['color'];?>">
 										<td><?php echo $fsatir[$b]['telephonenumber']; ?></td>
 										<td><?php echo $fsatir[$b]['displayname']; ?></td>
+										<td><?php echo $fsatir[$b]['order']; ?></td>
 										<td><div class="dropdown">
-											  <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton<?php echo $fsatir[$b]['telephonenumber']; ?>" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><?php echo $gtext['menu'];/*Menu*/?></button>
+											  <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton<?php echo $fsatir[$b]['telephonenumber']; ?>" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><?php echo $gtext['menu'];/*Menu*/?></button>
 											  <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
 												<a class="dropdown-item" onClick="javascript:updatenumber('<?php echo $fsatir[$b]['telephonenumber']; ?>');"><?php echo $gtext['change'];/*Değiştir*/?></a>
 												<a class="dropdown-item" onClick="javascript:deletenumber('<?php echo $fsatir[$b]['telephonenumber']; ?>');"><?php echo $gtext['delete'];/*Hesabı Kapat*/?></a>
@@ -163,16 +173,15 @@ $fisay=count($fsatir);
             <?php include($docroot."/footer.php"); ?>
             <!-- End of Footer -->
 			<!-- Modal-->
-				<div class="modal fade" id="ymModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
-					aria-hidden="true">
-					<div class="modal-dialog" role="document">
+				<div class="modal fade" id="ymModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="ymModalLabel" aria-hidden="true">
+					<div class="modal-dialog modal-dialog centered">
 						<div class="modal-content">
-							<form id="myForm" action="set_phone.php" method="POST">
+							<form name="myForm" method="POST" action="set_phone.php">
 							<input type="hidden" name="_id" id="_id" value=""/>
 							<input type="hidden" name="del" id="del" value="0"/>
 							<div class="modal-header">
-								<h5 class="modal-title" id="exampleModalLabel"><?php echo $gtext['speed_dials']." ".$gtext['ins_edit']; /*Ekleme/Değiştirme*/?></h5>
-								<button class="close" type="button" data-dismiss="modal" aria-label="<?php echo $gtext['close'];?>">
+								<h5 class="modal-title" id="ymModalLabel"><?php echo $gtext['speed_dials']." ".$gtext['ins_edit']; /*Ekleme/Değiştirme*/?></h5>
+								<button class="close" type="button" data-bs-dismiss="modal" aria-label="<?php echo $gtext['close'];?>">
 									<span aria-hidden="true">×</span>
 								</button>
 							</div>
@@ -231,8 +240,8 @@ $fisay=count($fsatir);
 								<tr>
 									<td><?php echo $gtext['active'];/*Aktif*/?>:</td>
 									<td>								
-										<label class="btn btn-outline-primary">
-											<input class="form-control" type="checkbox" data-toggle="toggle" name="aktif" id="aktif" data-on="Aktif" data-off="Pasif" style="border-color: black;"/>
+										<label class="btn btn-outline-primary" style="border-color: black;">
+											<input class="form-control" type="checkbox" data-bs-toggle="toggle" name="state" id="state" data-on="<?php echo $gtext['active'];?>" data-off="<?php echo $gtext['passive'];?>" />
 										</label>
 									</td>
 								</tr>
@@ -245,7 +254,8 @@ $fisay=count($fsatir);
 							</div>
 							<div class="modal-footer">
 								<button class="btn btn-primary" id="record"  type="submit"><?php echo $gtext['insert']; ?></button>
-								<button class="btn btn-secondary" type="button" id="cancel" data-dismiss="modal"><?php echo $gtext['cancel']; ?></button>
+								<button class="btn btn-secondary" type="button" id="cancel" data-bs-dismiss="modal"><?php echo $gtext['cancel']; ?></button>
+								<input style="display: none;" type='reset' value='Reset' id='reset'>
 							</div>
 							</form>
 						</div>
@@ -257,38 +267,26 @@ $fisay=count($fsatir);
 
     </div>
     <!-- End of Page Wrapper -->
-
+    <script src="/vendor/bootstrap/bootstrap.bundle.min.js"></script>
+    <script src="/vendor/jquery-easing/jquery.easing.min.js"></script> 
+    <script src="/js/sb-admin-2.js"></script>
     <!-- Scroll to Top Button-->
     <a class="scroll-to-top rounded" href="#page-top">
         <i class="fas fa-angle-up"></i>
     </a>
-    
-    <!-- Bootstrap core JavaScript-->
-    <script src="/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
-    <script src="/vendor/form-master/dist/jquery.form.min.js"></script>
-
-    <!-- Core plugin JavaScript-->
-    <script src="/vendor/jquery-easing/jquery.easing.min.js"></script>
-
-    <!-- Custom scripts for all pages-->
-    <script src="/js/sb-admin-2.min.js"></script>
 	
     <!-- Page level plugins -->
     <script src="/vendor/datatables/jquery.dataTables.min.js"></script>
     <script src="/vendor/datatables/dataTables.bootstrap4.min.js"></script>
-
-    <!-- Page level custom scripts -->
-    <script src="/js/demo/datatables-demo.js"></script>
-	<script src="/vendor/bootstrap-toggle/js/bootstrap-toggle.min.js"></script>
 	<script src="/js/portal_functions.js"></script>
 <script>
 var dturl="<?php echo $_SESSION['lang'];?>"; 
-var aktif="1";
+var state='on';
 const obj=JSON.parse('<?php echo json_encode($fsatir); ?>'); 
 $(document).ready(function() {
 	$('#phonelist').DataTable( {
         "language": {
-			url :"../vendor/datatables/"+dturl+".json",
+			url :"../vendor/datatables.net/"+dturl+".json",
 		}
 	});
 	$('#telephonenumber, #displayname').on('keyup', function(){ 
@@ -301,8 +299,10 @@ $(document).ready(function() {
 	$('input').on('change', function(){
 		$('#record').attr("disabled", false); 
 	});
-	$('#eklebtn').on('click', function(){		
-		if(aktif==1){ $('#aktif').bootstrapToggle('on'); }else{ $('#aktif').bootstrapToggle('off'); } 
+	$('#eklebtn').on('click', function(){
+		$('#reset').click();
+		$('#state').bootstrapToggle('on'); 
+		$('#ymModal').modal('show');
 	}); 
 	$('#record').on('click', function(){
 		var options={
@@ -319,7 +319,13 @@ $(document).ready(function() {
 			}
 		}
 		$('#myForm').ajaxForm(options);
-	});
+	});	
+	const ymModal = document.getElementById('ymModal')
+	if (ymModal) {
+	  ymModal.addEventListener('shown.bs.modal', () => {
+		const button = event.relatedTarget;
+	  });
+	}
 });
 	function bilgilerigetir(tel){ 
 		var result=getObjects(obj, "telephonenumber", tel); 
@@ -328,13 +334,15 @@ $(document).ready(function() {
 		$('#displayname').val(result[0]['displayname']);
 		$('#color').val(result[0]['color']);
 		$('#bgcolor').val(result[0]['bgcolor']);
-		aktif=result[0]['aktif']; if(aktif===undefined){ aktif='1'; } 
+		$('#order').val(result[0]['order']);
+		state=result[0]['state']; if(state===undefined||state===null||state===1){ state='on'; }else{ state='off';} 		
+		$('#state').bootstrapToggle(state); 
 	}
 	function updatenumber(tel){ 
 		bilgilerigetir(tel);
 		$('#del').val('0');
-		$('#record').html('<?php echo $gtext['change'];?>');
-		$('#eklebtn').click();
+		$('#record').html('<?php echo $gtext['change'];?>');		
+		$('#ymModal').modal('show');
 	}
 	function deletenumber(tel){ 
 		bilgilerigetir(tel);

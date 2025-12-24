@@ -160,13 +160,13 @@ $fisay=count($fsatir);
 
 
     <!-- Bootstrap core JavaScript-->
-    <script src="/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="/vendor/bootstrap/bootstrap.bundle.min.js"></script>
 
     <!-- Core plugin JavaScript-->
     <script src="/vendor/jquery-easing/jquery.easing.min.js"></script>
 
     <!-- Custom scripts for all pages-->
-    <script src="/js/sb-admin-2.min.js"></script>
+    <script src="/js/sb-admin-2.js"></script>
 <script>
 var usersource="<?php echo $ini['usersource'];?>";
 var userinfo="";
@@ -184,7 +184,7 @@ $(document).ready(function() {
 		if($('#search').val()==""){ alert('Arama kriteri boş olamaz!'); return false; }
 		if($('#search').val().length<3){ alert('Arama kriteri en az 3 harf olmalıdır...'); return false; } 
 		var userfrom="get_tel.php";
-		if(usersource=='LDAP'){ userfrom="get_tel_ldap.php";} 
+		//if(usersource=='LDAP'){ userfrom="get_tel_ldap.php";} 
 		$.ajax({
 			url: userfrom,
 			type: "POST",
@@ -210,9 +210,12 @@ $(document).ready(function() {
 							tab1+="<tr><td><?php echo $gtext['percompany']; /*Üst Birim*/?> </td><td>"+uinf["company"]+"</td></tr>";
 						}
 						tab1+="<tr><td><?php echo $gtext['a_department']; /*Birim*/?> </td><td>"+uinf["department"]+"</td></tr>"
-						+"<tr><td><?php echo $gtext['a_mail']; /*Mail*/?> </td><td><b>"+uinf["mail"]+"</b></td></tr>"
-						+"<tr><td><?php echo $gtext['telephonenumber']; /*Dahili Tel*/?> </td><td><b>"+uinf["telephonenumber"]+"</b></td></tr>"
-						+"<tr><td><?php echo $gtext['mobile']; /*GSM*/?> </td><td>"+uinf["mobile"]+"</td></tr>";
+						+"<tr><td><?php echo $gtext['a_mail']; /*Mail*/?> </td><td><b>"+uinf["mail"]+"</b></td></tr>";
+						if(uinf["physicaldeliveryofficename"]!=''){
+						tab1+="<tr><td><?php echo $gtext['physicaldeliveryofficename']; /*Ofis*/?> </td><td><b>"+uinf["physicaldeliveryofficename"]+"</b></td></tr>"; }
+						if(uinf["telephonenumber"]!=''){
+						tab1+="<tr><td><?php echo $gtext['telephonenumber']; /*Dahili Tel*/?> </td><td><b>"+uinf["telephonenumber"]+"</b></td></tr>"; }
+						tab1+="<tr><td><?php echo $gtext['mobile']; /*GSM*/?> </td><td>"+uinf["mobile"]+"</td></tr>";
 						if(uinf["manager"]!=''){
 							tab1+="<tr><td><?php echo $gtext['manager']; /*Manager*/?> </td><td>"+uinf["manager"]+" <button class='btn btn-outline-dark' onclick='javascript:seabyname("+i+");'><i class='fas fa-info-circle'></i></button></td></tr>";
 						}

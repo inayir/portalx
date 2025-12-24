@@ -8,7 +8,7 @@ include($docroot."/sess.php");
 if($_SESSION['user']==""&&$_SESSION['y_admin']!=1){
 	header('Location: \login.php');
 }
-//error_reporting(E_ALL);
+error_reporting(0);
 $collectionNames = [];
 foreach (@$collections as $collection) {
   $collectionNames[] = $collection->getName();
@@ -25,7 +25,7 @@ include($docroot."/app/php_functions.php");
 	$cursor = $collection->aggregate([
 		[
 			'$match'=>[
-				'$and'=>[['dp'=>['$eq'=>'C']],['status'=>['$ne'=>'C']]]
+				'$and'=>[['dp'=>['$eq'=>'C']],['state'=>['$ne'=>'C']]]
 			],
 		],
 		['$sort'=>['description'=>1]],
@@ -38,8 +38,8 @@ include($docroot."/app/php_functions.php");
 		$satir['distinguishedname']=$formsatir->distinguishedname;
 		$satir['managedby']=$formsatir->managedby;
 		$satir['manager']=substr($formsatir->managedby,3,strpos($formsatir->managedby,',OU')-3);
-		$satir['status']=$formsatir->status;
-		$satir['percount']=percount('C',$formsatir->ou, $ini['disabledname']);
+		$satir['state']=$formsatir->state;
+		$satir['percount']=percount('C',$formsatir->ou);
 		$csatir[]=$satir;
 		if($csay==0){ $company=$satir['ou'];}
 		$csay++;
@@ -49,7 +49,7 @@ $dsay=0;
 	$dcursor = $collection->aggregate([
 		[
 			'$match'=>[
-				'$and'=>[['dp'=>['$ne'=>'']],['status'=>['$ne'=>'C']],['company' => $company]]
+				'$and'=>[['dp'=>['$ne'=>'']],['state'=>['$ne'=>'C']],['company' => $company]]
 			],
 		],
 	]);
@@ -63,8 +63,8 @@ $dsay=0;
 			$satir['distinguishedname']=$dformsatir->distinguishedname;
 			$satir['managedby']=$dformsatir->managedby;
 			$satir['manager']=substr($dformsatir->managedby,3,strpos($dformsatir->managedby,',OU')-3);
-			$satir['status']=$dformsatir->status;
-			$satir['percount']=percount('D',$dformsatir->ou, $ini['disabledname']);
+			$satir['state']=$dformsatir->state;
+			$satir['percount']=percount('D',$dformsatir->ou);
 			$dsatir[]=$satir;	
 			$dsay++;
 		} 
@@ -84,19 +84,15 @@ $dsay=0;
     <link
  href="/vendor/googleapis/Nunito.css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
         rel="stylesheet">
-	<!-- Custom styles for this template-->
-    <link href="/css/sb-admin-2.css" rel="stylesheet">
     <script src="/vendor/jquery/jquery.js"></script>
     <!-- Bootstrap core JavaScript-->
-    <script src="/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
-	<link href="/vendor/bootstrap-toggle/css/bootstrap-toggle.min.css" rel="stylesheet">
-	<script src="/vendor/bootstrap-toggle/js/bootstrap-toggle.min.js"></script>
-    <!-- Core plugin JavaScript-->
-    <script src="/vendor/jquery-easing/jquery.easing.min.js"></script>	
-    <script src="/vendor/form-master/dist/jquery.form.min.js"></script>
+	<link href="/vendor/bootstrap/bootstrap.min.css" rel="stylesheet">
+	<!-- Custom styles for this template-->
+    <link href="/css/sb-admin-2.css" rel="stylesheet">
 	<!--DataTables-->
 	<link href="/vendor/datatables.net/datatables.min.css" rel="stylesheet">
 	<script src="/vendor/datatables.net/datatables.min.js"></script>
+	<link href="/vendor/bootstrap-toggle/css/bootstrap-toggle.min.css" rel="stylesheet">
     <!-- Page level custom scripts -->
 	<script src="/AD/ad_functions.js"></script>
 <?php include($docroot."/set_page.php"); ?>
@@ -131,7 +127,7 @@ $dsay=0;
 							<div class="card shadow mb-2">
 							  <div class="card-header py-2 d-sm-flex align-items-center justify-content-between">
 								<h6 class="m-0 font-weight-bold text-primary"><?php echo $gtext['percompanys'];/*Üst Birimler*/?></h6>
-								<span id='ret'><a href="#" id="c_insert" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm" ><i class="fas fa-download fa-sm text-white-50"></i> <?php echo $gtext['percompany']." ".$gtext['insert'];/*Üst Birim Ekle*/?></a>
+								<span id='ret'><a href="#" id="c_insert" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm" data-bs-toggle="modal" data-bs-target="#depModal"><i class="fas fa-download fa-sm text-white-50"></i> <?php echo $gtext['percompany']." ".$gtext['insert'];/*Üst Birim Ekle*/?></a>
 								</span>
 							  </div>
 							  <div class="card-body">
@@ -153,7 +149,7 @@ $dsay=0;
 									for($b=0;$b<$csay;$b++){
 									?><tr class="<?php if($b==0){ echo "selected"; $secimou=$csatir[$b]['ou']; $secimdesc=$csatir[$b]['description']; }?>" id="<?php echo $csatir[$b]['ou']; ?>">
 										<td><?php echo $csatir[$b]['description'];?> <span class="border border-solid border-dark rounded text-success p-1" title="<?php echo $gtext['s_percount'];?>"><?php echo $csatir[$b]['percount']; ?> </span></td>
-										<td><button class="btn btn-info cupdate" id="c-<?php echo $b; ?>"><?php echo $gtext['change'];/*Değiştir*/?></button></td>
+										<td><button class="btn btn-info cupdate" id="c-<?php echo $b; ?>" data-bs-toggle="modal" data-bs-target="#depModal"><?php echo $gtext['change'];/*Değiştir*/?></button></td>
 									</tr>
 									<?php } ?>
 									</tbody>
@@ -171,7 +167,7 @@ $dsay=0;
 							<div class="card shadow mb-2">
 							  <div class="card-header py-2 d-sm-flex align-items-center justify-content-between">
 								<h6 class="m-0 font-weight-bold text-primary"><?php echo $gtext['a_departments'];/*Birimler*/?></h6>
-								<span id='ret'><a href="#" id="d_insert" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm" ><i class="fas fa-download fa-sm text-white-50"></i> <?php echo $gtext['a_department']." ".$gtext['insert'];/*Birim Ekle*/?></a>
+								<span id='ret'><a href="#" id="d_insert" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"data-bs-toggle="modal" data-bs-target="#depModal"><i class="fas fa-download fa-sm text-white-50"></i> <?php echo $gtext['a_department']." ".$gtext['insert'];/*Birim Ekle*/?></a>
 							  </div>
 							  <div class="card-body">
 								<div class="table-responsive">
@@ -193,9 +189,9 @@ $dsay=0;
 									?><tr>
 										<td><?php echo $dsatir[$d]['description'];?> <a href="/admin/Personels.php?sea=<?php echo $dsatir[$d]['description'];?>" target="_blank"> <span class="border border-solid border-info rounded text-primary p-1" title="<?php echo $gtext['s_percount'];?>"><?php echo $dsatir[$d]['percount'];?></span></a></td>
 										<td>
-											<button class="btn btn-outline-info" onClick="javascript:dupdate('<?php echo $d;?>');"><?php echo $gtext['change'];/*Değiştir*/?></button>
-											<button class="btn btn-outline-danger" onclick="javascript:move('<?php echo $d;?>');"><?php echo $gtext['move'];/*Taşı*/?></button><?php
-											if($dsatir[$d]['percount']<=0){ ?>
+											<button class="btn btn-outline-info" onClick="javascript:dupdate('<?php echo $d;?>');" data-bs-toggle="modal" data-bs-target="#depModal"><?php echo $gtext['change'];/*Değiştir*/?></button>
+											<button class="btn btn-outline-danger" onclick="javascript:move('<?php echo $d;?>');" data-bs-toggle="modal" data-bs-target="#depModal"><?php echo $gtext['move'];/*Taşı*/?></button><?php
+											if($dsatir[$d]['dp']=='D'&&$dsatir[$d]['percount']<=0){ ?>
 											<button class="btn btn-outline-dark" onclick="javascript:ddelete('<?php echo $d;?>');"><?php echo $gtext['delete'];/*Sil*/?></button><?php } ?>
 										</td>
 									</tr>
@@ -229,9 +225,9 @@ $dsay=0;
             <?php include($docroot."/footer.php"); ?>
             <!-- End of Footer -->
 			<!-- Modal-->
-				<div class="modal fade" id="depModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+				<div class="modal fade" id="depModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
 					aria-hidden="true">
-					<div class="modal-dialog modal-lg" role="document">
+					<div class="modal-dialog modal-dialog modal-lg centered">
 						<div class="modal-content">
 							<form id="myForm" action="set_department.php" method="POST">
 							<input type="hidden" name="o_dn" id="o_dn" value=""/>
@@ -239,7 +235,7 @@ $dsay=0;
 							<input type="hidden" name="o_dp" id="o_dp"/>
 							<div class="modal-header">
 								<h5 class="modal-title" id="exampleModalLabel"><span class="text-bold" id="dp_desc"></span> <?php echo $gtext['ins_edit'];/*Birim Ekleme/Değiştirme*/?></h5>
-								<button class="close" type="button" data-dismiss="modal" aria-label="<?php echo $gtext['close'];?>">
+								<button class="close" type="button" data-bs-dismiss="modal" aria-label="<?php echo $gtext['close'];?>">
 									<span aria-hidden="true">×</span>
 								</button>
 							</div>
@@ -286,10 +282,10 @@ $dsay=0;
 									</td>
 								</tr>
 								<tr>
-									<td><?php echo $gtext['status'];/*Durum*/?>: </td>
+									<td><?php echo $gtext['state'];/*Durum*/?>: </td>
 									<td>
 										<span id="dmanager"></span>
-										<select name="status" id="status">
+										<select name="state" id="state">
 											<option value="A"><?php echo $gtext['active'];/*Aktif*/?></option>
 											<option value="C"><?php echo $gtext['closed'];/*Kapalı*/?></option>
 										</select>
@@ -299,7 +295,7 @@ $dsay=0;
 							</div>
 							<div class="modal-footer">
 								<button class="btn btn-primary" id="record" disabled type="button"><?php echo $gtext['insert']; ?></button>
-								<button class="btn btn-secondary" type="button" id="cancel" data-dismiss="modal"><?php echo $gtext['cancel']; ?></button>
+								<button class="btn btn-secondary" type="button" id="cancel" data-bs-dismiss="modal"><?php echo $gtext['cancel']; ?></button>
 							</div>
 							</form>
 						</div>
@@ -312,6 +308,12 @@ $dsay=0;
     </div>
     <!-- End of Page Wrapper -->
 
+    <!-- Core plugin JavaScript-->
+    <script src="/vendor/bootstrap/bootstrap.bundle.min.js"></script>
+	<script src="/vendor/bootstrap-toggle/js/bootstrap-toggle.min.js"></script>
+    <script src="/vendor/jquery-easing/jquery.easing.min.js"></script>	
+    <script src="/vendor/form-master/dist/jquery.form.min.js"></script>
+    <script src="/js/sb-admin-2.js"></script>
     <!-- Scroll to Top Button-->
     <a class="scroll-to-top rounded" href="#page-top">
         <i class="fas fa-angle-up"></i>
@@ -344,8 +346,7 @@ function dupdate(kd){
 	$('#manager').val(objd[kd]['managedby']);
 	$('#o_manager').val(objd[kd]['managedby']);
 	$('#record').html('<?php echo $gtext['change'];//Değiştir?>');
-	jQuery.noConflict();
-	$("#depModal").modal('show');
+	//$("#depModal").modal('show');
 };
 function move(kd){ 
 	isl='move';
@@ -362,18 +363,18 @@ function move(kd){
 	$('#description').val(objd[kd]['description']);
 	$('#description').css('display', 'none'); 
 	$('#record').html('<?php echo $gtext['move'];//Taşı?>');
-	jQuery.noConflict();
-	$("#depModal").modal('show');
+	//$("#depModal").modal('show');
 };
 function ddelete(kd){
-	if(confirm(kd+' silinecek?')){
-		alert('Dikkat!');
+	var depname=objd[kd]['description'];
+	if(confirm(depname+' silinecek?')){
+		alert('Silinemedi!');
 	}
 };
 $(document).ready(function() {
 	var ctable=$('#clist').DataTable( {
         language: {
-			url :"../vendor/datatables/"+dturl+".json",
+			url :"../vendor/datatables.net/"+dturl+".json",
 		}
 	});	
 	function getdepartments(cou){ //get departments according to it's company.	
@@ -381,7 +382,8 @@ $(document).ready(function() {
 			type: 'POST',
 			url: './get_depsbyc.php',
 			data: { company: cou },
-			success: function (response){ //console.log(response);
+			success: function (response){ //
+			console.log(response);
 				if(response=='login'){ alert('<?php echo $gtext['u_mustlogin'];?>'); location.reload(); }
 				if(response.indexOf('!')>=0){ alert(response); location.reload(); }
 				else{			
@@ -397,9 +399,9 @@ $(document).ready(function() {
 							var tab1='<tr>'
 							+'<td>'+uinf['description']+' <a href="/admin/Personels.php?sea='+uinf['description']+'" target="_blank"><span class="border border-solid rounded text-success" title="'+s_percount+'">'+uinf['percount']+'</span></a></td>'
 							+'<td>'
-							+' <button class="btn btn-outline-info" onclick="javascript:dupdate('+i+');"><?php echo $gtext['change']; ?></button>'
-							+' <button class="btn btn-outline-danger" onclick="javascript:move('+i+');"><?php echo $gtext['move']; ?></button>';
-							if(uinf['percount']<=0){ tab1+='<button class="btn btn-outline-dark" onclick="javascript:ddelete('+i+');"><?php echo $gtext['delete'];?></button>'; }
+							+' <button class="btn btn-outline-info" onclick="javascript:dupdate('+i+');" data-bs-toggle="modal" data-bs-target="#depModal"><?php echo $gtext['change']; ?></button>'
+							+' <button class="btn btn-outline-danger" onclick="javascript:move('+i+');" data-bs-toggle="modal" data-bs-target="#depModal"><?php echo $gtext['move']; ?></button>';
+							if(uinf['dp']=='D'&&uinf['percount']<=0){ tab1+='<button class="btn btn-outline-dark" onclick="javascript:ddelete('+i+');"><?php echo $gtext['delete'];?></button>'; }
 							tab1+='</td>'
 							+'</tr>';
 							$('#deplist > tbody:last-child').append(tab1);  
@@ -426,7 +428,7 @@ $(document).ready(function() {
 	});	
 	var dtable=$('#deplist').DataTable( {
         "language": {
-			url :"../vendor/datatables/"+dturl+".json",
+			url :"../vendor/datatables.net/"+dturl+".json",
 		}
 	});
 	$('#record').on('click', function(){
@@ -454,8 +456,7 @@ $(document).ready(function() {
 		$('#dp_desc').html(d);
 		$('#comsat').hide();
 		$('#company').val('');
-		jQuery.noConflict();
-		$("#depModal").modal('show');
+		//$("#depModal").modal('show');
 	});
 	$('#d_insert').on('click', function(){
 		isl='insert';
@@ -469,8 +470,7 @@ $(document).ready(function() {
 		//$('#company').attr('disabled', true); 
 		$('#description').val(''); 
 		$('#ou').val(''); 
-		jQuery.noConflict();
-		$("#depModal").modal('show');
+		//$("#depModal").modal('show');
 	});
 	$('.cupdate').on('click', function(){ 
 		isl='update';
@@ -486,8 +486,7 @@ $(document).ready(function() {
 		$('#dmanager').html(objc[c]['manager']); 
 		$('#manager').val(objc[c]['managedby']); 
 		$('#record').html('<?php echo $gtext['change'];//Değiştir?>');
-		jQuery.noConflict();
-		$("#depModal").modal('show');
+		//$("#depModal").modal('show');
 	});
 	$('#description').on("blur", function(){ 
 		var dep=dep_name($('#description').val(),99,0);

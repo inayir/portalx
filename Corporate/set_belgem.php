@@ -3,16 +3,16 @@
 	Belge kaydeder.
 */
 include('../set_mng.php');
-$log="";
-include($docroot."/app/php_functions.php");
-$logfile='docs';
 //error_reporting(0);
+$logfile='docs';
+include($docroot."/app/php_functions.php");
 header('Content-Type:text/html; charset=utf8');
 include($docroot."/config/config.php");
 include($docroot."/sess.php"); 
 if($_SESSION["user"]==""){
 	echo "login"; exit;
-}//*/
+}
+$log="";
 @$collection=$db->k_belgeler;
 
 $sonuc=false; @$sil=$_POST['del'];
@@ -33,11 +33,12 @@ if($sil==1){
 	//not: resimler silinmez.
 }else{
 	//bilgiler toplanır.
-	$tanim=str_ayikla($_POST['tanim']);
-	$aktif=0; if($_POST['aktif']=='on'){ $aktif=1; }
-	$log.=$tanim.",".$aktif.",{File:".$_POST['dosya']."}";
+	//$tanim=str_ayikla($_POST['tanim']);
+	$tanim=$_POST['tanim'];
+	$state=0; if($_POST['state']=='on'){ $state=1; }
+	$log.=$tanim.",".$state.",{File:".$_POST['dosya']."}";
 	//
-	$fields=["tip","snf","kod","tanim","b_tar","g_tar","user","aktif"];
+	$fields=["tip","snf","kod","tanim","b_tar","g_tar","user","state"];
 	if(isset($_POST['tip'])){
 		$data['tip']=$_POST['tip']; 
 		$log.=",{'tip':".$data['tip']."}"; 
@@ -66,9 +67,9 @@ if($sil==1){
 		$data['user']=$_POST['user']; 
 		$log.=",{'user':".$data['user']."}"; 
 	}
-	if(isset($_POST['aktif'])){
-		$data['aktif']=$_POST['aktif']; 
-		$log.=",{'aktif':".$data['aktif']."};"; 
+	if(isset($_POST['state'])){
+		$data['state']=$_POST['state']; 
+		$log.=",{'state':".$data['state']."};"; 
 	}
 	
 	if($_POST['_id']!=''){ //Update
@@ -102,7 +103,7 @@ if($sil==1){
 		}
 	}
 }
-$log.=";Query: ".$data;
+//$log.=";Query: ".implode(',',$data);
 if($r){ 
 	if($sil==""){
 		$msg.=""; 
@@ -118,9 +119,10 @@ if($r){
 				[ '$set' => $d]
 			);
 			if($cursord->getModifiedCount()>0){ 
-				echo "di."; $r=true; 
+				//echo $gtext['uploaded']; 
+				$r=true; 
 			}else{ 
-				echo "eMEdi!"; 
+				//echo $gtext['notuploaded']; 
 			}
 			$log.=";Uploaded File:".$yuklenecek_dosya;
 		} else {

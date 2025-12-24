@@ -80,8 +80,8 @@ if($dp=="D"){
 	$replace = array('c','c','g','g','i','i','o','o','s','s','u','u','-');
 	$dsearch = str_replace($search,$replace,$searched);
 }
-$liste=Array('samaccountname','displayname','givenname','sn','mail','description','title','mobile','company','department','manager','telephonenumber'); //,'physicaldeliveryofficename');
-$filter = '(|(objectCategory=person)(objectCategory=contact))';
+$liste=Array('displayname','givenname','sn','mail','description','title','mobile','company','department','manager','telephonenumber','physicaldeliveryofficename');
+$filter = '(objectCategory=person)';
 $ldap_search_result = ldap_search($conn, $dn, $filter, $liste);  //
 if ($ldap_search_result){
 	$entries = ldap_get_entries($conn, $ldap_search_result); //var_dump($entries);	
@@ -100,7 +100,7 @@ if ($ldap_search_result){
 			//aranan searched içindeki metin name ile karşılaştırılacak. strtolowersız olmadı.
 			$r=false; 
 			if($dp=="P"){ 
-				$name=strtolower($sorted[$i]['givenname'][0]." ".$sorted[$i]['sn'][0]); 
+				$name=strtolower($sorted[$i]['displayname'][0]; //." ".$sorted[$i]['sn'][0]); 
 				$r=str_contains($name,$searched); 
 			} else { 
 				$dep=strtolower(trim($sorted[$i]['department'][0]," ")); 

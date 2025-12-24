@@ -3,7 +3,7 @@
 	Pano sayfasını getirir.
 */
 include("../set_mng.php");
-//error_reporting(0); 
+error_reporting(0); 
 include($docroot."/sess.php"); 
 for($g=0;$g<7;$g++){
 	$gunler[]=$gtext['day'.$g];
@@ -33,20 +33,20 @@ $yarin=date("Y.m.d 00:00:00", strtotime("+1 day"));
 		'sort'=>['dh_ytar'=>-1]
 	]
 );
-foreach ($cursor as $satir) {
+foreach ($cursor as $formsatir) {
 	$satir=[]; 
-	$satir['_id']=$satir->_id;
-	if($satir->dh_ytar!=null){ 
-		$dt=$satir->dh_ytar->toDateTime()->format($ini['date_local']." H:i"); 
+	$satir['_id']=$formsatir->_id;
+	if($formsatir->dh_ytar!=null){ 
+		$dt=$formsatir->dh_ytar->toDateTime()->format($ini['date_local']." H:i"); 
 	}else{ $dt='';} 
 	$satir['dh_ytar']=$dt; 
-	$satir['dh_baslik']=$satir->dh_baslik;  
-	$satir['dh_icerik']=$satir->dh_icerik; 
-	$satir['dh_resim']=$satir->dh_resim; 
-	if($satir->dh_url!=''){ $satir['dh_url']=$satir->dh_url; }
-	$satir['dh_capt_on']=$satir->dh_capt_on;
-	$dh=$satir->dh;
-	$satir['aktif']=$satir->aktif;
+	$satir['dh_baslik']=$formsatir->dh_baslik;  
+	$satir['dh_icerik']=$formsatir->dh_icerik; 
+	$satir['dh_resim']=$formsatir->dh_resim; 
+	if($satir->dh_url!=''){ $satir['dh_url']=$formsatir->dh_url; }else{ $satir['dh_url']=''; }
+	$satir['dh_capt_on']=$formsatir->dh_capt_on;
+	$dh=$formsatir->dh;
+	$satir['aktif']=$formsatir->aktif;
 }
 
 switch($dh){ //D Duyuru, K Kurumsal, H haber
@@ -105,7 +105,7 @@ switch($dh){ //D Duyuru, K Kurumsal, H haber
 
                     <!-- Page Heading -->
                     <div class="d-sm-flex align-items-center justify-content-between mb-4">
-                        <h1 class="h5 mb-0 text-gray-800"><?php echo $satir->dh_baslik; ?></h1>
+                        <h1 class="h5 mb-0 text-gray-800"><?php echo $satir['dh_baslik']; ?></h1>
 						<div><small><?php echo "Yayım Tarihi:".$satir['dh_ytar']; ?></small></div>
                     </div>
                     <!-- Content Row -->
@@ -116,7 +116,7 @@ switch($dh){ //D Duyuru, K Kurumsal, H haber
                         <div class="col-xl-9 col-lg-8">
                             <!-- 5 Duyuru gelsin, devamı _blank açılsın. -->
                             <div class="card shadow mb-4"><?php								
-								if($satir->dh_resim!="") { $resimyolu=$satir->dh_resim; }else { $resimyolu='/img/undraw_posting_photo.svg'; }
+								if($satir['dh_resim']!="") { $resimyolu=$satir['dh_resim']; }else { $resimyolu='/img/undraw_posting_photo.svg'; }
 								?>
                                 <div class="card-body">
 									<!--h5 class="text-center"><?php echo $satir['dh_baslik']; ?></h5-->
@@ -124,12 +124,12 @@ switch($dh){ //D Duyuru, K Kurumsal, H haber
                                         <img class="img-fluid px-3 px-sm-4 mt-3 mb-4" style=""
                                             src="<?php echo $resimyolu; ?>" alt="...">
                                     </div>
-                                    <p><?php echo $satir->dh_icerik; ?></p>
+                                    <p><?php echo $satir['dh_icerik']; ?></p>
                                     <?php 
-									if($satir->dh_dlink!=""){ ?> 
-									<p><a href="javascript:open('<?php echo "/Docs/".$satir->dh_dlink; ?>');">Dosya<?php echo ":".$satir->dh_dlink;?></a></p> <?php } 
-									if($satir->dh_url!=""){ ?>
-									<p class="text-center"><a href="<?php echo $satir->dh_url; ?>" target="_blank">Haberin Linki</a></p><?php 
+									if($satir['dh_url']!=""){ ?> 
+									<p><a href="javascript:open('<?php echo "/Docs/".$satir['dh_url']; ?>');">Dosya<?php echo ":".$satir['dh_dlink'];?></a></p> <?php } 
+									if($satir['dh_url']!=""){ ?>
+									<p class="text-center"><a href="<?php echo $satir['dh_url']; ?>" target="_blank">Haberin Linki</a></p><?php 
 									} ?>
                                 </div>
                             </div>
@@ -160,13 +160,13 @@ switch($dh){ //D Duyuru, K Kurumsal, H haber
 
     <!-- Bootstrap core JavaScript-->
     <script src="../vendor/jquery/jquery.min.js"></script>
-    <script src="../vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="../vendor/bootstrap/bootstrap.bundle.min.js"></script>
 
     <!-- Core plugin JavaScript-->
     <script src="../vendor/jquery-easing/jquery.easing.min.js"></script>
 
     <!-- Custom scripts for all pages-->
-    <script src="../js/sb-admin-2.min.js"></script>
+    <script src="../js/sb-admin-2.js"></script>
 
 </body>
 

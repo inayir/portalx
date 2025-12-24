@@ -2,14 +2,11 @@
 /*
 	Department save. LDAP and MongoDB /NOT MOVES!
 */
-function datem($dat){
-	return new \MongoDB\BSON\UTCDateTime(strtotime($dat)*1000);
-}
-
 include('../set_mng.php');
 //error_reporting(0);
 header('Content-Type:text/html; charset=utf8');
 include($docroot."/sess.php");
+include($docroot."/app/php_functions.php");
 if($_SESSION["user"]==""){ 	echo "login"; exit; }
 //
 $base_dn=$ini['base_dn'];
@@ -70,6 +67,7 @@ $data['description']= $_POST['description'];
 $distinguishedname='OU='.$ou; //department veya company
 if($dp=='D'){ $distinguishedname.=',OU='.$_POST['company']; } //department ise
 $distinguishedname.=','.$base_dn;
+$data['distinguishedname']=$distinguishedname;
 //işlem yapılıyor*********************************************************/
 if($ini['usersource']=='LDAP'){  //LDAP işlemleri
 	$ldap_result = ldap_search($conn, $base_dn, "(ou=$ou)");
@@ -85,7 +83,6 @@ if($ini['usersource']=='LDAP'){  //LDAP işlemleri
 				echo $msg; exit;  
 			} 
 		}else{ //ou null-> save. echo " info-";
-			$data['distinguishedname']=$distinguishedname;
 			$sonuc=ldap_add($conn, $distinguishedname, $data); 
 			if($sonuc){ //"Eklendi.";	echo " add+";
 				echo $gtext['inserted']; 
@@ -139,7 +136,7 @@ if($ini['usersource']=='LDAP'){  //LDAP işlemleri
 //DB işlemleri..................................................
 $data["dp"]		= $dp; 
 $data["company"]= $_POST['company'];
-$data["status"] = $_POST['status'];
+$data["state"]  = $_POST['state'];
 if($_POST['dp']=='C'||$_POST['company']==''){ //department=company ise root ou yazılır.
 	$data["company"] = $baseou; //from config
 }
@@ -166,27 +163,31 @@ if($upd==1){
 	$data=array();
 	$data['department']=$ou;
 	$data['company']=$_POST['company'];
-	$ldap_result = ldap_search($conn, $ini['base_dn'], "(department=$ou)");
-	$info = ldap_get_entries($conn, $ldap_result); 
-	echo " - Personel: ";
-	if($info["count"]>0){
-		//var_dump($info);
-		for($i==0; $i<$info["count"]; $i++){
-			echo "\n".$i." ".$info[$i]['displayname'][0]." ";
-			$sonuc=ldap_mod_replace($conn, $info[$i]['distinguishedname'][0], $data);
-			if($sonuc){ //echo "OK"; 
-				$pcursor = $pcollection->updateOne(
-					[
-						'displayname'=>$info[$i]['displayname'][0]
-					],
-					[ '$set' => $dataper ]
-				); 
-				if($pcursor->getModifiedCount()>0){ echo $gtext['updated']; $rec++; }
-				else{ echo $gtext['notupdated']; $log.="{'update error':''}"; }			
+	if($ini['usersource']=='LDAP'){ 
+		$ldap_result = ldap_search($conn, $ini['base_dn'], "(department=$ou)");
+		$info = ldap_get_entries($conn, $ldap_result); 
+		echo " - Personel: ";
+		if($info["count"]>0){
+			//var_dump($info);
+			for($i==0; $i<$info["count"]; $i++){
+				echo "\n".$i." ".$info[$i]['displayname'][0]." ";
+				$sonuc=ldap_mod_replace($conn, $info[$i]['distinguishedname'][0], $data);
+				if($sonuc){ //echo "OK"; 
+					$pcursor = $pcollection->updateOne(
+						[
+							'displayname'=>$info[$i]['displayname'][0]
+						],
+						[ '$set' => $dataper ]
+					); 
+					if($pcursor->getModifiedCount()>0){ echo $gtext['updated']; $rec++; }
+					else{ echo $gtext['notupdated']; $log.="{'update error':''}"; }			
+				}
 			}
-		}
-		echo "\n".$gtext['updated']." #".$rec." records.";
-	}else{ echo $gtext['notupdated']; $log.="{'update error':''}"; }
+			echo "\n".$gtext['updated']." #".$rec." records.";
+		}else{ echo $gtext['notupdated']; $log.="{'update error':''}"; }
+	}else{
+		//sadece DB
+	}
 }
 logger("department",$log);
 ?>

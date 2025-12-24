@@ -3,7 +3,7 @@
 	Duyuru-Haber kaydeder.
 */
 include('../set_mng.php');
-//error_reporting(0);
+error_reporting(0);
 include($docroot."/config/config.php");
 include($docroot."/sess.php");
 header('Content-Type:text/html; charset=utf8');
@@ -108,7 +108,7 @@ if($sil==1){
 	}
 
 	if($r){ 
-		if($_POST['dh']!='K'){
+		if($_POST['dh']!='K'&&$_FILES['dh_resim']['name']!=''){
 			$dizin = '../dhimg';
 			$yuklenecek_dosya = $dizin.'/'.basename($_FILES['dh_resim']['name']);
 			$logarr.=",{'dh_resim':".$yuklenecek_dosya."}";

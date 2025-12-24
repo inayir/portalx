@@ -3,7 +3,7 @@
 	Company'ye bağlı Departmentları getirir.
 	Gets departments in a company
 */
-error_reporting(0);
+//error_reporting(0);
 $docroot=$_SERVER['DOCUMENT_ROOT'];
 include($docroot."/set_mng.php");
 include($docroot."/sess.php");
@@ -23,7 +23,7 @@ try{
 	$dcursor = $collection->aggregate([
 		[
 			'$match'=>[
-				'$and'=>[['dp'=>['$ne'=>'']],['status'=>['$ne'=>'C']],['company' => $company]]
+				'$and'=>[['dp'=>['$ne'=>'']],['state'=>['$ne'=>'C']],['company' => $company]]
 			],
 		],
 		[
@@ -37,15 +37,16 @@ try{
 		$ksay=0; 
 		foreach ($dcursor as $dformsatir) {
 			$satir=[];
-			$satir['ou']=$dformsatir->ou; //echo "<br>".$dformsatir->ou; 
+			$satir['dp']=$dformsatir->dp; 
+			$satir['ou']=$dformsatir->ou; 
 			$satir['company']=$dformsatir->company;
-			$percount=percount('D', $dformsatir->ou, $ini['disabledname']);
 			$satir['description']=$dformsatir->description;
+			$percount=percount('D', $dformsatir->ou);
 			$satir['percount']=$percount;
 			$satir['distinguishedname']=$dformsatir->distinguishedname;
 			$satir['managedby']=$dformsatir->managedby;
 			$satir['manager']=substr($dformsatir->managedby,3,strpos($dformsatir->managedby,',OU')-3);
-			$satir['status']=$dformsatir->status;
+			$satir['state']=$dformsatir->state;
 			$dsatir[]=$satir;	
 			$ksay++;
 		} 

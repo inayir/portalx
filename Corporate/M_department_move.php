@@ -3,6 +3,7 @@
 	Kullanıcıyı başka bir OU altına taşır.
 */
 include('../set_mng.php');
+error_reporting(0);
 header('Content-Type:text/html; charset=utf8');
 include($docroot."/sess.php");
 if($_SESSION['user']==""){
@@ -58,15 +59,15 @@ if($o_dn!=''){
 	}//*/
 	//Record to mongodb -----------------------------------------------
 	$log.="*DB;"; 
-	$dbdata=array();
-	$dbdata['distinguishedname']=$dn;
-	$dbdata['company']=$company; 
+	$data=array();
+	$data['distinguishedname']=$dn;
+	$data['company']=$company; 
 	@$collection = $db->departments; $ksay=0; 	//echo "collection:".$collection."\n";
 	@$cursor = $collection->updateOne(
 		[
 			'ou'=>$dep
 		],
-		[ '$set' => $dbdata ]
+		[ '$set' => $data ]
 	);
 	if($cursor->getModifiedCount()>0){ 
 		echo $gtext['updated']; 
@@ -89,12 +90,21 @@ if($o_dn!=''){
 		//personel_act dosyasına yazılır...
 		echo "\n**Activity:";
 		$act_collection = $db->personel_act;
-		$act_data['act']='move';		
-		$act_data['o_company']=$_POST['o_company'];
-		$act_data['company']=$company;
-		$act_data['date']=datem(date("Y-m-d", strtotime("now").'T'.date("H:i:s", strtotime("now")).'.000+00:00'));
+		$datact['act']='move';
+		//değişen veriler alınır. $data 
+		$allkey=[];
+		$allkey=getkeys($data);
+		for($k=0;$k<count($allkey);$k++){
+			if($allkey[$k]!='_id'&&$allkey[$k]!='act'&&$allkey[$k]!='displayname'&&$allkey[$k]!='distinguishedname'&&$allkey[$k]!='actdate'){
+				$field=$allkey[$k];  //var_dump($field);
+				$val=$data->$field;
+				$dt.=$field.":".$val.";";
+			}
+		}
+		$datact['changedata']=$dt;  //*/
+		$datact['date']=datem(date("Y-m-d", strtotime("now").'T'.date("H:i:s", strtotime("now")).'.000+00:00'));
 		$act_cursor = $act_collection->insertOne(
-			$act_data
+			$datact
 		);
 		if($act_cursor->getInsertedCount()>0){ echo " ".$gtext['updated']; $log.=$gtext['updated'].";";  }
 		else{ echo $gtext['notupdated']."!!->"; $log.=$gtext['notupdated']."{'update error':''};";  }
@@ -102,7 +112,7 @@ if($o_dn!=''){
 		echo $gtext['notupdated']."!"; 
 		$log.=$gtext['notupdated']."{'update error':''};"; 
 	} 
-}else{ echo " ! ".$gtext['u_fieldisnotblank']."!"; }  //Alanlar boş olamaz
+}else{ echo " ! ".$gtext['u_fieldmustnotblank']."!"; }  //Alanlar boş olamaz
 //
 logger($logfile,$log);
 ?>

@@ -61,7 +61,7 @@ $bresult = $baglan->query($bq);
                     <div class="d-sm-flex align-items-center justify-content-between mb-4">
                         <h1 class="h3 mb-0 text-gray-800">Yönetsel Formlar</h1>
 						<?php if($_SESSION['y_bo']==1){?>
-                        <a id="belge_ekle" data-toggle="modal" data-target="#belgeekleModal" href="#" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i
+                        <a id="belge_ekle" data-bs-toggle="modal" data-bs-target="#belgeekleModal" href="#" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i
 						class="fas fa-download fa-sm text-white-50"></i> Belge Ekle</a><?php } ?>
                     </div>
 
@@ -103,7 +103,7 @@ $bresult = $baglan->query($bq);
 										echo "<td><a target='_blank' href='";
 										
 										if(strpos($dxrow['dosya'],'.pdf')>0){ echo "b_goster.php?d=".$dxrow['uid']; } 
-										else { echo $ini['b_forms_yol']."/".$dxrow['dosya']; }
+										else { echo $ini['b_forms_url']."/".$dxrow['dosya']; }
 										echo "'>".$dxrow['tanim']."</a></td>";
 										echo "<td>";
 										if($_SESSION['y_bo']==1){ 
@@ -147,14 +147,14 @@ $bresult = $baglan->query($bq);
         <i class="fas fa-angle-up"></i>
     </a>
 <!-- dosya yükle Modal-->
-	<div class="modal fade" id="belgeekleModal" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+	<div class="modal fade" id="belgeekleModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
 		aria-hidden="true">
 		<div class="modal-dialog w-75" role="document">
 			<div class="modal-content">
 				<form id="form1" method="POST" action="set_belge.php">
 				<div class="modal-header">
 					<h5 class="modal-title" id="ModalLabel">Belge Ekleme/Değiştirme</h5>
-					<button class="close" type="button" data-dismiss="modal" aria-label="<?php echo $gtext['close'];?>">
+					<button class="close" type="button" data-bs-dismiss="modal" aria-label="<?php echo $gtext['close'];?>">
 						<span aria-hidden="true">×</span>
 					</button>
 				</div>
@@ -175,10 +175,10 @@ $bresult = $baglan->query($bq);
 				<tr>
 					<td>Dosya</td>
 					<td colspan="3">
-						<p id="pbelge_yolu"><?php echo $ini['b_forms_yol']; ?></p>
+						<p id="pbelge_yolu"><?php echo $ini['b_forms_url']; ?></p>
 						<p id="pdosya"></p>
 						<input type="file" name="dyol" id="dyol"/>
-						<input type="hidden" name="belge_yolu" id="belge_yolu" size="50" value="<?php echo $ini['b_forms_yol']; ?>"/>
+						<input type="hidden" name="belge_yolu" id="belge_yolu" size="50" value="<?php echo $ini['b_forms_url']; ?>"/>
 						<input type="hidden" name="dosya" id="dosya" size="70" value=""/>
 					</td>
 				</tr>
@@ -190,13 +190,13 @@ $bresult = $baglan->query($bq);
 				</tr>
 				<tr>
 					<td>Aktif</td>
-					<td><input type="checkbox" data-toggle="toggle" name="aktif" id="aktif" data-on="Aktif" data-off="Pasif"/></td>
+					<td><input type="checkbox" data-bs-toggle="toggle" name="aktif" id="aktif" data-on="Aktif" data-off="Pasif"/></td>
 				</tr>
 				</table>
-				<a id="belge_getir" data-toggle="modal" data-target="#belgeekleModal" href="#" style="display: none;"> Belge Getir</a>
+				<a id="belge_getir" data-bs-toggle="modal" data-bs-target="#belgeekleModal" href="#" style="display: none;"> Belge Getir</a>
 				</div>
 				<div class="modal-footer">
-					<button class="btn btn-secondary" type="button" id="cancel" data-dismiss="modal"><?php echo $gtext['cancel']; ?></button>
+					<button class="btn btn-secondary" type="button" id="cancel" data-bs-dismiss="modal"><?php echo $gtext['cancel']; ?></button>
 					<button class="btn btn-primary" id="eklebtn" disabled type="submit"><?php echo $gtext['insert']; ?></button>
 				</div>
 				</form>
@@ -206,14 +206,14 @@ $bresult = $baglan->query($bq);
 <!--dosya yükle modal sonu-->
     <!-- Bootstrap core JavaScript-->
     <script src="../vendor/jquery/jquery.min.js"></script>
-    <script src="../vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="../vendor/bootstrap/bootstrap.bundle.min.js"></script>
     <script src="../vendor/form-master/dist/jquery.form.min.js"></script>
 
     <!-- Core plugin JavaScript-->
     <script src="../vendor/jquery-easing/jquery.easing.min.js"></script>
 
     <!-- Custom scripts for all pages-->
-    <script src="../js/sb-admin-2.min.js"></script>
+    <script src="../js/sb-admin-2.js"></script>
 	
     <!-- Page level plugins -->
     <script src="../vendor/datatables/jquery.dataTables.min.js"></script>
@@ -228,7 +228,7 @@ var dturl="<?php echo $_SESSION['lang'];?>";
 $(document).ready(function() {
 	$('#b_list').DataTable( {
         "language": {
-			url :"../vendor/datatables/"+dturl+".json",
+			url :"../vendor/datatables.net/"+dturl+".json",
 		}
 	});
 

@@ -58,48 +58,48 @@ foreach ($cursor as $formsatir) {
 	$satir['aktif']			=intval($formsatir->aktif);
 	//$fsatir[]=$satir; 
 }; 
-//
+//-------------Servis Personeli-------------
 @$pcoll=$db->personel;
 @$pcur = $pcoll->find(
     [
-		'pser_kodu'=>$satir['pser_kodu']
+		'$and'=>[['pser_kodu'=>$satir['pser_kodu']],['state'=>'A']],
     ],
     [
         'limit' => 0,
         'projection' => [
-            'sicilno' => 1,
-            'adisoyadi' => 1,
-			'birim' => 1,
-			'telefon' => 1,
+            'description' => 1,
+            'displayname' => 1,
+			'department' => 1,
+			'telephoneNumber' => 1,
             'email' => 1,
 			'username'=>1,
         ],
-		'sort'=>['pser_kodu'=>1]
+		'sort'=>['adisoyadi'=>1]
     ]
 );
 foreach ($pcur as $pformsatir) {
-	$psatir=[];
-	$psatir['sicilno']		=$pformsatir->sicilno;
-	$psatir['adisoyadi']	=$pformsatir->adisoyadi;
-	$psatir['birim']		=$pformsatir->birim;
-	$psatir['telefon']		=$pformsatir->telefon;
-	$psatir['email']		=$pformsatir->email;
-	$psatir['username']		=$pformsatir->username;
-	$fpsatir[]=$psatir; 
+	$yolcusatir=[];
+	$yolcusatir['sicilno']		=$pformsatir->description;
+	$yolcusatir['adisoyadi']	=$pformsatir->displayname;
+	$yolcusatir['birim']		=$pformsatir->department;
+	$yolcusatir['telefon']		=$pformsatir->telephoneNumber;
+	$yolcusatir['email']		=$pformsatir->email;
+	$yolcusatir['username']		=$pformsatir->username;
+	$yolcusatirlari[]=$yolcusatir; 
 }; 
-//tumpersonel
+//-------Servise personel eklerken getirilecek bir servise kayıtlı olmayan personel.
 @$tpcoll=$db->personel;
 @$tpcur = $tpcoll->find(
     [
-		'pser_kodu'=>null
+		'$and'=>[['pser_kodu'=>null],['state'=>'A']]
     ],
     [
         'limit' => 0,
         'projection' => [
-            'sicilno' => 1,
-            'adisoyadi' => 1,
-			'birim' => 1,
-			'telefon' => 1,
+            'department' => 1,
+            'displayname' => 1,
+			'department' => 1,
+			'telephoneNumber' => 1,
             'email' => 1,
 			'username'=>1,
         ],
@@ -108,10 +108,10 @@ foreach ($pcur as $pformsatir) {
 );
 foreach ($tpcur as $tpformsatir) {
 	$tpsatir=[];
-	$tpsatir['sicilno']		=$tpformsatir->sicilno;
-	$tpsatir['adisoyadi']	=$tpformsatir->adisoyadi;
-	$tpsatir['birim']		=$tpformsatir->birim;
-	$tpsatir['telefon']		=$tpformsatir->telefon;
+	$tpsatir['sicilno']		=$tpformsatir->department;
+	$tpsatir['adisoyadi']	=$tpformsatir->displayname;
+	$tpsatir['birim']		=$tpformsatir->department;
+	$tpsatir['telefon']		=$tpformsatir->telephoneNumber;
 	$tpsatir['email']		=$tpformsatir->email;
 	$tpsatir['username']	=$tpformsatir->username;
 	$ftpsatir[]=$tpsatir; 
@@ -134,11 +134,24 @@ foreach ($tpcur as $tpformsatir) {
     <link
         href="/vendor/googleapis/Nunito.css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
         rel="stylesheet">
+    <!-- Bootstrap core JavaScript-->
+    <script src="/vendor/jquery/jquery.js"></script>
+	<link href="/vendor/bootstrap/bootstrap.min.css" rel="stylesheet">
+    <script src="/vendor/bootstrap/bootstrap.bundle.min.js"></script>
 
-    <!-- Custom styles for this template-->
+    <!-- Core plugin JavaScript-->
+    <script src="/vendor/jquery-easing/jquery.easing.min.js"></script>
+
+    <!-- Custom scripts for all pages-->
     <link href="/css/sb-admin-2.css" rel="stylesheet">
-    <link href="/vendor/datatables/dataTables.bootstrap4.min.css" rel="stylesheet">
-    <script src="/vendor/jquery/jquery.min.js"></script>
+    <script src="/js/sb-admin-2.js"></script>
+	<!--DataTables-->
+	<link href="/vendor/datatables.net/datatables.min.css" rel="stylesheet"> 
+	<script src="/vendor/datatables.net/datatables.min.js"></script>
+	<script src="/vendor/datatables.net/pdfmake.min.js"></script>
+	<script src="/vendor/datatables.net/vfs_fonts.js"></script>
+    <script src="/vendor/form-master/dist/jquery.form.min.js"></script>
+
 <?php include("../set_page.php"); ?>
 </head>
 
@@ -168,6 +181,10 @@ foreach ($tpcur as $tpformsatir) {
                     <!-- Page Heading -->
                     <div class="d-sm-flex align-items-center justify-content-between mb-4">
                         <h1 class="h3 mb-0 text-gray-800"><i class="fas fa-fw fa-route"></i> <?php echo $gtext['a_pserpassengers'];/*Personel Servis Yolcuları*/?></h1>
+						<div class='btn-group btn-group-md'>
+							<a type='button' class='d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm' data-bs-target="#yolcuekleModal" data-bs-toggle="modal"><i class='fas fa-user-plus fa-sm text-white-50'></i> <?php echo $gtext['passenger']." ".$gtext['insert'];/*Yolcu Ekle*/?></a>
+							<button class="d-none d-sm-inline-block btn btn-sm btn-bordered border-success shadow-sm" id='yenile' onClick="location.reload();"><?php echo $gtext['refresh'];/*Yenile*/?></button>
+						</div>
                     </div>
 
                     <!-- Content Row -->
@@ -190,18 +207,11 @@ foreach ($tpcur as $tpformsatir) {
 							<td><?php echo $satir['pser_sofor'];?></td>
 							<td><small><?php$satir['pser_bolge']?></small></td><?php $r=($satir['aktif']==1)? 'Aktif' : 'Pasif'; ?>
 							<td><?php echo $r;?></td>
-							<td>
-								<div class='btn-group btn-group-md'>
-									<a id='yolcueklebtn' class='d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm' href='#' data-toggle='modal' data-target='#yolcuekleModal'><i class='fas fa-user-plus fa-sm text-white-50'></i> <?php echo $gtext['passenger']." ".$gtext['insert'];/*Yolcu Ekle*/?></a>
-									<button class="d-none d-sm-inline-block btn btn-sm btn-bordered border-success shadow-sm" id='yenile'><?php echo $gtext['refresh'];/*Yenile*/?></button>
-								</div>
-							</td>
 						</tr>
 						</tbody>
 						</table>
 					</div>
-
-                    <!-- Content Row -->
+					<!-- Content Row -->
                     <div class="row">
 					  <!--Serviste kayıtlı yolcular-->
                       <div class="card shadow mb-4">
@@ -209,7 +219,7 @@ foreach ($tpcur as $tpformsatir) {
                             <h6 class="m-0 font-weight-bold text-primary"><?php echo $gtext['passengers'];/*Yolcular*/?></h6>
                         </div>
                         <div class="card-body"><?php
-						if (count($fpsatir)>0) { ?>
+						if (count($yolcusatirlari)>0) { ?>
                             <div class="table-responsive">
                                 <table class="table table-bordered" id="pser_ylist" width="100%" cellspacing="0">
                                     <thead>
@@ -233,20 +243,21 @@ foreach ($tpcur as $tpformsatir) {
                                         </tr>
                                     </tfoot-->
                                     <tbody><?php 																		  
-										for($i=0; $i<count($fpsatir); $i++){ ?>
+										for($i=0; $i<count($yolcusatirlari); $i++){ ?>
 										<tr>
-                                            <td><?php echo $fpsatir[$i]['sicilno']; ?></td>
-                                            <td><?php echo $fpsatir[$i]['adisoyadi']; ?></td>
-                                            <td><?php echo $fpsatir[$i]['birim']; ?></td>
-                                            <td><?php echo $fpsatir[$i]['telefon']; ?></td>
-                                            <td><?php echo $fpsatir[$i]['email']; ?></td>
-                                            <td><a class="btn btn-primary" onClick="javascript:pser_yolcu('<?php echo $fpsatir[$i]['username']; ?>', 'C');"><i class='fas fa-user-minus fa-sm text-white-50'></i> <?php echo $gtext['remove'];/*Çıkar*/?></a></td>
+                                            <td><?php echo $yolcusatirlari[$i]['sicilno']; ?></td>
+                                            <td><?php echo $yolcusatirlari[$i]['adisoyadi']; ?></td>
+                                            <td><?php echo $yolcusatirlari[$i]['birim']; ?></td>
+                                            <td><?php echo $yolcusatirlari[$i]['telefon']; ?></td>
+                                            <td><?php echo $yolcusatirlari[$i]['email']; ?></td>
+                                            <td><a class="btn btn-primary" onClick="javascript:pser_yolcu('<?php echo $yolcusatirlari[$i]['username']; ?>', 'C');"><i class='fas fa-user-minus fa-sm text-white-50'></i> <?php echo $gtext['remove'];/*Çıkar*/?></a></td>
                                         </tr>
 										<?php } ?>
 									</tbody>
                                 </table>
 						  <?php }else{ echo "Yolcu Bulunamadı!";} ?>
 							</div>
+						
 						</div>
                       </div>
                     </div>
@@ -255,7 +266,6 @@ foreach ($tpcur as $tpformsatir) {
                     <div class="row">
 					
                     </div>
-
                 </div>
                 <!-- /.container-fluid -->
 
@@ -265,20 +275,14 @@ foreach ($tpcur as $tpformsatir) {
             <!-- Footer -->
             <?php include("../footer.php"); ?>
             <!-- End of Footer -->
-
-        </div>
-        <!-- End of Content Wrapper -->
-
-    </div>
-    <!-- End of Page Wrapper -->
-	<!-- yolcuekle Modal   serviste kayıtlı olmayan kişiler..........................................................-->
-	<div class="modal fade" id="yolcuekleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+			<!-- yolcuekle Modal   serviste kayıtlı olmayan kişiler..........................................................-->
+	<div class="modal fade" id="yolcuekleModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="yolcuekleModalLabel"
 		aria-hidden="true">
-		<div class="modal-dialog modal-lg" role="document">
+		<div class="modal-dialog modal-dialog centered">
 			<div class="modal-content">							
 				<div class="modal-header">
-					<h5 class="modal-title" id="exampleModalLabel"><?php echo $gtext['a_pseraddpassengers'];/*Yolcu Ekleme*/?></h5>
-					<button class="close" type="button" data-dismiss="modal" aria-label="<?php echo $gtext['close'];?>">
+					<h5 class="modal-title fs-5" id="yolcuekleModalLabel"><?php echo $gtext['a_pseraddpassengers'];/*Yolcu Ekleme*/?></h5>
+					<button class="close" type="button" data-bs-dismiss="modal" aria-label="<?php echo $gtext['close'];?>">
 						<span aria-hidden="true">×</span>
 					</button>
 				</div>
@@ -287,75 +291,60 @@ foreach ($tpcur as $tpformsatir) {
 					<table class="table table-bordered" id="tumlist" width="100%" cellspacing="0">
 					<thead>
 						<tr>
-							<th><?php echo $gtext['pernumber'];/*Sicil*/?></th>
 							<th><?php echo $gtext['name'];/*İsim*/?></th>
 							<th><?php echo $gtext['area'];/*Bölüm*/?></th>
 							<th><?php echo $gtext['process'];/*İşlem*/?></th>
 						</tr>
 					</thead>
-					<tbody><?php 																		  
-										for($i=0; $i<count($ftpsatir); $i++){ ?>
-										<tr>
-                                            <td><?php echo $ftpsatir[$i]['sicilno']; ?></td>
-                                            <td><?php echo $ftpsatir[$i]['adisoyadi']; ?></td>
-                                            <td><?php echo $ftpsatir[$i]['birim']; ?></td>
-                                            <td><a class="btn btn-primary" onClick="javascript:pser_yolcu('<?php echo $ftpsatir[$i]['username']; ?>', 'E');"><i class='fas fa-user-plus fa-sm text-white-50'></i> <?php echo $gtext['insert'];/*Ekle*/ ?></a></td>
-                                        </tr>
-										<?php } ?>
+					<tbody><?php														  
+						for($i=0; $i<count($ftpsatir); $i++){ ?>
+						<tr>
+							<td><?php echo $ftpsatir[$i]['adisoyadi']; ?></td>
+							<td><?php echo $ftpsatir[$i]['birim']; ?></td>
+							<td><a class="btn btn-primary" onClick="javascript:pser_yolcu('<?php echo $ftpsatir[$i]['username']; ?>', 'E');"><i class='fas fa-user-plus fa-sm text-white-50'></i> <?php echo "*".$gtext['insert'];/*Ekle*/ ?></a></td>
+						</tr>
+						<?php } ?>
 					</tbody>
 					</table>
-				</div>
+					</div>
 				</div>
 				<div class="modal-footer">
-					<button class="btn btn-secondary" type="button" id="cancel" data-dismiss="modal"><?php echo $gtext['cancel'];/*Vazgeç*/?></button>
+					<button class="btn btn-secondary" type="button" id="cancel" data-bs-dismiss="modal"><?php echo $gtext['cancel'];/*Vazgeç*/?></button>
 					<button class="btn btn-primary" id="servisekle" disabled type="submit"><?php echo $gtext['insert'];/*Ekle*/ ?></button>
 				</div>
 			</div>
 		</div>
 	</div>
 			<!--yolcuekle modal sonu-->
+        </div>
+        <!-- End of Content Wrapper -->
+
+    </div>
+    <!-- End of Page Wrapper -->
+	
     <!-- Scroll to Top Button-->
     <a class="scroll-to-top rounded" href="#page-top">
         <i class="fas fa-angle-up"></i>
     </a>
-    <!-- Bootstrap core JavaScript-->
-    <script src="/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
-    <script src="/vendor/form-master/dist/jquery.form.min.js"></script>
-
-    <!-- Core plugin JavaScript-->
-    <script src="/vendor/jquery-easing/jquery.easing.min.js"></script>
-
-    <!-- Custom scripts for all pages-->
-    <script src="/js/sb-admin-2.min.js"></script>
-    <!-- Page level plugins -->
-    <script src="/vendor/datatables/jquery.dataTables.min.js"></script>
-    <script src="/vendor/datatables/dataTables.bootstrap4.min.js"></script>
-
-    <!-- Page level custom scripts -->
-    <script src="/js/demo/datatables-demo.js"></script>
 <script>
 var ps="<?php echo $satir['pser_kodu']; ?>";
 var pservis="<?php echo $satir['pser_tanim']; ?>";
 var instext="<?php echo $gtext['insert']; ?>";
 var dturl="<?php echo $_SESSION['lang'];?>";
-$(document).ready(function() {
-	if(dil=='TR'){ var tdil='../vendor/datatables/Turkish.json'; }
-	$('#pser_ylist').DataTable({ "language": { url :"../vendor/datatables/"+dturl+".json", } });
-	$('#tumlist').DataTable( { 	 "language": { url :"../vendor/datatables/"+dturl+".json", } });
-	$('#yenile').on('click', function(){
-		location.reload();
-	});
+$(document).ready(function() { 
+	$('#pser_ylist').DataTable({ "language": { url :"../vendor/datatables.net/"+dturl+".json", } });
+	$('#tumlist').DataTable( { 	 "language": { url :"../vendor/datatables.net/"+dturl+".json", } });
 });
 function pser_yolcu(username, isl){ 
-		$.ajax({
-			type: 'POST',
-			url: 'set_pser_yolcu.php',
-			data: { 'u': username, 'ps': ps, 'isl': isl },
-			success: function (data){ 
-				alert(data); 
-				$('#yenile').click();
-			}
-		});
+	$.ajax({
+		type: 'POST',
+		url: 'set_pser_yolcu.php',
+		data: { 'u': username, 'ps': ps, 'isl': isl },
+		success: function (data){ 
+			alert(data); 
+			$('#yenile').click();
+		}
+	});
 }
 </script>
 </body>

@@ -104,9 +104,21 @@ $fisay=count($fsatir); //echo "fisay:".$fisay; //for($ii=0; $ii<$fisay-1;$ii++){
     <link
         href="/vendor/googleapis/Nunito.css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
         rel="stylesheet">
-
+	<!--JQuery-->
+    <script src="/vendor/jquery/jquery.js"></script>
+    <!-- Bootstrap core JavaScript-->
+	<link href="/vendor/bootstrap/bootstrap.min.css" rel="stylesheet">
+    <script src="/vendor/bootstrap/bootstrap.bundle.min.js"></script> 
     <!-- Custom styles for this template-->
     <link href="/css/sb-admin-2.css" rel="stylesheet">
+    <!-- Custom scripts for all pages-->
+    <script src="/vendor/jquery-easing/jquery.easing.min.js"></script>
+    <script src="/vendor/form-master/dist/jquery.form.min.js"></script>
+    <!-- Page level plugins -->
+    <link href="/vendor/datatables/dataTables.bootstrap4.min.css" rel="stylesheet">
+    <script src="/vendor/datatables/jquery.dataTables.min.js"></script>
+    <script src="/vendor/datatables/dataTables.bootstrap4.min.js"></script>
+
 <?php include($docroot."/set_page.php"); ?>
 </head>
 
@@ -154,7 +166,7 @@ $fisay=count($fsatir); //echo "fisay:".$fisay; //for($ii=0; $ii<$fisay-1;$ii++){
 							</form>
 						</div><?php if($_SESSION['y_addinfomenu']==1){ ?>
 						<div class="col-auto">
-							<a id="eklebtn" href="#" data-toggle="modal" data-target="#ymModal" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i
+							<a id="eklebtn" href="#" data-bs-toggle="modal" data-bs-target="#ymModal" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i
 						class="fas fa-shuttle-van fa-sm text-white-50"></i> <?php echo $gtext['addmenu'];/*Menü Ekle*/?> </a>
 						</div><?php } ?>
                     </div>
@@ -175,7 +187,7 @@ $fisay=count($fsatir); //echo "fisay:".$fisay; //for($ii=0; $ii<$fisay-1;$ii++){
 						</thead>
 						<TBODY><?php 
 if($fisay<1){ 
-	echo "<tr><td colspan='4'>Hiç menü bulunamadı, lutfen bu ay için bir menü oluşturunuz...</td></tr>";
+	echo "<tr><td colspan='4'>".$gtext['sb_nomealmenu']."</td></tr>"; //Menü bulunamadı!
 }else{
 	for($i=0; $i<$fisay; $i++){ //echo "<tr><td colspan='4'>?.</td></tr>";  ?>
 						<tr>
@@ -233,14 +245,14 @@ if($fisay<1){
     </div>
     <!-- End of Page Wrapper -->
 <!-- menu ekle Modal-->
-				<div class="modal fade" id="ymModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+				<div class="modal fade" id="ymModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="exampleModalLabel"
 					aria-hidden="true">
 					<div class="modal-dialog modal-xl" role="document">
 						<div class="modal-content">
 							<form id="form_ymekle" method="POST" action="set_ymenu.php">
 							<div class="modal-header">
 								<h5 class="modal-title" id="exampleModalLabel">Yemek Menüsü Ekleme</h5>
-								<button class="close" type="button" data-dismiss="modal" aria-label="<?php echo $gtext['close'];?>">
+								<button class="close" type="button" data-bs-dismiss="modal" aria-label="<?php echo $gtext['close'];?>">
 									<span aria-hidden="true">×</span>
 								</button>
 							</div>
@@ -307,7 +319,7 @@ if($fisay<1){
 							<span>Oluşturan: <span id="olusturan"></span> (<span id="gtar"></span>) Son Değişiklik: <span id="son_deg_per"></span> (<span id="son_deg_tar"></span>)</span>
 							</div>
 							<div class="modal-footer">
-								<button class="btn btn-secondary" type="reset" id="cancel" data-dismiss="modal"><?php echo $gtext['cancel']; ?></button>
+								<button class="btn btn-secondary" type="reset" id="cancel" data-bs-dismiss="modal"><?php echo $gtext['cancel']; ?></button>
 								<button class="btn btn-primary" id="ymekle" disabled type="submit"><?php echo $gtext['insert']; ?></button>
 							</div>
 							</form>
@@ -315,28 +327,18 @@ if($fisay<1){
 					</div>
 				</div>
 			<!--menu ekle sonu-->
+	<script src="/js/sb-admin-2.js"></script>
     <!-- Scroll to Top Button-->
     <a class="scroll-to-top rounded" href="#page-top">
         <i class="fas fa-angle-up"></i>
     </a>
-
-    <!-- Bootstrap core JavaScript-->
-    <script src="/vendor/jquery/jquery.min.js"></script>
-    <script src="/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
-    <script src="/vendor/form-master/dist/jquery.form.min.js"></script>
-
-    <!-- Core plugin JavaScript-->
-    <script src="/vendor/jquery-easing/jquery.easing.min.js"></script>
-
-    <!-- Custom scripts for all pages-->
-    <script src="/js/sb-admin-2.min.js"></script>
 <script>
 var isl='';
 var dturl="<?php echo $_SESSION['lang'];?>"; 
 $(document).ready(function() {
 	var table=$('#list').DataTable( {
         "language": {
-			url :"../vendor/datatables/"+dturl+".json",
+			url :"../vendor/datatables.net/"+dturl+".json",
 		}
 	});
 	$('#ymekle').on("click", function(){ //ekle/değiştir ajaxform

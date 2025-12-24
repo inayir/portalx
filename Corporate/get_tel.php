@@ -9,7 +9,7 @@ error_reporting(0); //$log="";
 header('Content-Type: text/html; charset=utf-8');
 include("../set_mng.php");
 include($docroot."/sess.php");
-$liste=Array('displayname','description','mail','title','company','department','telephonenumber','mobile','manager'); 
+$liste=Array('displayname','description','mail','title','company','department','telephonenumber','mobile','manager','physicaldeliveryofficename'); 
 
 @$searched=$_POST["sea"];  //
 if($searched==""){ @$searched=$_GET["sea"]; }
@@ -29,7 +29,7 @@ $sea=new \MongoDB\BSON\Regex(preg_quote($searched), 'i');
 @$collection=$db->personel;
 $cursor = $collection->aggregate([
 	[
-        '$match'=>['$and'=>[[$seafield => $sea],['status'=>['$ne'=>'0']]]]
+        '$match'=>['$and'=>[[$seafield => $sea],['state'=>['$ne'=>'0']]]]
     ],
 	['$lookup'=>
 		[
@@ -92,6 +92,7 @@ foreach ($cursor as $formsatir) {
 	$satir['dp']=$formsatir->dp;
 	$satir['order']=$formsatir->order;
 	$satir['manager']=$formsatir->manager;
+	$satir['physicaldeliveryofficename']=$formsatir->physicaldeliveryofficename;
 	$fsatir[]=$satir;
 }; 
 $fisay=count($fsatir); 

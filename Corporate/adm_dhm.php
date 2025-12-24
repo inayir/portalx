@@ -25,7 +25,7 @@ $cursor = $collection->aggregate([
     ['$lookup'=>
 		[
 			'from'=>"personel",
-			'localField'=>"kullanici",
+			'localField'=>"username",
 			'foreignField'=>"username",
 			'as'=>"persons"
 		]
@@ -85,25 +85,18 @@ $json=addslashes(json_encode($fsatir));
     <title><?php echo $ini['title']." ".$gtext['onenews']."/".$gtext['announcement'];/*Haber/Duyuru*/?></title>
 
     <!-- Custom fonts for this template-->
-    <link href="../vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
+    <link href="/vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
     <link
         href="/vendor/googleapis/Nunito.css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
         rel="stylesheet">
 
     <!-- Custom styles for this template-->
-    <link href="../css/sb-admin-2.css" rel="stylesheet">
-    <link href="/vendor/datatables/dataTables.bootstrap4.min.css" rel="stylesheet">
+    <link href="/css/sb-admin-2.css" rel="stylesheet">
 	<link href="/vendor/bootstrap-toggle/css/bootstrap-toggle.min.css" rel="stylesheet">
-    <script src="../vendor/jquery/jquery.min.js"></script>
-    <!-- Bootstrap core JavaScript-->
-    <script src="../vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="/vendor/jquery/jquery.min.js"></script>
 
-    <!-- Core plugin JavaScript-->
-    <script src="../vendor/jquery-easing/jquery.easing.min.js"></script>
-
-    <!-- Custom scripts for all pages-->
-    <script src="../js/sb-admin-2.min.js"></script><!-- Page level plugins -->
     <script src="/vendor/datatables/jquery.dataTables.min.js"></script>
+    <link href="/vendor/datatables/dataTables.bootstrap4.min.css" rel="stylesheet">
     <script src="/vendor/datatables/dataTables.bootstrap4.min.js"></script>
 
     <!-- Page level custom scripts -->
@@ -228,6 +221,10 @@ $json=addslashes(json_encode($fsatir));
 
     </div>
     <!-- End of Page Wrapper -->
+    <!-- Core plugin JavaScript-->
+    <script src="/vendor/bootstrap/bootstrap.bundle.min.js"></script>
+    <script src="/vendor/jquery-easing/jquery.easing.min.js"></script>
+    <script src="/js/sb-admin-2.js"></script>
 
     <!-- Scroll to Top Button-->
     <a class="scroll-to-top rounded" href="#page-top">
@@ -239,7 +236,7 @@ var dturl="<?php echo $_SESSION['lang'];?>";
 $(document).ready(function() {
 	var table=$('#list').DataTable( {
         "language": {
-			url :"../vendor/datatables/"+dturl+".json",
+			url :"../vendor/datatables.net/"+dturl+".json",
 		}
 	});
 });

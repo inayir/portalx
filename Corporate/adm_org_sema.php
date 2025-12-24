@@ -3,7 +3,7 @@
 
 */
 include('../set_mng.php'); 
-//error_reporting(0);
+error_reporting(0);
 include($docroot."/sess.php");
 if($user==""){ //gerekliyse.
 	header('Location: /login.php');
@@ -75,25 +75,18 @@ $fisay=count($fsatir); //echo "fisay:".$fisay;
     <link
         href="/vendor/googleapis/Nunito.css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
         rel="stylesheet">
+	
+    <script src="/vendor/jquery/jquery.js"></script>
+    <!-- Bootstrap core JavaScript-->
+	<link href="/vendor/bootstrap/bootstrap.min.css" rel="stylesheet">
+	<link href="/vendor/bootstrap-toggle/css/bootstrap-toggle.min.css" rel="stylesheet">
 
-    <!-- Custom styles for this template-->
+    <!-- Custom styles and scripts for this template-->
     <link href="/css/sb-admin-2.css" rel="stylesheet">
-	<link href="/vendor/datatables/dataTables.bootstrap4.min.css" rel="stylesheet">    <!-- Bootstrap core JavaScript-->
-    <script src="/vendor/jquery/jquery.min.js"></script>
-    <script src="/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
-    <script src="/vendor/form-master/dist/jquery.form.min.js"></script>
-
-    <!-- Core plugin JavaScript-->
-    <script src="/vendor/jquery-easing/jquery.easing.min.js"></script>
-
-    <!-- Custom scripts for all pages-->
-    <script src="/js/sb-admin-2.min.js"></script>
     <!-- Page level plugins -->
+	<link href="/vendor/datatables/dataTables.bootstrap4.min.css" rel="stylesheet">
     <script src="/vendor/datatables/jquery.dataTables.min.js"></script>
     <script src="/vendor/datatables/dataTables.bootstrap4.min.js"></script>
-
-    <!-- Page level custom scripts -->
-    <script src="/js/demo/datatables-demo.js"></script>
 <?php include($docroot."/set_page.php"); ?>
 </head>
 
@@ -123,7 +116,7 @@ $fisay=count($fsatir); //echo "fisay:".$fisay;
                     <!-- Page Heading -->
                     <div class="d-sm-flex align-items-center justify-content-between mb-4">
                         <h1 class="h3 mb-0 text-gray-800"><i class="fas fa-fw fa-sitemap"></i> <?php echo $gtext['a_orgschemes'];/*Organizasyon Şemaları*/?></h1>
-                        <?php if($_SESSION['y_addinfoser']==1){ ?><a id="eklebtn" href="#" data-toggle="modal" data-target="#orgsekleModal" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i
+                        <?php if($_SESSION['y_addinfoser']==1){ ?><a id="eklebtn" href="#" data-bs-toggle="modal" data-bs-target="#orgsekleModal" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i
                                 class="fas fa-download fa-sm text-white-50"></i> <?php echo $gtext['a_neworgscheme'];/*Yeni Şema Ekle*/?></a><?php } ?>
                     </div>
                     <!-- Content Row -->
@@ -142,6 +135,14 @@ $fisay=count($fsatir); //echo "fisay:".$fisay;
 											<th></th>
 										</tr>
                                     </thead>
+                                    <tfoot>
+										<tr>
+											<th class="text-center"><?php echo $gtext['pubdate'];/*Yayım Tarihi*/?></th>
+											<th class="text-center"><?php echo $gtext['description'];/*Tanım*/?></th>
+											<th class="text-center" width="30%"><?php echo $gtext['preview'];/*Önizleme*/?></th>
+											<th></th>
+										</tr>
+									</tfoot>
 									<tbody><?php for($i=0; $i<$fisay; $i++){ ?>
 										<tr>
 											<td><?php echo $fsatir[$i]['orgs_tarih']; ?></td>
@@ -154,14 +155,6 @@ $fisay=count($fsatir); //echo "fisay:".$fisay;
 										</tr>
 									<?php } ?>
 									</tbody>
-                                    <tfoot>
-										<tr>
-											<th class="text-center"><?php echo $gtext['pubdate'];/*Yayım Tarihi*/?></th>
-											<th><?php echo $gtext['description'];/*Tanım*/?></th>
-											<th><small><?php echo $gtext['preview'];/*Önizleme*/?></small></th>
-											<th></th>
-										</tr>
-									</tfoot>
 								</table>
 							</div>
 						</div>
@@ -194,7 +187,7 @@ $fisay=count($fsatir); //echo "fisay:".$fisay;
     </a>
 
 <!-- sema ekle Modal-->
-				<div class="modal fade" id="orgsekleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+				<div class="modal fade" id="orgsekleModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
 					aria-hidden="true">
 					<div class="modal-dialog modal-xl" role="document">
 						<div class="modal-content">
@@ -202,7 +195,7 @@ $fisay=count($fsatir); //echo "fisay:".$fisay;
 							<input type="hidden" name="_id" id="_id" value="" />
 							<div class="modal-header">
 								<h5 class="modal-title" id="exampleModalLabel"><?php echo $gtext['a_neworgscheme'];/*Ekle*/?></h5>
-								<button class="close" type="button" data-dismiss="modal" aria-label="<?php echo $gtext['close'];?>">
+								<button class="close" type="button" data-bs-dismiss="modal" aria-label="<?php echo $gtext['close'];?>">
 									<span aria-hidden="true">×</span>
 								</button>
 							</div>
@@ -215,7 +208,7 @@ $fisay=count($fsatir); //echo "fisay:".$fisay;
 							<tr>
 								<td class="text-right"><?php echo $gtext['pubdate'];/*Yayım Tarihi*/?></td>
 								<td><input class="form-control" type="text" name="orgs_tarih" id="orgs_tarih" value="" /></td>
-								<td class="text-right"><?php echo $gtext['status'];/*Durum*/?></td>
+								<td class="text-right"><?php echo $gtext['state'];/*Durum*/?></td>
 								<td>
 									<div class="form-check form-check-inline">
 										<input class="form-check-input" type="radio" name="aktif" id="aktif_1" value="1" checked />
@@ -245,7 +238,7 @@ $fisay=count($fsatir); //echo "fisay:".$fisay;
 							<input type="hidden" name="son_deg_tar" id="son_deg_tar" value="" />
 							</div>
 							<div class="modal-footer">
-								<button class="btn btn-secondary" type="reset" id="cancel" data-dismiss="modal"><?php echo $gtext['cancel']; ?></button>
+								<button class="btn btn-secondary" type="reset" id="cancel" data-bs-dismiss="modal"><?php echo $gtext['cancel']; ?></button>
 								<button class="btn btn-primary" id="orgsekle" disabled type="submit"><?php echo $gtext['insert']; ?></button>
 							</div>
 							</form>
@@ -254,17 +247,21 @@ $fisay=count($fsatir); //echo "fisay:".$fisay;
 				</div>
 			<!--sema ekle modal sonu-->
 
+    <script src="/vendor/bootstrap/bootstrap.bundle.min.js"></script>
+    <script src="/vendor/jquery-easing/jquery.easing.min.js"></script>
+    <script src="/js/sb-admin-2.js"></script>
+    <script src="/vendor/form-master/dist/jquery.form.min.js"></script>
 
 <script>
 var isl='';
-var dturl="<?php echo $_SESSION['lang'];?>"; 
+var dturl="<?php echo $dil;?>"; 
 const obj=JSON.parse('<?php echo json_encode($fsatir); ?>'); 
 var Org_Sema_Dir="<?php echo $ini['Org_Sema_Dir']; ?>";
 $(document).ready(function(){
 	var table=$('#list').DataTable();
 	if(dturl!='US'){
 		table.language = {
-			url :"../vendor/datatables/"+dturl+".json",
+			url :"../vendor/datatables.net/"+dturl+".json",
 		}
 	}
 	$('#orgsekle').on("click", function(){ //ekle/değiştir
@@ -273,7 +270,7 @@ $(document).ready(function(){
 			url 	: './set_orgsm.php',
 			contentType: 'application/x-www-form-urlencoded;charset=utf-8',
 			beforeSubmit : function(){
-				var y=confirm('<?php echo $gtext['q_rusure']; /*Emin Misiniz?*/?>');
+				return confirm('<?php echo $gtext['q_rusure']; /*Emin Misiniz?*/?>');
 			},
 			success: function(data){ 
 				if(data!='!-'){ alert(data); location.reload(); }
@@ -317,7 +314,7 @@ $(document).ready(function(){
 		$('#onizleme').attr('src', yol); 
 		$('#orgsekle').html('Değiştir');
 		isl='E';
-		$('#eklebtn').click(); 
+		$('#orgsekleModal').modal('show'); 
 	}
 	$('#orgs_dosya').change(function(){
 		$('#orgs_dosya_adi').val($('#orgs_dosya').val());
@@ -327,7 +324,7 @@ $(document).ready(function(){
 	});
 	$('#orgsekleModal').on('blur',function(){
 		isl='';
-		$('#orgs_bolge').html('');
+		$('#onizleme').attr('src', '');
 	});
 
 </script>

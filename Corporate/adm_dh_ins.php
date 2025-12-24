@@ -3,7 +3,7 @@
 	News or Announcesment Insert/Edit
 */
 include('../set_mng.php');
-//error_reporting(0);
+error_reporting(0);
 include($docroot."/config/config.php");
 include($docroot."/sess.php"); 
 
@@ -48,16 +48,26 @@ if($id!=""){ 	//zduyuru_haber dosyasından liste getirilir.
 	}
 	//$fisay=count($fsatir); //echo "fisay:".$fisay." dosya:".$fsatir[0]['orgs_dosya'];//var_dump($fsatir);
 }else{
+	$satir['_id']="";
+	$satir['dh_ytar']=date("d.m.Y H:i", strtotime("now"));
+	$satir['dh_baslik']="";
+	$satir['dh_icerik']="";
+	$satir['dh_resim']="";
+	$satir['dh_link']="";
+	$satir['dh_url']="";
+	$satir['dh_sdkullanici']="";
+	$satir['kullanici']="";
+	$satir['dh_sgtar']=date("d.m.Y H:i", strtotime("+60 days"));
+	$satir['dh_sdtar']=date("d.m.Y H:i", strtotime("+60 days"));
 	$satir['dh_capt_on']=1;
 	$satir['aktif']=1;
+	$dh_uid="";
 }
-
-
 switch($dh){ //D Duyuru, K Kurumsal, H haber
-case "D" : $dha=" Duyuru"; $dhi="bullhorn"; break; 
-case "K" : $dha=" Kurumsal Duyuru"; $dhi="bullhorn"; break;
-case "H" : $dha=" Haber"; $dhi="paper-plane"; break;
-default : $dh="D"; $dha=" Duyuru"; $dhi="bullhorn";
+	case "D" : $dha=" ".$gtext['announcement']; $dhi="bullhorn"; break; //Duyuru
+	case "K" : $dha=" ".$gtext['organizational']." ".$gtext['announcement']; $dhi="bullhorn"; break; //Kurumsal Duyuru
+	case "H" : $dha=" ".$gtext['onenews']; $dhi="paper-plane"; break;  //Haber
+	default : $dh="D"; $dha=" ".$gtext['announcement']; $dhi="bullhorn"; //Duyuru
 }
 
 ?>
@@ -78,13 +88,15 @@ default : $dh="D"; $dha=" Duyuru"; $dhi="bullhorn";
         href="/vendor/googleapis/Nunito.css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
         rel="stylesheet">
 
-    <!-- Custom styles for this template-->
-    <link href="/css/sb-admin-2.css" rel="stylesheet">
     <!-- Bootstrap core JavaScript-->
     <script src="/vendor/jquery/jquery.min.js"></script>
-    <script src="/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+	<link href="/vendor/bootstrap/bootstrap.min.css" rel="stylesheet">
+    <script src="/vendor/bootstrap/bootstrap.bundle.min.js"></script>
     <script src="/vendor/form-master/dist/jquery.form.min.js"></script>
     <script src="/js/portal_functions.js"></script>
+    <!-- Custom styles for this template-->
+    <link href="/css/sb-admin-2.css" rel="stylesheet">
+    <script src="/js/sb-admin-2.js"></script>
 	<?php include($docroot."/set_page.php"); ?>
 </head>
 <body id="page-top">
@@ -112,7 +124,7 @@ default : $dh="D"; $dha=" Duyuru"; $dhi="bullhorn";
 
                     <!-- Page Heading -->
                     <div class="d-sm-flex align-items-center justify-content-between mb-4">
-                        <h1 class="h3 mb-0 text-gray-800"><i class='fas fa-<?php echo $dhi."'></i> ".$dha; ?> Ekle/Değiştir</h1>
+                        <h1 class="h3 mb-0 text-gray-800"><i class="fas fa-<?php echo $dhi;?>"></i> <?php echo $dha." ".$gtext['ins_edit']; /*Ekle/Değiştir*/ ?></h1>
 						<!--a href="javascript:d_ekle();" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i
                                 class="fas fa-bullhorn fa-sm text-white-50"></i> Duyuru Ekle </a-->
                     </div>
@@ -173,29 +185,20 @@ default : $dh="D"; $dha=" Duyuru"; $dhi="bullhorn";
 						</tr>
 						<?php } ?>
 						<tr>
-							<td><?php echo $gtext['q_filedir'];/*Dosya Yolu*/?></td><td colspan="3"><input class="form-control" style="max-width:30;" type="text" name="dh_link" id="dh_link" value="<?php echo $satir['dh_link']; ?>" />
+							<td><?php echo $gtext['q_filedir'];/*Dosya Yolu*/?></td>
+							<td colspan="3"><input class="form-control" style="max-width:30;" type="text" name="dh_link" id="dh_link" value="<?php echo $satir['dh_link']; ?>" />
 							<small>* <?php echo $gtext['u_filedir'];/*Sisteme yüklenmiş bir dokümanın yolu*/?></small>
 							</td>
 						</tr>
 						<tr>
-							<td><?php echo $gtext['a_weblink'];/*Web Sayfa linki*/?></td><td colspan="3"><input class="form-control" style="max-width:30;" type="text" name="dh_url" id="dh_url" value="<?php echo $satir['dh_url']; ?>" />
+							<td><?php echo $gtext['a_weblink'];/*Web Sayfa linki*/?></td>
+							<td colspan="3"><input class="form-control" style="max-width:30;" type="text" name="dh_url" id="dh_url" value="<?php echo $satir['dh_url']; ?>" />
 							<small>* <?php echo $gtext['u_weblink'];/*Portale yüklenmiş bir dokümanın adresi (veya başka bir web sayfası)*/?></small>
 							</td>
 						</tr>
 						<tr>
-							<td class="text-right"><?php echo $gtext['status'];/*Durum*/?></td>
-							<td>
-								<div class="form-check form-check-inline">
-									<input class="form-check-input" type="radio" name="aktif" id="aktif_1" value="1" <?php if($satir['aktif']=='1'){ echo "checked"; }?> />
-									<label class="form-check-label" for="aktif_1"> <?php echo $gtext['active'];/*Aktif*/?></label>
-								</div>
-								<div class="form-check form-check-inline">
-									<input class="form-check-input" type="radio" name="aktif" id="aktif_0" value="0" <?php if($satir['aktif']=='0'){ echo "checked"; }?>/>
-									<label class="form-check-label" for="aktif_0"> <?php echo $gtext['passive'];/*Pasif*/?></label>
-								</div>
-							</td>
-							<td class="text-right"><?php echo $gtext['type'];/*Tip*/?>
-							<p><small> (*) <?php echo $gtext['u_dhtype'];/*Gerekmedikçe<br>değiştirmeyiniz.*/?></small></p></td>
+							<td class="text-left"><div><?php echo $gtext['type'];/*Tip*/?>
+							<p><small> (*) <?php echo $gtext['u_dhtype'];/*Gerekmedikçe değiştirmeyiniz.*/?></small></p></div></td>
 							<td>
 								<div class="form-check form-check-inline">
 									<input class="form-check-input" type="radio" name="dh" id="dh_D" value="D" <?php if($dh=='D'){ echo "checked"; }?> />
@@ -210,14 +213,25 @@ default : $dh="D"; $dha=" Duyuru"; $dhi="bullhorn";
 									<label class="form-check-label" for="dh_H"> <?php echo $gtext['news'];/*Haber*/?></label>
 								</div>
 							</td>
+							<td class="text-right"><?php echo $gtext['state'];/*Durum*/?></td>
+							<td>
+								<div class="form-check form-check-inline">
+									<input class="form-check-input" type="radio" name="aktif" id="aktif_1" value="1" <?php if($satir['aktif']=='1'){ echo "checked"; }?> />
+									<label class="form-check-label" for="aktif_1"> <?php echo $gtext['active'];/*Aktif*/?></label>
+								</div>
+								<div class="form-check form-check-inline">
+									<input class="form-check-input" type="radio" name="aktif" id="aktif_0" value="0" <?php if($satir['aktif']=='0'){ echo "checked"; }?>/>
+									<label class="form-check-label" for="aktif_0"> <?php echo $gtext['passive'];/*Pasif*/?></label>
+								</div>
+							</td>
 						</tr>
-						</table><?php if($uid!=""){ ?>
+						</table><?php if(@$dh_uid!=""){ ?>
 								<span><small><?php echo $gtext['a_creator']."/".$gtext['date'];/*Oluşturan/Tarih*/?>: <?php echo $satir['kullanici']."/".date("Y-m-d H:i:s", strtotime($satir['dh_tarih'])); ?></small> </span>
 								<span><small> <?php echo $gtext['a_lastediting']."/".$gtext['date'];/*Son Düzenleyen/Tarih*/?>: <?php echo $satir['dh_sdkullanici']."/".date("Y-m-d H:i:s", strtotime($satir['dh_sdtar'])); ?></small></span>
 							<?php } ?>
 						</div>
 						<div class="modal-footer">
-							<button class="btn btn-secondary" type="button" id="cancel" data-dismiss="modal"><?php echo $gtext['cancel']; ?></button>
+							<button class="btn btn-secondary" type="button" id="cancel" data-bs-dismiss="modal"><?php echo $gtext['cancel']; ?></button>
 							<button class="btn btn-primary" type="submit" id="ekle" disabled><?php 
 							if($id==""){ 
 								echo "<i class='fas fa-plus-circle fa-sm text-white-50'></i> ".$gtext['insert'];/*Insert*/ }

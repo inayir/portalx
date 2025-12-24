@@ -65,7 +65,7 @@ if($ksay>0){ //ou bulunduysa...
 	} //LDAP işlemleri sonu-----------------------------------------
 	//DB işlemleri...................................................
 	$data=array();
-	$data['status']='D'; //silindi
+	$data['state']='D'; //silindi
  
 	@$cursor = $collection->updateOne(
 		[

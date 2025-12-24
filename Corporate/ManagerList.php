@@ -4,7 +4,7 @@
 	From DB. if use LDAP, must Sync LDAP to DB.
 */
 include('../set_mng.php');
-//error_reporting(0);
+error_reporting(0);
 include($docroot."/sess.php");
 if($_SESSION['user']==""&&$_SESSION['y_admin']!=1){
 	header('Location: \login.php');
@@ -44,12 +44,13 @@ $fsatir=Array();
 			$satir['dp']=$formsatir->dp;
 			$satir['ou']=$formsatir->ou;
 			$satir['description']=$formsatir->description;
+			$satir['manager']=$formsatir->manager;
 			$satir['managedby']=$formsatir->managedby;
 			$man=$formsatir->managedby;
 			$man=substr($man, 3);
 			$man=substr($man, 0, strpos($man, ',OU='));
 			if($man==''){ $man="-"; }
-			$satir['manager']=$man;
+			$satir['man']=$man; //from manager ou
 			$satir['company']=$formsatir->depname;
 			if($ksay==0){ $company=$satir['ou'];}
 			$fsatir[]=$satir;
@@ -81,15 +82,11 @@ $fsatir=Array();
     <!-- Custom styles for this template-->
     <link href="/css/sb-admin-2.css" rel="stylesheet">
 	<!--JQuery-->
-    <script src="/vendor/jquery/jquery.min.js"></script>
+    <script src="/vendor/jquery/jquery.js"></script>
     <!-- Bootstrap core JavaScript-->
-    <script src="/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+	<link href="/vendor/bootstrap/bootstrap.min.css" rel="stylesheet">
 	<!-- Bootstrap Toogle-->
 	<link href="/vendor/bootstrap-toggle/css/bootstrap-toggle.min.css" rel="stylesheet">
-	<script src="/vendor/bootstrap-toggle/js/bootstrap-toggle.min.js"></script>
-    <!-- Core plugin JavaScript-->
-    <script src="/vendor/jquery-easing/jquery.easing.min.js"></script>
-    <script src="/vendor/form-master/dist/jquery.form.min.js"></script>
 	<!--DataTables-->
 	<link href="/vendor/datatables.net/datatables.min.css" rel="stylesheet"> 
 	<script src="/vendor/datatables.net/pdfmake.min.js"></script>
@@ -171,13 +168,9 @@ body {
 						<div class="col-xl-12 col-lg-12 p-1">
 							<!-- DataTables Üst Birim -->
 							<div class="card shadow mb-2">
-							  <div class="card-header py-2 d-sm-flex align-items-center justify-content-between">
-								<h6 class="m-0 font-weight-bold text-primary"><?php echo $gtext['a_managerlist'];/*Üst Birimler*/?></h6>
-								</span>
-							  </div>
 							  <div class="card-body">
 								<div class="table-responsive">
-									<table id="clist" class="table table-striped" width="100%" cellspacing="0">
+									<table id="list" class="table table-striped" width="100%" cellspacing="0">
 									<thead>
 									<tr>
 										<td><b><?php echo $gtext['percompany'];/*Yönetici*/?></b></td>
@@ -196,13 +189,21 @@ body {
 									</tfoot>
 									<tbody><?php 
 									for($b=0;$b<$ksay;$b++){ 
-									?><tr class="<?php if($b==0){ /*echo "selected";*/ $secimou=$fsatir[$b]['ou']; $secimdesc=$fsatir[$b]['description']; }?>" id="<?php echo $fsatir[$b]['ou']; ?>">
-										<td><?php echo $fsatir[$b]['company']; if($fsatir[$b]['company']==""){ echo "-"; }?></td>
-										<td><?php echo $fsatir[$b]['description']; ?></td>
-										<td><?php echo $fsatir[$b]['manager']; ?></td>
+									?><tr class="<?php if($b==0){ /*echo "selected";*/ 
+										$secimou=$fsatir[$b]['ou']; 
+										$secimdesc=$fsatir[$b]['description']; }?>" id="<?php echo $fsatir[$b]['ou']; ?>">
 										<td>
-											<button class="btn btn-secondary cupdate" id="c-<?php echo $b; ?>"><?php echo $gtext['assign'];/*Ata*/?></button>
-											<button class="btn btn-outline-danger cclear" id="c-<?php echo $b; ?>"><?php echo $gtext['empty'];/*Boşalt*/?></button>
+											<?php echo $fsatir[$b]['company']; if($fsatir[$b]['company']==""){ echo "-"; }?>
+										</td>
+										<td>
+											<?php echo $fsatir[$b]['description']; ?>
+										</td>
+										<td class="text-center">
+											<?php echo $fsatir[$b]['man']; ?>
+										</td>
+										<td><?php if($fsatir[$b]['man']=='-'){ ?>
+										<button class="btn btn-secondary cupdate" id="c-<?php echo $b; ?>" data-bs-toggle="modal" data-bs-target="#depModal"><?php echo $gtext['assign'];/*Ata*/?></button><?php }else{ ?>
+											<button class="btn btn-outline-danger cclear" id="c-<?php echo $b; ?>" data-bs-toggle="modal" data-bs-target="#depModal"><?php echo $gtext['empty'];/*Boşalt*/?></button><?php } ?>
 										</td>
 									</tr>
 									<?php } ?>
@@ -235,15 +236,14 @@ body {
             <?php include($docroot."/footer.php"); ?>
             <!-- End of Footer -->
 			<!-- Modal-->
-				<div class="modal fade" id="depModal" tabindex="-1" role="dialog" aria-labelledby="depModalLabel"
-					aria-hidden="true">
-					<div class="modal-dialog" role="document">
+				<div class="modal fade" id="depModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="depModalLabel"	aria-hidden="true">
+					<div class="modal-dialog modal-dialog centered">
 						<div class="modal-content">
-							<form id="myForm" action="set_manager.php" method="POST">
+							<form id="myForm" method="POST" action="set_manager.php">
 							<input type="hidden" name="department" id="department" value=""/>
 							<div class="modal-header">
-								<h5 class="modal-title" id="depModalLabel"><?php echo $gtext['a_dep_ins_edit'];/*Birim Ekleme/Değiştirme*/?></h5>
-								<button class="close" type="button" data-dismiss="modal" aria-label="<?php echo $gtext['close'];?>">
+								<h5 class="modal-title" id="depModalLabel"><?php echo $gtext['manager']." ";?><span id="process"><?php echo $gtext['ins_edit']."/".$gtext['empty'];/*Yönetici Ekle/Değiştir/Boşalt*/?></span></h5>
+								<button class="close" type="button" data-bs-dismiss="modal" aria-label="<?php echo $gtext['close'];?>">
 									<span aria-hidden="true">×</span>
 								</button>
 							</div>
@@ -262,10 +262,10 @@ body {
 								<tr class="newmanager">
 									<td class="w-25"><?php echo $gtext['new']." ".$gtext['manager'];/*Yönetici*/?>: </td>
 									<td class="w-75">
-										<input class="form-control-sm" type="text" name="manager" id="manager" onkeyup="searchper();" placeholder="<?php echo $gtext['search'];?>..." />
+										<input class="form-control-sm" type="text" name="searchper" id="searchper" onkeyup="searchpers();" placeholder="<?php echo $gtext['search'];?>..." title="<?php echo $gtext['searchtitle'];?>"/>
 										<input type="hidden" name="username" id="username" value=""/>
 										<ul id="perlist">
-										  
+											<li><?php echo $gtext['choose']; //Seçiniz... ?></li>
 										</ul>
 									</td>
 								</tr>
@@ -276,7 +276,7 @@ body {
 							</div>
 							<div class="modal-footer">
 								<button class="btn btn-primary" id="record" disabled type="button"><?php echo $gtext['assign']; ?></button>
-								<button class="btn btn-secondary" type="button" id="cancel" data-dismiss="modal"><?php echo $gtext['cancel']; ?></button>
+								<button class="btn btn-secondary" type="button" id="cancel" data-bs-dismiss="modal"><?php echo $gtext['cancel']; ?></button>
 							</div>
 							</form>
 						</div>
@@ -288,7 +288,11 @@ body {
 
     </div>
     <!-- End of Page Wrapper -->
-
+    <script src="/vendor/bootstrap/bootstrap.bundle.min.js"></script>
+	<script src="/vendor/bootstrap-toggle/js/bootstrap-toggle.min.js"></script>
+    <script src="/vendor/jquery-easing/jquery.easing.min.js"></script>
+    <script src="/vendor/form-master/dist/jquery.form.min.js"></script>
+	<script src="/js/sb-admin-2.js"></script>
     <!-- Scroll to Top Button-->
     <a class="scroll-to-top rounded" href="#page-top">
         <i class="fas fa-angle-up"></i>
@@ -298,9 +302,13 @@ body {
 var secimou="<?php echo $secimou;?>";
 var secimdesc="<?php echo $secimdesc;?>";
 var domain="<?php echo $ini['domain']; ?>";
-var dturl="<?php echo $_SESSION['lang'];?>"; 
+var dturl="<?php echo $dil;?>"; 
 var lang_row='<?php echo $gtext['row'];?>';
 const objc=JSON.parse('<?php echo json_encode($fsatir); ?>'); 
+var messagetop='<?php echo $gtext['date'].":".date("d.m.Y H:i", strtotime("now")); ?>';
+var messagebottom='<?php echo $gtext['user'].":".$user;?>';
+var searchValue='<?php echo $_GET['sea'];?>';
+if(searchValue!=''){ searchValue='"'+searchValue+'"'; }
 var objper="", keys="";
 $('#description').on("blur", function(){
 	if($('#description').val()!=''){	
@@ -311,16 +319,23 @@ $('#description').on("blur", function(){
 	}	
 });
 $(document).ready(function() {
-	var table=$('#clist').DataTable( {
-        language: {
-			url :"../vendor/datatables/"+dturl+".json",
+	var table=$('#list').DataTable( {
+		language: {
+			url :"../vendor/datatables.net/"+dturl+".json",
 			buttons: {
 				pageLength: {
 					_: ' %d '+lang_row,
-					'-1': 'Tümü'
+					'-1': '<?php echo $gtext['allof']; /*Tümü*/?>'
 				}
-			}
+			},
+			"columnDefs": [
+				{
+					"targets": 1,
+					"type": "num",
+				}
+			]
 		},
+		search: {"search": searchValue},
 		dom: 'Bfrtip',
 		buttons: [
 			{
@@ -329,26 +344,44 @@ $(document).ready(function() {
 			{
 				extend: 'csv',
 				text: '<i class="fas fa-file-csv"></i>',
+				titleAttr: '<?php echo $gtext['tabledata'].":".$gtext['export']; /*table data Export*/?>->CSV',
 				className: 'btn btnExport',
+				header: true,
+				messageTop: messagetop,
+				messageBottom: messagebottom,
 				charset: 'utf-8',				
 				extension: '.csv',
 				fieldSeparator: ';',
 				fieldBoundary: '',
 				bom: true,
 				exportOptions: {
+					rows: '.d-show', 
 					columns: [0, 1, 2]
 				},
 			},
 			{
-				extend: 'excel',
+				extend: 'excelHtml5',
 				text: '<i class="fas fa-file-excel"></i>',
+				titleAttr: '<?php echo $gtext['tabledata'].":".$gtext['export']; /*table data Export*/?>->XLSX',
 				className: 'btn btnExport',
+				header: true,
+				messageTop: messagetop,
+				messageBottom: messagebottom,
+				exportOptions: {
+					rows: '.d-show', 
+					columns: [0, 1, 2]
+				},
 			},
 			{
 				extend: 'pdf',
 				text: '<i class="fas fa-file-pdf"></i>',
+				titleAttr: '<?php echo $gtext['tabledata'].":".$gtext['export']; /*table data Export*/?>->PDF',
 				className: 'btn btnExport',
-				exportOptions: { 
+				header: true,
+				messageTop: messagetop,
+				messageBottom: messagebottom,
+				exportOptions: {
+					rows: '.d-show', 
 					columns: [0, 1, 2]
 				},
 				customize: function(doc) {
@@ -360,13 +393,45 @@ $(document).ready(function() {
 			{
 				extend: 'print',
 				text: '<i class="fas fa-print"></i>',
+				titleAttr: '<?php echo $gtext['tabledata'].":".$gtext['print']; /*table data:Print*/ ?>',
 				className: 'btn btnExport',
-				exportOptions: { 
+				header: true,
+				messageTop: messagetop,
+				messageBottom: messagebottom,
+				exportOptions: {
+					rows: '.d-show', 
 					columns: [0, 1, 2]
 				}
 			}, 
-		]
+		],
 	}); 
+	table.on('click', 'tbody tr', (e) => {
+		let classList = e.currentTarget.classList;		
+		if (classList.contains('selected')) { classList.remove('selected');	}
+		else {
+			table.rows('.selected').nodes().each((row) => row.classList.remove('selected')); 
+			classList.add('selected');
+		}
+	});	
+	$("#closedaccs").change(function(){
+		var dis="<?php echo $dis;?>";
+		table.rows().eq(0).each( function ( index ) {
+			var row = table.row( index ).node();
+			var data = table.row( index ).data();
+			if($("#closedaccs").prop("checked")==true){				
+				$(row).removeClass('d-none');
+				$(row).addClass('d-show');
+			}else{
+				if(data[0].indexOf(dis)>-1){ 
+					$(row).removeClass('d-show');
+					$(row).addClass('d-none'); 
+				}else{ 
+					$(row).removeClass('d-none');
+					$(row).addClass('d-show'); 
+				}
+			}
+		});
+	});
 	table.on('click', 'tbody tr', (e) => {
 		let classList = e.currentTarget.classList;		
 		if (!classList.contains('selected')) { 
@@ -381,13 +446,12 @@ $(document).ready(function() {
 		$('#ou').val(objc[c]['ou']);  
 		$('#c_desc').html(objc[c]['description']); 
 		$('#department').val(objc[c]['ou']); 
-		$('#manager').val(''); 		
+		$('#searchper').val(objc[c]['searchper']);
 		if($('.newmanager').css('display')=='none'){ $('.newmanager').css('display','inline'); } 
-		$('#dmanager').html(objc[c]['manager']); 
+		$('#dmanager').html(objc[c]['man']); 
+		$('#process').html('<?php echo $gtext['ins_edit'];/*Yönetici Ekle/Değiştir*/?>'); 
 		$('#perlist li').remove();	
 		$('#perlist').css('display', 'inline');
-		jQuery.noConflict();
-		$('#depModal').modal('show');
 	});	
 	$('.cclear').on('click', function(e){
 		var c=$(this).attr('id'); 
@@ -395,23 +459,23 @@ $(document).ready(function() {
 		$('#ou').val(objc[c]['ou']);  
 		$('#c_desc').html(objc[c]['description']); 
 		$('#department').val(objc[c]['ou']); 
-		$('#username').val("");
-		$('#manager').val(''); 
+		$('#username').val('');
+		$('#searchper').val(objc[c]['searchper']); 
 		$('.newmanager').css('display','none'); 
-		$('#dmanager').html(objc[c]['manager']); 
+		$('#dmanager').html(objc[c]['man']); 
+		$('#process').html('<?php echo $gtext['empty'];/*Yönetici Boşalt*/?>');
 		$('#perlist').css('display', 'none');
 		$('#record').html('<?php echo $gtext['empty']; ?>');
 		$('#record').prop("disabled", false );
-		jQuery.noConflict();
-		$('#depModal').modal('show');		
 	});	
 	$('#record').on('click', function(){
 		var options={
 			type:	'POST',
 			url : 'set_manager.php',
 			contentType: 'application/x-www-form-urlencoded;charset=utf-8',
+			data: { username: $('#username').val() },
 			beforeSubmit : function(){
-				confirm('<?php echo $gtext['q_rusure'];?>');
+				return confirm('<?php echo $gtext['q_rusure'];?>');
 			},
 			success: function(data){ 
 				if(data=='login'){ confirm('<?php echo $gtext['u_mustlogin'];?>'); location.open('/login.php'); }
@@ -423,13 +487,13 @@ $(document).ready(function() {
 		$('#myForm').submit();
 	});
 });
-function searchper() {
+function searchpers() {
 	$('#perlist').css('display', 'inline');
     var input, filter, ul, li, a, i, txtValue;
-    input = document.getElementById("manager"); 
+    input = document.getElementById("searchper"); 
     if(input.value.length>2){
 		filter = input.value.toUpperCase(); 
-		ul = document.getElementById("perlist");
+		//ul = document.getElementById("perlist");
 		$('#perlist li').remove();
 		$.each(objper, function(i, key, username, displayname, title){ 
 			var k=objper[i].key, v=objper[i].displayname; 
@@ -441,13 +505,13 @@ function searchper() {
 	}
 }
 function sec(username, displayname){ 
-	$('#manager').val(displayname);
+	$('#searchper').val(displayname);
 	$('#username').val(username);
 	$('#perlist').css('display', 'none');
 	$('#record').prop("disabled", false );
 }
 function listegetir(){
-	var yol="get_per_list.php"; 
+	var yol="/app/get_per_list.php"; 
 	keys=['username','displayname','title','description'];
 	$.ajax({
 		url: yol,
@@ -455,16 +519,16 @@ function listegetir(){
 		datatype: 'json',
 		async: false,
 		data: { 'keys': keys },
-		success: function(response){ 
+		success: function(response){ //console.log(response);
 			if(response=='login'){ location.reload(); }
 			objper=JSON.parse(response);
 		},
 		error: function(response){ alert('Hata!'); }
 	});
 }
-//$('form').find(':input').change(function(){ $('#record').prop("disabled", false ); });
+$("#searchper").prop("autocomplete", "off");
+$('form').find(':input').change(function(){ $('#record').prop("disabled", false ); });
 $('#cancel').on('click', function(){ $('#record').prop("disabled", true ); });
-
 </script>
 </body>
 
