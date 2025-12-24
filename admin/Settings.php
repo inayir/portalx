@@ -45,20 +45,13 @@ if($MongoDB==''){ $MongoDB="DB01"; }
 
     <!-- Custom styles for this template-->
     <link href="/css/sb-admin-2.css" rel="stylesheet">
-    <link href="/vendor/datatables/dataTables.bootstrap4.min.css" rel="stylesheet">
 	<link href="/vendor/bootstrap-toggle/css/bootstrap-toggle.min.css" rel="stylesheet">
 
     <!-- Bootstrap core JavaScript-->
     <script src="/vendor/jquery/jquery.min.js"></script>
-    <script src="/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
     <script src="/vendor/form-master/dist/jquery.form.min.js"></script>
 
-    <!-- Core plugin JavaScript-->
-    <script src="/vendor/jquery-easing/jquery.easing.min.js"></script>
-
-    <!-- Custom scripts for all pages-->
-    <script src="/js/sb-admin-2.min.js"></script>
-	<script src="/vendor/bootstrap-toggle/js/bootstrap-toggle.min.js"></script>
+    <link href="/vendor/datatables/dataTables.bootstrap4.min.css" rel="stylesheet">
     <script src="/js/portal_functions.js"></script>
 <?php include($docroot."/set_page.php"); ?>
 </head>
@@ -143,11 +136,30 @@ if($MongoDB==''){ $MongoDB="DB01"; }
 										</td>
 									</tr>
 									<tr>
+										<td><?php echo $gtext['s_loginbgpicture'];/*Login Arkaplan Dosyası*/?></td>
+                                        <td>
+											<div class="input-group">
+												<span class="input-group-text">#</span>
+												<input class="form-control" type="text" name="bg_login" id="bg_login" value="<?php echo @$ini['bg_login']; ?>" placeholder="<?php echo $bg_login;?>"/>
+											</div>
+											<br>
+											<small>(**)<?php echo $gtext['s_loginpic_rules'];/* png, jpg...*/?></small>
+										</td>
+									</tr>
+									<tr>
 										<td><?php echo $gtext['s_dateformat'];/*Tarih Görünümü*/?></td>
                                         <td><?php $tg=@$ini['date_local']; if($tg==''){ $tg="d.m.Y"; }?>
 											<input class="form-control" type="text" name="date_local" id="date_local" value="<?php echo $tg; ?>"/>
 											<br>
 											<small><?php echo $gtext['s_dateformatrules'];/*Örnek: d.m.Y = 31.12.2024*/?></small>
+										</td>
+									</tr>
+									<tr>
+										<td><?php echo $gtext['s_act_seperator'];/*Hareketler Ayracı*/?></td>
+                                        <td><?php $as=@";"; if($as==''){ $as="<br>"; }?>
+											<input class="form-control" type="text" name="act_seperator" id="act_seperator" value="<?php echo $as; ?>"/>
+											<br>
+											<small><?php echo $gtext['s_act_seperator_ex'];/*Örnek: <br>*/?></small>
 										</td>
 									</tr>
 									<tr>
@@ -163,7 +175,7 @@ if($MongoDB==''){ $MongoDB="DB01"; }
 										<td><?php echo $gtext['s_wd_saturday'];/*Cumartesi Günü Çalışma*/?></td>
                                         <td>
 											<label class="btn btn-outline-primary">
-												<input class="form-control" type="checkbox" data-toggle="toggle" name="menu_gun6" id="menu_gun6" data-on="<?php echo $gtext['exist'];/*Var*/?>" data-off="<?php echo $gtext['notexist'];/*Yok*/?>" style="border-color: black;" data-width="80px"/>
+												<input class="form-control" type="checkbox" data-bs-toggle="toggle" name="menu_gun6" id="menu_gun6" data-on="<?php echo $gtext['exist'];/*Var*/?>" data-off="<?php echo $gtext['notexist'];/*Yok*/?>" style="border-color: black;" data-width="80px"/>
 											</label>
 										</td>
 									</tr>
@@ -171,7 +183,7 @@ if($MongoDB==''){ $MongoDB="DB01"; }
 										<td><?php echo $gtext['s_wd_sunday'];/*Pazar Günü Çalışma*/?> **</td>
                                         <td>
 											<label class="btn btn-outline-primary">	
-												<input class="form-control" type="checkbox" data-toggle="toggle" name="menu_gun0" id="menu_gun0" data-on="<?php echo $gtext['exist'];/*Var*/?>" data-off="<?php echo $gtext['notexist'];/*Yok*/?>" data-width="80px"/>
+												<input class="form-control" type="checkbox" data-bs-toggle="toggle" name="menu_gun0" id="menu_gun0" data-on="<?php echo $gtext['exist'];/*Var*/?>" data-off="<?php echo $gtext['notexist'];/*Yok*/?>" data-width="80px"/>
 											</label>
 											<br>
 											<small>** <?php echo $gtext['s_u_wd'];/*Yemek listesi gibi noktalarda kullanılır.*/?></small>
@@ -200,6 +212,19 @@ if($MongoDB==''){ $MongoDB="DB01"; }
 									</tr>
                                     <thead>
 									<tr>
+										<th colspan="2"><b><i><?php echo $gtext['apps'];/*Uygulamalar*/?></i></b></th>
+									</tr>
+                                    </thead>
+									<tr>
+										<td><?php echo $gtext['fixtures'];/*Demirbaşlar*/?></td>
+                                        <td>
+											<label class="btn btn-outline-primary">
+												<input class="form-control" type="checkbox" data-bs-toggle="toggle" name="Fixtures" id="Fixtures" data-on="<?php echo $gtext['exist'];/*Var*/?>" data-off="<?php echo $gtext['notexist'];/*Yok*/?>" data-width="80px"/>
+											</label>
+										</td>
+									</tr>
+                                    <thead>
+									<tr>
 										<th colspan="2"><b><i><?php echo $gtext['docs'];/*Belgeler*/?></i></b></th>
 									</tr>
                                     </thead>
@@ -207,7 +232,7 @@ if($MongoDB==''){ $MongoDB="DB01"; }
 										<td><?php echo $gtext['orgschemes'];/*Organizasyon Şeması*/?></td>
                                         <td>
 											<label class="btn btn-outline-primary">
-												<input class="form-control" type="checkbox" data-toggle="toggle" name="Org_Sema" id="Org_Sema" data-on="<?php echo $gtext['exist'];/*Var*/?>" data-off="<?php echo $gtext['notexist'];/*Yok*/?>" data-width="80px"/>
+												<input class="form-control" type="checkbox" data-bs-toggle="toggle" name="Org_Sema" id="Org_Sema" data-on="<?php echo $gtext['exist'];/*Var*/?>" data-off="<?php echo $gtext['notexist'];/*Yok*/?>" data-width="80px"/>
 											</label>
 										</td>
 									</tr>
@@ -219,37 +244,37 @@ if($MongoDB==''){ $MongoDB="DB01"; }
 										<td><?php echo $gtext['certs'];/*Sertifikalar*/?></td>
                                         <td>
 											<label class="btn btn-outline-primary">
-												<input class="form-control" type="checkbox" data-toggle="toggle" name="Sertifikalar" id="Sertifikalar" id="Sertifikalar" data-on="<?php echo $gtext['exist'];/*Var*/?>" data-off="<?php echo $gtext['notexist'];/*Yok*/?>" data-width="80px"/>
+												<input class="form-control" type="checkbox" data-bs-toggle="toggle" name="Sertifikalar" id="Sertifikalar" id="Sertifikalar" data-on="<?php echo $gtext['exist'];/*Var*/?>" data-off="<?php echo $gtext['notexist'];/*Yok*/?>" data-width="80px"/>
 											</label>
 										</td>
 									</tr>
 									<tr>
 										<td><?php echo $gtext['s_certsdir'];/*Sertifika Klasörü*/?></td>
-                                        <td><input class="form-control" type="text" name="b_certs_yol" id="b_certs_yol" value="<?php echo @$ini['b_certs_yol']; ?>"/></td>
+                                        <td><input class="form-control" type="text" name="b_certs_url" id="b_certs_url" value="<?php echo @$ini['b_certs_url']; ?>"/></td>
 									</tr>
 									<tr>
 										<td><?php echo $gtext['quals'];/*Kalifikasyonlar*/?></td>
                                         <td>
 											<label class="btn btn-outline-primary">
-												<input class="form-control" type="checkbox" data-toggle="toggle" name="Kalifikasyonlar" id="Kalifikasyonlar" data-on="<?php echo $gtext['exist'];/*Var*/?>" data-off="<?php echo $gtext['notexist'];/*Yok*/?>" data-width="80px"/>
+												<input class="form-control" type="checkbox" data-bs-toggle="toggle" name="Kalifikasyonlar" id="Kalifikasyonlar" data-on="<?php echo $gtext['exist'];/*Var*/?>" data-off="<?php echo $gtext['notexist'];/*Yok*/?>" data-width="80px"/>
 											</label>
 										</td>
 									</tr>
 									<tr>
 										<td><?php echo $gtext['s_qualsdir'];/*Kalifikasyon Klasörü*/?></td>
-                                        <td><input class="form-control" type="text" name="b_quals_yol" id="b_quals_yol" value="<?php echo @$ini['b_quals_yol']; ?>"/></td>
+                                        <td><input class="form-control" type="text" name="b_quals_url" id="b_quals_url" value="<?php echo @$ini['b_quals_url']; ?>"/></td>
 									</tr>
 									<tr>
 										<td><?php echo $gtext['forms'];/*Formlar*/?></td>
                                         <td>											
 											<label class="btn btn-outline-primary">
-												<input class="form-control" type="checkbox" data-toggle="toggle" name="Formlar" id="Formlar" data-on="<?php echo $gtext['exist'];/*Var*/?>" data-off="<?php echo $gtext['notexist'];/*Yok*/?>" data-width="80px"/>
+												<input class="form-control" type="checkbox" data-bs-toggle="toggle" name="Formlar" id="Formlar" data-on="<?php echo $gtext['exist'];/*Var*/?>" data-off="<?php echo $gtext['notexist'];/*Yok*/?>" data-width="80px"/>
 											</label>
 										</td>
 									</tr>
 									<tr>
 										<td><?php echo $gtext['s_formsdir'];/*Form Klasörü*/?></td>
-                                        <td><input class="form-control" type="text" name="b_forms_yol" id="b_forms_yol" value="<?php echo @$ini['b_forms_yol']; ?>"/></td>
+                                        <td><input class="form-control" type="text" name="b_forms_url" id="b_forms_url" value="<?php echo @$ini['b_forms_url']; ?>"/></td>
 									</tr>
                                     <thead>
 									<tr>
@@ -260,7 +285,7 @@ if($MongoDB==''){ $MongoDB="DB01"; }
 										<td><?php echo $gtext['menuofdayinroot'];/*Anasayfada Günün Menüsü*/?></td>
                                         <td>
 											<label class="btn btn-outline-primary">
-												<input class="form-control" type="checkbox" data-toggle="toggle" name="menuofday" id="menuofday" data-on="<?php echo $gtext['exist'];/*Var*/?>" data-off="<?php echo $gtext['notexist'];/*Yok*/?>" data-width="80px"/>
+												<input class="form-control" type="checkbox" data-bs-toggle="toggle" name="menuofday" id="menuofday" data-on="<?php echo $gtext['exist'];/*Var*/?>" data-off="<?php echo $gtext['notexist'];/*Yok*/?>" data-width="80px"/>
 											</label>
 										</td>
 									</tr>
@@ -268,7 +293,7 @@ if($MongoDB==''){ $MongoDB="DB01"; }
 										<td><?php echo $gtext['s_dtelview'];/*Şoför Telefon numarası gösterimi*/?></td>
                                         <td>
 											<label class="btn btn-outline-primary">
-												<input class="form-control" type="checkbox" data-toggle="toggle" name="pservis_sofor_tel_gosterim" id="pservis_sofor_tel_gosterim" data-on="<?php echo $gtext['exist'];/*Var*/?>" data-off="<?php echo $gtext['notexist'];/*Yok*/?>" data-width="80px"/>
+												<input class="form-control" type="checkbox" data-bs-toggle="toggle" name="pservis_sofor_tel_gosterim" id="pservis_sofor_tel_gosterim" data-on="<?php echo $gtext['exist'];/*Var*/?>" data-off="<?php echo $gtext['notexist'];/*Yok*/?>" data-width="80px"/>
 											</label>
 										</td>
 									</tr>
@@ -276,14 +301,14 @@ if($MongoDB==''){ $MongoDB="DB01"; }
 										<td><?php echo $gtext['pano'];/*İletişim Panosu*/?></td>
                                         <td>
 											<label class="btn btn-outline-primary">
-												<input class="form-control" type="checkbox" data-toggle="toggle" name="personel_pano" id="personel_pano" data-on="<?php echo $gtext['exist'];/*Var*/?>" data-off="Yok " data-width="80px"/>
+												<input class="form-control" type="checkbox" data-bs-toggle="toggle" name="personel_pano" id="personel_pano" data-on="<?php echo $gtext['exist'];/*Var*/?>" data-off="Yok " data-width="80px"/>
 											</label>
 										</td>
 									</tr>
 									<tr>
 										<td><?php echo $gtext['usercanedit'];/*user can edit*/?></td>
                                         <td>
-											<input class="form-control" type="checkbox" data-toggle="toggle" name="usercanedit" id="usercanedit" data-on="<?php echo $gtext['yes'];/*Evet*/?>" data-off="<?php echo $gtext['no'];/*Hayır*/?>" data-width="80px"/>
+											<input class="form-control" type="checkbox" data-bs-toggle="toggle" name="usercanedit" id="usercanedit" data-on="<?php echo $gtext['yes'];/*Evet*/?>" data-off="<?php echo $gtext['no'];/*Hayır*/?>" data-width="80px"/>
 										</td>
 									</tr><!-- usernameflow -->
 									<tr>
@@ -326,13 +351,13 @@ if($MongoDB==''){ $MongoDB="DB01"; }
 									<tr>
 										<td><?php echo $gtext['disabledname'];/*Disabledname*/?></td>
                                         <td>
-											<input class="form-control" type="text" data-toggle="toggle" name="disabledname" id="disabledname" value="<?php echo @$ini['disabledname']; ?>"/>
+											<input class="form-control" type="text" data-bs-toggle="toggle" name="disabledname" id="disabledname" value="<?php echo @$ini['disabledname']; ?>"/>
 										</td>
 									</tr>
 									<tr>
 										<td><?php echo $gtext['disabledmailuser'];/*DisabledMailUser*/?></td>
                                         <td>
-											<input class="form-control" type="text" data-toggle="toggle" name="disabledmailuser" id="disabledmailuser" value="<?php echo @$ini['disabledmailuser']; ?>"/>
+											<input class="form-control" type="text" data-bs-toggle="toggle" name="disabledmailuser" id="disabledmailuser" value="<?php echo @$ini['disabledmailuser']; ?>"/>
 										</td>
 									</tr>
                                     <thead>
@@ -474,6 +499,11 @@ if($MongoDB==''){ $MongoDB="DB01"; }
     </div>
     <!-- End of Page Wrapper -->
 
+    <!-- Custom scripts for all pages-->
+    <script src="/vendor/bootstrap/bootstrap.bundle.min.js"></script>
+    <script src="/vendor/jquery-easing/jquery.easing.min.js"></script>
+	<script src="/vendor/bootstrap-toggle/js/bootstrap-toggle.min.js"></script>
+    <script src="/js/sb-admin-2.js"></script>
     <!-- Scroll to Top Button-->
     <a class="scroll-to-top rounded" href="#page-top">
         <i class="fas fa-angle-up"></i>
@@ -481,7 +511,7 @@ if($MongoDB==''){ $MongoDB="DB01"; }
 
 <script>
 var kur='<?php echo $kur;?>';
-var cl='<?php echo $_SESSION['cloud'];?>';
+var cl='<?php if(isset($_SESSION['cloud'])){ echo $_SESSION['cloud']; }?>';
 $(document).ready(function() {
 	$('#send_set').on("click", function(){ //ekle/değiştir ajaxform
 		var opt={
@@ -512,6 +542,8 @@ $(document).ready(function() {
 	if(menu_gun0==1){ $('#menu_gun0').bootstrapToggle('on'); }else{ $('#menu_gun0').bootstrapToggle('off'); } 
 	var menu_gun6="<?php echo @$ini['menu_gun6']; ?>";
 	if(menu_gun6==1){ $('#menu_gun6').bootstrapToggle('on'); }else{ $('#menu_gun6').bootstrapToggle('off'); } 
+	var Fixtures="<?php echo @$ini['Fixtures']; ?>";
+	if(Fixtures==1){ $('#Fixtures').bootstrapToggle('on'); }else{ $('#Fixtures').bootstrapToggle('off'); } 
 	var Org_Sema="<?php echo @$ini['Org_Sema']; ?>";
 	if(Org_Sema==1){ $('#Org_Sema').bootstrapToggle('on'); }else{ $('#Org_Sema').bootstrapToggle('off'); } 
 	var Sertifikalar="<?php echo @$ini['Sertifikalar']; ?>";

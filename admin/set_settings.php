@@ -7,6 +7,7 @@ include('../vendor/php-ini-class/INI.class.php');
 $inifile="../config/config.ini";
 include('../sess.php');
 //
+error_reporting(0);
 if(@$_SESSION['k']!=''){ 
 	$_SESSION['user']='admin'; 
 	$_SESSION['y_admin']==1; //	echo "admin ".$_SESSION['user']; 
@@ -29,13 +30,14 @@ if(isset($_POST['logo'])){
 	if($_POST['logo']==""){ $inic->data['Settings']['logo']='/img/portalx_logo.png'; 
 	}else{ $inic->data['Settings']['logo']=$_POST['logo']; $data['logo']=$_POST['logo'];	}
 }
-if(isset($_POST['bg_set'])){ $inic->data['Settings']['bg_set']=$_POST['bg_set']; $data['bg_set']=$_POST['bg_set'];	}
-if(isset($_POST['date_local'])){ $inic->data['Settings']['date_local']=$_POST['date_local']; $data['date_local']=$_POST['date_local']; }
-if(isset($_POST['sess_time'])){ $inic->data['Settings']['sess_time']=$_POST['sess_time'];  $data['sess_time']=$_POST['sess_time']; 	}
-if(isset($_POST['menu_gun0'])){ $inic->data['Settings']['menu_gun0']=$_POST['menu_gun0'];  $data['menu_gun0']=$_POST['menu_gun0']; 	}
-if(isset($_POST['menu_gun6'])){ $inic->data['Settings']['menu_gun6']=$_POST['menu_gun6'];  $data['menu_gun6']=$_POST['menu_gun6']; 	}
-if(isset($_FILES['logo'])){	
-	$inic->data['Settings']['logo'] = '/img/'.basename($_FILES['logo']['name']); 
+if(isset($_POST['bg_set'])){ 		$inic->data['Settings']['bg_set']=$_POST['bg_set']; $data['bg_set']=$_POST['bg_set'];	}
+if(isset($_POST['bg_login'])){ 		$inic->data['Settings']['bg_login']=$_POST['bg_login']; $data['bg_login']=$_POST['bg_login'];	}
+if(isset($_POST['date_local'])){ 	$inic->data['Settings']['date_local']=$_POST['date_local']; $data['date_local']=$_POST['date_local']; }
+if(isset($_POST['act_seperator'])){ $inic->data['Settings']['act_seperator']=$_POST['act_seperator']; $data['act_seperator']=$_POST['act_seperator']; }
+if(isset($_POST['sess_time'])){ 	$inic->data['Settings']['sess_time']=$_POST['sess_time'];  $data['sess_time']=$_POST['sess_time']; 	}
+if(isset($_POST['menu_gun0'])){ 	$inic->data['Settings']['menu_gun0']=$_POST['menu_gun0'];  $data['menu_gun0']=$_POST['menu_gun0']; 	}
+if(isset($_POST['menu_gun6'])){ 	$inic->data['Settings']['menu_gun6']=$_POST['menu_gun6'];  $data['menu_gun6']=$_POST['menu_gun6']; 	}
+if(isset($_FILES['logo'])){			$inic->data['Settings']['logo'] = '/img/'.basename($_FILES['logo']['name']); 
 	//file upload
 	if (move_uploaded_file($_FILES['logo']['tmp_name'], "/img/".basename($_FILES['logo']['name']))){
 		//ok
@@ -71,6 +73,13 @@ if(isset($_POST['MongoDB'])){ //name controlled before
 	$inic->data['DataBase_Settings_Mongo']['MongoDB']=$_POST['MongoDB'];
 	$data['MongoDB']=$_POST['MongoDB']; 
 }
+//***Apps section
+//Fixtures
+	$s=0; 
+	if(@$_POST['Fixtures']=="on"){ $s=1; }	
+	$inic->data['Apps']['Fixtures']=$s;	
+	 $data['Fixtures']=$s;	
+//
 //***Documents section
 //Org_Sema
 	$s=0; 
@@ -85,23 +94,23 @@ if(isset($_POST['Org_Sema_Dir'])){ 	$inic->data['Documents']['Org_Sema_Dir']=$_P
 	$inic->data['Documents']['Sertifikalar']=$s;
 	$data['Org_Sema_Dir']=$s; 
 //
-if(isset($_POST['b_certs_yol'])){ 	$inic->data['Documents']['b_certs_yol']=$_POST['b_certs_yol'];	}
+if(isset($_POST['b_certs_url'])){ 	$inic->data['Documents']['b_certs_url']=$_POST['b_certs_url'];	}
 //Kalifikasyonlar
 	$s=0; 
 	if(@$_POST['Kalifikasyonlar']=="on"){ $s=1; }
 	$inic->data['Documents']['Kalifikasyonlar']=$s;
-	$data['b_certs_yol']=$s; 
+	$data['b_certs_url']=$s; 
 //
-if(isset($_POST['b_quals_yol'])){ 	$inic->data['Documents']['b_quals_yol']=$_POST['b_quals_yol'];	}
+if(isset($_POST['b_quals_url'])){ 	$inic->data['Documents']['b_quals_url']=$_POST['b_quals_url'];	}
 //Formlar	
 	$s=0; 
 	if(@$_POST['Formlar']=="on"){ $s=1; }
 	$inic->data['Documents']['Formlar']=$s;
 	$data['Formlar']=$s; 
 //
-if(isset($_POST['b_forms_yol'])){ 	
-	$inic->data['Documents']['b_forms_yol']=$_POST['b_forms_yol'];	
-	$data['b_forms_yol']=$_POST['date_local']; 
+if(isset($_POST['b_forms_url'])){ 	
+	$inic->data['Documents']['b_forms_url']=$_POST['b_forms_url'];	
+	$data['b_forms_url']=$_POST['date_local']; 
 }
 //***Domain_Settings section
 if(isset($_POST['usersource'])){	

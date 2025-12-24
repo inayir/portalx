@@ -15,19 +15,21 @@ function pcont($p){
 	return true;
 }
 include("../set_mng.php");
-//error_reporting(0);
-header('Content-Type:text/html; charset=utf8');
+error_reporting(0);
 include($docroot."/sess.php");
-//include($docroot."/ldap.php");
 if($_SESSION["user"]==""){ echo "login"; exit; }
+//
+header('Content-Type:text/html; charset=utf8');
+include($docroot."/ldap.php");
 //
 $log="";
 include($docroot."/app/php_functions.php");
 $logfile='personel';
-//
-@$trace=$_POST['t']; if($trace==''){ $trace=1; } 
+@$trace=0; 
 @$username=$_POST['u']; 
-if($username==''){ @$username=$_POST['username']; } if($username==""){ $username="yyilmaz"; }
+if($username==''){ @$username=$_POST['username']; } 
+if($username==''){ @$username=$_POST['usernamen']; } 
+echo $gtext['user']." ";
 @$gpass=$_POST['gpass'];
 @$newPassword=$_POST['pass'];  if($newPassword==""){ $newPassword="Akss2024.."; }
 @$renewPassword=$_POST['repass']; 
@@ -36,12 +38,10 @@ if($username==''){ @$username=$_POST['username']; } if($username==""){ $username
 $data=[]; @$ksay=0; 
 //
 if(pcont($newPassword)==false||pcont($renewPassword)==false){ echo $gtext['u_passnotacceptable']; logger($logfile,$log); exit; }
-if($newPassword!=""){ 
-	$data['pass']=tirnakayarla($newPassword); 
-	$log.="Pass;"; 
-}else{ 
+$log.="Pass;";
+if($newPassword==""){  
 	echo $gtext['u_passnotchanged']."(null)"; 
-	$log.="pass null->nok;";
+	$log.="null->nok;";
 	logger($logfile,$log);
 	exit;
 }//*/
@@ -60,7 +60,7 @@ if($newPassword!=""){
 if(isset($cursor)){	 
 	$distinguishedname=$cursor->distinguishedname;
 }else{ 
-	echo $gtext['user']." ".$gtext['notfound']; 
+	echo $gtext['notfound']." (".$username.")"; 
 	exit;
 }
 //old pass auth from DB...
@@ -73,71 +73,80 @@ if($gpass!=''){
 		exit; 
 	}
 }
-echo $gtext['user'].": ".$username."\n";
 $log.="username:".$username.";";
 //LDAP
 if($ini['usersource']=='LDAP'){ 
 	echo "LDAP:";
-	try{
-		$ADSI = new COM("LDAP:");
-		echo "Connected!";
-		$adsidn="LDAP://".$ini['ldap_server']."/".$distinguishedname; if($trace==1){ echo "<br>".$adsidn."<br>"; }
+	$ADSI = new COM("LDAP:");
+	$adsidn="LDAP://".$ini['ldap_server']."/".$distinguishedname; 
+	if($trace==1){ echo "<br>".$adsidn."<br>"; }
+	//
+	$user = $ADSI->OpenDSObject($adsidn, $_SESSION['user'], $_SESSION['pass'], 1); 
+	//if($trace==1){ echo "<br> user OK<br>"; }
+	if($user){
+		$user->SetPassword($newPassword);
 		try{
-			$user = $ADSI->OpenDSObject($adsidn, $_SESSION['user'], $_SESSION['pass'], 1); if($trace==1){ echo "<br> user OK<br>"; }
-			if($user){ 
-				$user->SetPassword($newPassword);
-				try{
-					echo $user->SetInfo();
-					echo $gtext['u_passchanged'];
-					$log.="u_passchanged->ok;";
-				}catch(Exception $e){ //bilgi güncellenemedi.
-					echo $gtext['u_passnotchanged']."!";//"Şifre değiştirileMEdi.";
-					$log.="passnotchanged->Setinfo nok;";
-					logger($logfile,$log);
-					exit;
-				}
-			}else{ //user bulunamadı.
-				echo $gtext['u_passnotchanged']."!!";//"Şifre değiştirileMEdi.";
-				$log.="passnotchanged->ADSI nok;";
-				logger($logfile,$log);
-				exit;
+			$user->SetInfo();
+			echo $gtext['u_passchanged'];
+			$log.="u_passchanged->ok;";
+			//pwdLastSet -> 0, unlock .
+			$ldap_result = ldap_search($conn, $ini['base_dn'], "(samaccountname=$username)");
+			$info = ldap_get_entries($conn, $ldap_result); //$keys=Array('useraccountcontrol');
+			if($info["count"]>0){	
+			   if($_POST['rechpass']==="true"){ $userinfo['pwdLastSet']=0; }
+			   $userinfo['useraccountcontrol']=544;
+			   $dn=$info[0]['distinguishedname'][0];
+			   $sx=ldap_modify($conn, $dn, $userinfo);
+			   if($sx){ echo ".";}else{ echo "-";}
 			}
 		}catch(Exception $e){
-			echo $gtext['u_passnotchanged']."!!!";//"Şifre değiştirileMEdi.";
-			$log.="passnotchanged->OpenDSObject nok;";
+			//$result["ERROR"]="1";
+			echo $e->getMessage(); 
+			echo $gtext['u_passnotchanged']."!";//"Şifre değiştirileMEdi.";
+			$log.="passnotchanged->Setinfo nok;";
 			logger($logfile,$log);
 			exit;
 		}
-		$ADSI->Release();
-		echo "/DB:";
-	}catch (adLDAPException $e) { //ADSI not connect.
-		echo "->".$gtext['u_passnotchanged']."!";/*"Şifre değiştirileMEdi.";*/ 
+	}else{ //user bulunamadı.
+		echo $gtext['u_passnotchanged']."!!!";//"Şifre değiştirileMEdi.";
 		$log.="passnotchanged->ADSI nok;";
 		logger($logfile,$log);
-		$rawErr = $e->getCode();
-		$processedErr = $rawErr + 0x100000000;
-		printf( 'Error code 0x%x', $processedErr );
 		exit;
-	}
-	
+	}	
+	echo " - DB:";
 }
 //DB
 $log.="DB:";
+/*$data['pass']=tirnakayarla($newPassword); 
 $data['lastpassdate']=datem(date("Y-m-d", strtotime("now")).'T'.date("H:i:s", strtotime("now")).'.000+00:00');
+//*/
 $data['aktif']=1;
 @$cursor = $collection->UpdateOne(
 	[
 		'username' => $username
 	],
-	[ '$set' => $data]
+	[ '$set' => $data ]
 );
 if($cursor->getModifiedCount()>0){ 
 	echo $gtext['u_passchanged'];/*"Şifre değiştirildi.";*/ 
 	$log.="u_passchanged->ok;"; 
 	$act_collection = $db->personel_act;
-	$data['act_date']=datem(date("Y-m-d", strtotime("now").'T'.date("H:i:s", strtotime("now")).'.000+00:00'));
+	$datact=[];
+	$datact['act']='set_pss';
+	//değişen veriler alınır. $data 
+	$allkey=[];
+	$allkey=getkeys($data);
+	for($k=0;$k<count($allkey);$k++){
+		if($allkey[$k]!='_id'&&$allkey[$k]!='act'&&$allkey[$k]!='displayname'&&$allkey[$k]!='distinguishedname'&&$allkey[$k]!='actdate'){
+			$field=$allkey[$k];  //var_dump($field);
+			$val=$data->$field;
+			$dt.=$field.":".$val.";";
+		}
+	}
+	$datact['changedata']=$dt;  //*/
+	$datact['act_date']=datem(date("Y-m-d", strtotime("now").'T'.date("H:i:s", strtotime("now")).'.000+00:00'));
 	$act_cursor = $act_collection->insertOne(
-		$data
+		$datact
 	);
 }else{ 
 	echo $gtext['u_passnotchanged']."!";/*"Şifre değiştirileMEdi.";*/ 

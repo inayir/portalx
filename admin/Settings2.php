@@ -211,14 +211,14 @@ if($_POST['adm_user']!=""){
 
     <!-- Bootstrap core JavaScript-->
     <script src="/vendor/jquery/jquery.min.js"></script>
-    <script src="/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="/vendor/bootstrap/bootstrap.bundle.min.js"></script>
     <script src="/vendor/form-master/dist/jquery.form.min.js"></script>
 
     <!-- Core plugin JavaScript-->
     <script src="/vendor/jquery-easing/jquery.easing.min.js"></script>
 
     <!-- Custom scripts for all pages-->
-    <script src="/js/sb-admin-2.min.js"></script>
+    <script src="/js/sb-admin-2.js"></script>
 	<script src="/vendor/bootstrap-toggle/js/bootstrap-toggle.min.js"></script>
 <?php include($docroot."/set_page.php"); ?>
 </head>
@@ -333,7 +333,7 @@ $('#send').on("click", function(){ //ekle/değiştir ajaxform
 		contentType: 'application/x-www-form-urlencoded;charset=utf-8',
 		beforeSubmit : function(){
 			if(($('#adm_user').val()=='')||($('#adm_pass').val()=='')||($('#displayname').val()=='')){ 
-				alert('<?php echo $gtext['u_fieldisnotblank'];/*Alanlar boş olamaz!*/?>');
+				alert('<?php echo $gtext['u_fieldmustnotblank'];/*Alanlar boş olamaz!*/?>');
 				return false;
 			}
 			return confirm('<?php echo $gtext['q_rusure'];/*Emin Misiniz?*/?>');
