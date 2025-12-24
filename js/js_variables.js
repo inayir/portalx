@@ -1,0 +1,1 @@
+var oglearasi=1;

@@ -2,11 +2,13 @@
   "use strict"; // Start of use strict
 
   // Toggle the side navigation
-  $("#sidebarToggle, #sidebarToggleTop").on('click', function(e) {
-    $("body").toggleClass("sidebar-toggled");
-    $(".sidebar").toggleClass("toggled");
+  $("#sidebarToggle, #sidebarToggleTop").on('click', function(e) { 
+    $("body").toggleClass("sidebar-toggled"); 
+    $(".sidebar").toggleClass("toggled"); 
+	$('#sidebarToggle').html('<i class="fas fa-arrow-left"></i>'); 
     if ($(".sidebar").hasClass("toggled")) {
-      $('.sidebar .collapse').collapse('hide');
+      //$('.sidebar .collapse').collapse('hide');
+	  $('#sidebarToggle').html('<i class="fas fa-arrow-right"></i>'); 
     };
   });
 
@@ -41,7 +43,7 @@
       $('.scroll-to-top').fadeIn();
     } else {
       $('.scroll-to-top').fadeOut();
-    }
+    } 
   });
 
   // Smooth scrolling using jQuery easing
@@ -54,3 +56,4 @@
   });
 
 })(jQuery); // End of use strict
+
