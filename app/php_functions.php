@@ -37,7 +37,91 @@ function strtouppertr($str){
 	$s=strtoupper($s);
 	return $s;
 }
-function datem($dat){
+function datem($dat){ //date to mongodate
 	return new \MongoDB\BSON\UTCDateTime(strtotime($dat)*1000);
 }
+function mdatetodate($dat){
+	if($dat!=""){
+		$t=strpos($dat,'T'); 
+		if($t==''){ return substr($dat,0); }
+		else{ return substr($dat,0,$t); }
+	}else{ return false; }
+}
+function mdatetimetodate($dat){
+	global $ini;
+	if($dat!=""){
+		$t=strpos($dat,'T'); 
+		$d=substr($dat,0,$t); 
+		$dl=date($ini['date_local'], strtotime($d));
+		$tm=substr($dat,$t+1);
+		return $dl." ".$tm;
+	}else{ return false; }
+}
+function percount($dp, $ou){
+	/*Gets department personel count*/
+	global $db; $par='department';
+	if($dp=='C'){ $par='company'; }
+	$xsay=0;
+	@$xcollection = $db->personel; 
+	$xcursor = $xcollection->find(
+		[
+			'$and'=>[[$par=>$ou],['state'=>['$ne'=>'C']],['title'=>['$ne'=>'Phone']]]
+		],
+		[
+			'limit' => 0,
+			'projection' => [
+				'state'=>1,
+			]
+		]
+	);
+	if(isset($xcursor)){	 
+		foreach ($xcursor as $xsatir) {
+			$yer="";
+			if($xsatir->state=='A'){ $xsay++; }
+		}
+	}
+	return $xsay;
+}
+function perlist($dp, $ou){
+	/*Gets department personel count*/
+	global $db; $par='department';
+	if($dp=='C'){ $par='company'; }
+	$xsay=0; $list="";
+	@$xcollection = $db->personel; 
+	$xcursor = $xcollection->find(
+		[
+			'$and'=>[[$par=>$ou],['state'=>['$ne'=>'C']]]
+		],
+		[
+			'limit' => 0,
+			'projection' => [
+				'state'=>1,
+				'displayname'=>1,
+			],
+			'sort'=>[
+				'displayname'=>1,
+			],
+		]
+	);
+	if(isset($xcursor)){	 
+		foreach ($xcursor as $xsatir) {
+			$yer="";
+			if($xsatir->state=='A'){ 
+				$list.=$xsatir->displayname."; ";
+			};
+		}
+	}
+	return $list;
+}
+function setstate($state){
+	switch($state){ 
+		case "A" 	: $state=1; break; 
+		case "1" 	: $state=1; break; 
+		case "on" 	: $state=1; break; 
+		case "P"	: $state=0; break; 
+		case "0" 	: $state=0; break; 
+		case "off" 	: $state=0; break; 
+	} 
+	return $state;
+} 
 ?>
