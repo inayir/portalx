@@ -6223,7 +6223,7 @@ a.close.disabled {
 @media (prefers-reduced-motion: reduce) {
   .carousel-control-prev,
   .carousel-control-next {
-    transition: none;
+    transition: opacity 0.6s ease;
 	outline: black;
 	  background-size: 100%, 100%;
 	  border-radius: 50%;
@@ -6236,10 +6236,10 @@ a.close.disabled {
 .carousel-control-prev:hover, .carousel-control-prev:focus,
 .carousel-control-next:hover,
 .carousel-control-next:focus {
-  color: #fff;
+  color: #000;
   text-decoration: none;
   outline: 0;
-  opacity: 0.9;
+  opacity: 1;
 }
 
 .carousel-control-prev {
@@ -6253,8 +6253,8 @@ a.close.disabled {
 .carousel-control-prev-icon,
 .carousel-control-next-icon {
   display: inline-block;
-  width: 20px;
-  height: 20px;
+  width: 10px;
+  height: 10px;
   background: 50% / 100% 100% no-repeat;
 }
 
@@ -6284,17 +6284,17 @@ a.close.disabled {
   box-sizing: content-box;
   flex: 0 1 auto;
   width: 30px;
-  height: 5px;
+  height: 10px;
   margin-right: 3px;
   margin-left: 3px;
   text-indent: -999px;
   cursor: pointer;
   background-color: #fff;
   background-clip: padding-box;
-  border-top: 10px solid transparent;
+  border-top: 20px solid transparent;
   border-bottom: 10px solid transparent;
-  opacity: .5;
-  transition: opacity 0.6s ease;
+  opacity: 1;
+  transition: opacity 1s ease;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -10878,7 +10878,7 @@ a:focus {
   background-size: cover;
 }
 .bg-login-image {
-  background: url("../img/lock.jpg");
+  background: url("/img/lock.jpg");
   background-position: center;
   background-size: cover;
 }
