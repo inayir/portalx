@@ -35,7 +35,7 @@ $simdi=datem(date("Y-m-d H:i:s", strtotime("now")));
 $data=[];
 $data['username']=$username;
 $data['state']='D';
-$data['state_ch_date']=$simdi;
+$data['state_chdate']=$simdi;
 @$cursor = $collection->updateOne(
 	[
 		'username'=>$username

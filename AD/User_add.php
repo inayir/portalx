@@ -1,57 +1,53 @@
 <?php
 include('../set_mng.php');
-//error_reporting(0);
+error_reporting(0);
 include($docroot."/sess.php");
 require($docroot."/ldap.php");
 if($user==""){
 	header('Location: \login.php');
 }
-$username=$_GET['u']; 
+@$username=$_GET['u']; 
 $ksay=0; 
-$data=Array(); 
-if($ini['usersource']=='LDAP'){ 
+$csatir=Array(); 
+/*if($ini['usersource']=='LDAP'){ 
 	//get ous
 	$liste=Array("ou", "description");
 	$filter="ou=*";
 	$sr=ldap_list($conn, $ini['base_dn'], $filter, $liste); 
 	$info=ldap_get_entries($conn, $sr); 	
 	for ($ii=0; $ii < $info["count"]; $ii++){
-		$data[$ii]['ou']=$info[$ii]["ou"][0];
-		$data[$ii]['description']=$info[$ii]["description"][0];
+		$csatir[$ii]['ou']=$info[$ii]["ou"][0];
+		$csatir[$ii]['description']=$info[$ii]["description"][0];
 		$ksay++;
-	}//*/
-}else{ 
+	}
+}else{ //*/
 	@$collection = $db->departments;
-	try{
-		@$cursor = $collection->find(
-			[
-				'dp' => ['$eq'=>'C']
+	@$cursor = $collection->find(
+		[
+			'$and'=>[['dp' => ['$eq'=>'C']],['state'=>'A']]
+		],
+		[
+			'limit' => 0,
+			'projection' => [
+				'ou' => 1,
+				'company' => 1,
+				'description' => 1,
 			],
-			[
-				'limit' => 0,
-				'projection' => [
-					'ou' => 1,
-					'company' => 1,
-					'description' => 1,
-				],
-				'sort'=>['description'=>1],
-			]
-		);
-		if(isset($cursor)){	
-			foreach ($cursor as $formsatir) {
-				//echo $formsatir->ou." ".$formsatir->description."<br>";
-				$satir=[];
-				$satir['ou']=$formsatir->ou;
-				$satir['company']=$formsatir->company;
-				$satir['description']=$formsatir->description;
-				$data[]=$satir;
-				$ksay++;
-			} //*/	
-		}
-	}catch(Exception $e){
-		
-	}	
-}
+			'sort'=>['description'=>1],
+		]
+	);
+	if(isset($cursor)){	
+		foreach ($cursor as $formsatir) {
+			//echo $formsatir->ou." ".$formsatir->description."<br>";
+			$satir=[];
+			$satir['ou']=$formsatir->ou;
+			$satir['company']=$formsatir->company;
+			$satir['description']=$formsatir->description;
+			$csatir[]=$satir;
+			$ksay++;
+		} //*/	
+	}
+//}
 ?>
 <!DOCTYPE html>
 <html lang="<?php echo $dil;?>">
@@ -76,7 +72,7 @@ if($ini['usersource']=='LDAP'){
 	<link href="../vendor/bootstrap-toggle/css/bootstrap-toggle.min.css" rel="stylesheet">    
 	<!-- Bootstrap core JavaScript-->
     <script src="/vendor/jquery/jquery.min.js"></script>
-    <script src="/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="/vendor/bootstrap/bootstrap.bundle.min.js"></script>
     <script src="/vendor/form-master/dist/jquery.form.min.js"></script>
 	<script src="/vendor/bootstrap-toggle/js/bootstrap-toggle.min.js"></script>
 
@@ -84,7 +80,7 @@ if($ini['usersource']=='LDAP'){
     <script src="/vendor/jquery-easing/jquery.easing.min.js"></script>
 
     <!-- Custom scripts for all pages-->
-    <script src="/js/sb-admin-2.min.js"></script>
+    <script src="/js/sb-admin-2.js"></script>
     <script src="ad_functions.js"></script>
 	<script src="/js/portal_functions.js"></script>
 <?php include($docroot."/set_page.php"); ?>
@@ -207,10 +203,10 @@ var dis='';
 								<div class="m-1">
 									<SELECT class="form-control" type="text" name="company" id="company" <?php if($username!=""){echo 'disabled="disabled"';  } ?>>
 	<?php					for ($i=0; $i < $ksay; $i++){
-								$a=$data[$i]["ou"];
-								if($a[0]!="_"&&$data[$i]["description"]!=""){ 
+								$a=$csatir[$i]["ou"];
+								if($a[0]!="_"&&$csatir[$i]["description"]!=""){ 
 									echo "<option value='".$a."'>";
-									echo $data[$i]["description"]."</option>\n"; 
+									echo $csatir[$i]["description"]."</option>\n"; 
 								}
 							} ?>	
 									</SELECT>
@@ -233,6 +229,7 @@ var dis='';
 								<div class="m-1">
 									<input class="form-control" type="text" name="telephonenumber" id="telephonenumber" value="" size="30"/>
 									<input type="hidden" name="o_telephonenumber" id="o_telephonenumber" value=""/>
+									<input class="form-control" type="text" name="otherTelephone" id="otherTelephone" value="" size="30" style="display:none" />
 								</div>
 							</td>
 							<td class="w-25 text-right m-1"><?php echo $gtext['mobile'];/*Telefon (GSM)*/?>(*): </td>
@@ -240,6 +237,7 @@ var dis='';
 								<div class="m-1">
 									<input class="form-control" type="text" name="mobile" id="mobile" value="" size="30"/>
 									<input type="hidden" name="o_mobile" id="o_mobile" value=""/>
+									<input class="form-control" type="text" name="otherMobile" id="otherMobile" value="" size="30" style="display:none" />
 								</div>
 							</td>
 						</tr>
@@ -257,25 +255,35 @@ var dis='';
 							<td class="w-25">
 								<div class="m-1">
 									<textarea class="form-control h-100" name="streetaddress" id="streetaddress"></textarea>
+									<textarea style="display:none;" name="o_streetaddress" id="o_streetaddress"></textarea>
 								</div>
 							</td>
 							<td class="w-50 ml-1" colspan="2">
 							  <div class="input-group text-right ml-1">	
 								<div class="w-50"><?php echo $gtext['district'];/*İlçe*/?>:&nbsp;</div>
-								<div class="w-50"><input class="form-control" type="text" name="district" id="district"/></div>
+								<div class="w-50">
+									<input class="form-control" type="text" name="district" id="district"/>
+									<input type="hidden" name="o_district" id="o_district"/>
+								</div>
 							  </div>
 							  <div class="input-group text-right ml-1">
 								<div class="w-50"><?php echo $gtext['st'];/*Şehir*/?>:&nbsp;</div>
-								<div class="w-50"><input class="form-control" type="text" name="st" id="st"/></div>
+								<div class="w-50">
+									<input class="form-control" type="text" name="st" id="st"/>
+									<input type="hidden" name="o_st" id="o_st"/>
+								</div>
 							  </div>
 							  <div class="input-group text-right ml-1">								
 								<div class="w-50"><?php echo $gtext['country'];/*Ülke*/?>:&nbsp;</div>					
-								<div class="w-50"><input class="form-control" type="text" name="co" id="co"/></div>
+								<div class="w-50">
+									<input class="form-control" type="text" name="co" id="co"/>
+									<input type="hidden" name="o_co" id="o_co"/>
+								</div>
 							  </div>
 							</td>
 						</tr>
 						<tr>
-							<td class="w-25 text-right m-1"><?php echo $gtext['sdate'];/*Starting Dete*/?>(*): </td>
+							<td class="w-25 text-right m-1"><?php echo $gtext['sdate'];/*Starting Date*/?>(*): </td>
 							<td class="w-25">								
 								<div class="m-1">
 									<input class="form-control" type="date" name="sdate" id="sdate" value="<?php echo date("Y-m-d", strtotime("now")); ?>"/>
@@ -299,10 +307,10 @@ var dis='';
 									<button class="form-control" type="button" id="createpss" title="Create new Password"><?php echo $gtext['create'];/*Oluştur*/?></button>
 								</div>
 							</td>
-							<td class="w-25 text-right m-1"></td>
+							<td class="w-25 text-right m-1"><?php echo $gtext['state'];/*Durumu*/?>: <span id='uac'></span></td>
 							<td class="w-25">
 								<div class="m-1">
-									
+									<input type="checkbox" name="useraccountcontrol" id="useraccountcontrol" data-bs-toggle="toggle" data-on="<?php echo $gtext['active'];/*Aktif*/?>" data-off="<?php echo $gtext['passive'];/*Kapalı*/?>"/>
 								</div>
 							</td>
 						</tr>
@@ -369,10 +377,14 @@ $(document).ready(function() {
 		beforeSubmit : function(){
 			if($('#givenname').val()==''||$('#sn').val()==''){ alert('Fields can NOT blank!'); return false; }
 			$('#rp').html('');
-			var c=confirm('<?php echo $gtext['q_rusure'];?>');
+			if(confirm('<?php echo $gtext['q_rusure'];?>')){
+				$('#record').prop("disabled", true); 
+			}else{
+				return false;
+			}
+			jQuery.noConflict();
 		},
 		success: function(data){
-			$('#record').attr("disabled", true); 
 			if(data.indexOf('!!')>-1){ alert(data); window.opener.location.reload(); }else{ alert('<?php echo $gtext['a_OK'];/*"OK";*/?>');}
 		}
 	}
@@ -393,24 +405,32 @@ $(document).ready(function() {
 	var kontt=0; var dep='';
 	$('#usrkont').on("click", function(){ 
 		$('#mail').val('');
+		if($('#givenname').val()==''||$('#sn').val()==''||$('#username').val()==''){ 
+			alert('<?php echo $gtext['u_fieldmustnotblank'];/*boş olamaz.*/?>!');  
+			return false; 
+		}
 		$.ajax({
 			type: 'POST',
 			url: 'user_kont.php',
 			data: { u: $('#username').val() },
 			beforeSubmit : function(){ 
-				if($('#givenname').val()==''||$('#sn').val()==''||$('#username').val()==''){ alert('<?php echo $gtext['u_fieldisnotblank'];/*boş olamaz.*/?>!');  return false; }
+				
 			},
-			success: function (data){ //console.log(data);
-				if(data=='+'){ 
+			success: function (data){ //
+			console.log(data);
+				if(data==''){ console.log('notcontrolled!'); }
+				if(data=='+'||data=='L+'){ 
 					alert('<?php echo $gtext['free'];/*Uygun*/?>');
 					$('#mail').val($('#username').val()+'@'+domain);
-					$('#record').attr("disabled", false); 
 				}else{ //veriler yerine konur 
-					if(data.indexOf('-')>-1){ alert('<?php echo $gtext['u_fieldisnotblank'];/*boş olamaz*/?>'); exit; }
+					if(data=='-'){ return confirm('<?php echo $gtext['u_fieldmustnotblank'];/*boş olamaz*/?>');  }
+					if(data=='L-'){ return confirm('<?php echo "Kayıt bulunamadı!"; ?>');  }
 					if(data.indexOf('!!')>-1){ alert('Please login!'); location.reload(); }
-					if(kontt==0&&data=='U'){ /*used*/
+					if(kontt==0&&(data=='U'||data=='U')){ /*used*/
 						if(confirm('<?php echo $gtext['u_usernameused'].",".$gtext['q_userinfos'];/*used*/?>')){
 							bilgilerigetir($('#username').val()); 
+						}else{
+							$('#username').val('').focus();
 						}
 					}
 				}
@@ -422,7 +442,7 @@ $(document).ready(function() {
 	}
 	function bilgilerigetir(username){
 		var yol="get_user_infos.php"; dep='';
-		var keys=['samaccountname','givenname','sn','mail','description','title','mobile','company','department','distinguishedname','telephonenumber','physicaldeliveryofficename','manager','useraccountcontrol','ptype','note','streetaddress','district','st','co','sdate','resigndate'];
+		var keys=['samaccountname','givenname','sn','mail','description','title','mobile','otherMobile','company','department','distinguishedname','telephonenumber','otherTelephone','physicaldeliveryofficename','manager','useraccountcontrol','ptype','note','streetaddress','district','st','co','sdate','resigndate'];
 		$.ajax({
 			url: yol,
 			type: "POST",
@@ -438,6 +458,7 @@ $(document).ready(function() {
 						if(k!='useraccountcontrol'){ 
 							$('#'+k).val(v); 
 							$('#o_'+k).val(v);
+							//console.log(k+' :'+$('#'+k).val()+' o:'+$('#o_'+k).val());
 						}
 						if(k=='samaccountname'){ 
 							if(u!=''){ $('#username').html(v); }else{ $('#username').val(v); }
@@ -450,7 +471,7 @@ $(document).ready(function() {
 						if(k=='distinguishedname'){
 							var va=v.indexOf(disabledOU); 
 							if(va<0){ $('#record').val('Değiştir'); }
-							else{ $('#record').attr("disabled", true); /*İşlem yapılmaz*/ }
+							else{ $('#record').prop("disabled", true); /*İşlem yapılmaz*/ }
 						}
 						if(k=='useraccountcontrol'){ 
 							$('#useraccountcontrol').prop("checked",false); 
@@ -476,6 +497,14 @@ $(document).ready(function() {
 						}
 						if(k=='streetaddress'){
 							$('#'+k).html(v);
+						}
+						if(k=='telephonenumber'){
+							$('#'+k).html(v);
+                            if(v==''){ $('#telephonenumber').css('display', 'none'); $('#otherTelephone').css('display', 'inline'); }
+						}
+						if(k=='mobile'){
+							$('#'+k).html(v);
+                            if(v==''){ $('#mobile').css('display', 'none'); $('#otherMobile').css('display', 'inline'); }
 						}
 					}				
 				}); 

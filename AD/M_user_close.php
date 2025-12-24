@@ -42,12 +42,15 @@ if($username!=''){
 				}//*/
 				//telephones //Atribute Editor 
 				if($info[0]['telephonenumber'][0]!=""){
+					$data["otherTelephone"]=$info[0]['telephonenumber'][0]; 
 					$data["telephonenumber"]=array(); 
 					$log.="telephonenumber:deleted;";
 				}//*/
 				if($info[0]['mobile'][0]!=""){
-					$data["pager"]=$info[0]['mobile'][0]; //mobile telefon pager a kaydırılır.
+					$data["otherMobile"]=$info[0]['mobile'][0]; //mobile telefon otherTeelphone kaydına alınır.
 					$data["mobile"]=array(); //rehberde çıkmaması için silinir->
+					//$data["msDS-cloudExtensionAttribute11"]=
+                    $log.="10:".$info[0]['msDS-cloudExtensionAttribute10'][0]." del;"; //sonraki alana kaydırılır.
 					$data["msDS-cloudExtensionAttribute10"]="<not set>"; //vpn iptal
 					$log.="mobile closed; user vpn closed;";
 				}
@@ -76,7 +79,7 @@ if($username!=''){
 				}else{
 					echo " **".$gtext['notchanged']."!!"; $log.=$gtext['notchanged'].";";
 					$log.="ldap_mod_replace err:".ldap_error($conn)."->".ldap_errno($conn).";";
-					echo $msg; logger($logfile,$log); exit;
+					echo $msg." "; logger($logfile,$log); exit;
 				}
 				//moving-------------------------------------------------------------
 				$newdn="CN=".$ini['disabledname'].$info[0]['cn'][0]; 
@@ -116,7 +119,8 @@ if($username!=''){
 				'projection' => [
 					'displayname' => 1,
 					'givenname' => 1,
-					'telephonenumber' => 1
+					'telephonenumber' => 1,
+					'mobile' => 1
 				],
 			]
 		);
@@ -126,7 +130,8 @@ if($username!=''){
 				$data["displayname"]=$ini['disabledname'].$formsatir->displayname;
 				$data["givenname"]=$ini['disabledname'].$formsatir->givenname;
 				if($ini['disabledmailuser']!=''){  $data["mail"]=$ini['disabledmailuser'].$formsatir->mail; }
-				$data["pager"]=$formsatir->telephonenumber;
+				$data["otherTelephone"]=$formsatir->telephonenumber;
+				$data["otherMobile"]=$formsatir->mobile;
 				$data["mobile"]="";
 				$data["useraccountcontrol"]="514";
 			} 
@@ -139,7 +144,7 @@ if($username!=''){
 	$data["telephonenumber"]="";
 	//ayrılış tarihi:				
 	$data["resigndate"]=datem(date("Y-m-d H:i:s", strtotime("now")));
-	$data["aktif"]=0;	
+	$data["state"]=0;	
 	//
 	@$collection = $db->personel;
 	@$acursor = $collection->updateOne(
@@ -153,11 +158,23 @@ if($username!=''){
 		$log.=$gtext['updated'].";"; 
 		//personel_act dosyasına yazılır...
 		echo "\nActivity:";
-		$data['act']='remove';
-		$data["actdate"]=datem(date("Y-m-d H:i:s", strtotime("now")));
+		$datact=[];
+		$datact['act']='close';
+		//değişen veriler alınır. $data 
+		$allkey=[];
+		$allkey=getkeys($data);
+		for($k=0;$k<count($allkey);$k++){
+			if($allkey[$k]!='_id'&&$allkey[$k]!='act'&&$allkey[$k]!='displayname'&&$allkey[$k]!='distinguishedname'&&$allkey[$k]!='actdate'){
+				$field=$allkey[$k];  //var_dump($field);
+				$val=$data->$field;
+				$dt.=$field.":".$val.";";
+			}
+		}
+		$datact['changedata']=$dt;  //*/
+		$datact["actdate"]=datem(date("Y-m-d H:i:s", strtotime("now")));
 		$act_collection = $db->personel_act;		
 		$act_cursor = $act_collection->insertOne(
-			$data
+			$datact
 		);
 		if($act_cursor->getInsertedCount()>0){ echo " ".$gtext['inserted']; $log.=$gtext['inserted'].";";  }
 		else{ echo $gtext['notinserted']."!!->"; $log.=$gtext['notinserted']."{'insert error':''};";  }

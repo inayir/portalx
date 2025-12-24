@@ -3,7 +3,7 @@
 	User controlling
 */
 include('../set_mng.php');
-//error_reporting(0);
+error_reporting(0);
 header('Content-Type:text/html; charset=utf8');
 include($docroot."/config/config.php");
 include($docroot."/sess.php");
@@ -15,14 +15,14 @@ require("./ldap.php");
 $msg="Kullanıcı Adı: [";
 $username=$_POST['u']; 
 if($username==""){ echo "-"; }
-else{
-	if($ini['usersource']=='LDAP'){
+else{ 
+	if($ini['usersource']=='LDAP'){ 
 		$ldap_result = ldap_search($conn, $dom_dn, "(samaccountname=$username)");
 		if($ldap_result){ 
 			$info = ldap_get_entries($conn, $ldap_result); 
-			if($info["count"]>0){ echo "U"; }  //Used
-			else { echo "+"; }
-		} 
+			if($info["count"]>0){ echo "LU"; }  //Used
+			else { echo "L+"; }
+		}else{ echo "L-"; }
 	}else{ //DB
 		@$collection = $db->personel;
 		try{

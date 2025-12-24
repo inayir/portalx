@@ -2,7 +2,7 @@
 /*
 	set_user_sync: LDAP ile MongoDB senkronizasyonu LDAP->MongoDB
 */
-//error_reporting(0);
+error_reporting(0);
 include("../set_mng.php");	
 include($docroot."/sess.php");	
 include($docroot."/ldap.php");
@@ -51,7 +51,7 @@ if($result){
 			$data['company']	= $company;
 			$data['distinguishedname']  = $entries[$ix]['distinguishedname'][0];
 			$data['description'] 		= $entries[$ix]['description'][0];
-			$data['status'] 			= "A";
+			$data['state'] 				= "A";
 			
 			$log.="managedby:";
 			$managedby=$entries[$ix]['managedby'][0];
@@ -94,16 +94,15 @@ if($result){
 				[
 					'limit' => 1,
 					'projection' => [
-						'ou' => 1,
-						'dp' => 1,
-						'company' => 1,
-						'description' => 1,
-						'managedby' => 1,
-						'manager' => 1,
+						'state' => 1,
 					],
 				],
 			);
-			if(isset($cursor)){	$ksay=1; }
+			if(isset($cursor)){	
+				$ksay=1; 
+				if($cursor->state<>'C'&&$cursor->state<>'D'&&$cursor->state<>'A'){ $data['state']='A'; echo "-".$data['state'];}
+				$msg.=",";
+			}
 			if($ksay>0){ 
 				@$cursor = $collection->updateOne(
 					[
@@ -121,7 +120,7 @@ if($result){
 				}else{ echo $gtext['inserted']."=>"; $log.="{'insert error':''}"; }
 			}//*/
 			$log.="\n"; 
-			echo $company."->".$ou."(".$data['description'].") managedby:".$managedby."<br>";
+			echo $company."->".$ou."(".$data['description'].")<br>"; // managedby:".$managedby."
 		}
 	}
 }

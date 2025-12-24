@@ -35,6 +35,44 @@ function change_pass($distinguishedname,$newPassword, $usr, $usp){
 	}else{ $msg.=$gtext['connection'].":".$gtext['u_error']."!";}
 	return $msg;
 }
+function getOUdesc($ou){ //Returns OU description 
+	global $db;
+	@$coll = $db->departments;
+	$curs = $coll->findOne(
+		[
+			'ou'=>$ou
+		],
+		[
+			'limit' => 1,
+			'projection' => [
+			],
+		]
+	);
+	if($curs){ return "test:".$curs->description; }
+	else{ return $ou; }
+	return 0;
+}
+function msgyaz($y, $data, $date_local){
+	$s=substr_count($y, '{');
+	for($i=0;$i<$s;$i++){
+		$b=strpos($y,"{"); 
+		if($b!=false||$b!=-1){
+			$b2=strpos($y,"}");
+			$par=substr($y, $b+1, ($b2-$b-1)); 			
+			if($par=="sdate"||$par=="tarih"||$par=="resigndate"||$par=="lastpassdate"||$par=="department"||$par=="company"){
+				if($par=="sdate"||$par=="tarih"){
+					$ys=date($date_local, strtotime($data[$par]));
+					$y=str_replace("{".$par."}", $ys, $y);				
+				}
+				if($par=="department"||$par=="company"){ 
+					$ys=getOUdesc($data[$par]); 
+					$y=str_replace("{".$par."}", $ys, $y);
+				}//*/
+			}else{ $y=str_replace("{".$par."}", $data[$par], $y); }
+		}
+	}
+	return $y;
+}
 ///---------------------------
 include('../set_mng.php');
 error_reporting(0);
@@ -98,10 +136,11 @@ try{
 	
 }
 //General
-$o_user_dn=$_POST['distinguishedname'];
+$o_user_dn=$_POST['distinguishedname']; 
+$distinguishedname=$o_user_dn; 
 $baseou=substr($base_dn,3, strpos($base_dn,',')-3); //ASELSANKONYA
-$data["givenname"]=$_POST['givenname']; 
-	$sn=strtouppertr($_POST['sn'],1);
+$data["givenname"]=trim($_POST['givenname']); 
+	$sn=strtouppertr(trim($_POST['sn'],1));
 $data["sn"]=$sn; 
 $displayname=$data['givenname']." ".$data["sn"];  
 if($displayname!=""&&$displayname!=" "){ $data["displayname"]= $displayname; }
@@ -131,13 +170,9 @@ if($o_user_dn==""){ //Insert
 			$data["company"]	= $_POST['company']; 
 		}	
 	}
+	$distinguishedname="CN=".$displayname.",OU=".$data['department'].",OU=".$data['company'].",".$base_dn;
+	$data["distinguishedname"]=$distinguishedname;
 }
-//
-$distinguishedname="CN=".$displayname.",OU=";
-if($department!=$company||$company!=$ini['domshort']){ 
-	$distinguishedname.=$data['department'].",OU=";  
-}
-$distinguishedname.=$data['company'].",".$base_dn;
 //Profile 
 if($o_user_dn==""&&$ini['homedir']!=""){ //configden gelir.
 	$data["homedrive"]= $ini['homedrive'];  //configden gelir
@@ -167,31 +202,32 @@ if($_POST['telephonenumber']!=$_POST['o_telephonenumber']){
 } 
 if($_POST['mobile']!=$_POST['o_mobile']){
 	$data["mobile"]= $_POST['mobile'];
+	//extralar:
 	$vpntel=str_replace(" ", "", $_POST['mobile']);
 	$vpntel=substr($vpntel,1);
 	$data["msDS-cloudExtensionAttribute10"]= $vpntel; 
 }//*/
 //Enable the user
 $data["useraccountcontrol"]="544";
-if(strpos($displayname,$ini['disabledname'])>-1){ $data["useraccountcontrol"]= "514"; }
+if($_POST['useraccountcontrol']!='on'||$dis==1){ $data["useraccountcontrol"]= "514"; }
 if($_POST['password']!=''){ //şifre değiştiriliyorsa...
 	$newPassword=$_POST['password']; //şifre içeriği denetlenir...
 }
 
-if($_POST['streetaddress']!=''){
+if($_POST['streetaddress']!=$_POST['o_streetaddress']){
 	$data['streetaddress']=$_POST['streetaddress'];
 }
-if($_POST['district']!=''){ //l : District
+if($_POST['district']!=$_POST['o_district']){ //l : District
 	$data['l']=$_POST['district'];
 }
-if($_POST['st']!=''){ //st : State
+if($_POST['st']!=$_POST['o_st']){ //st : State of Place
 	$data['st']=$_POST['st'];
 }
-if($_POST['co']!=''){  //co Country -> seçimli hale gelince değiştirilsin.
+if($_POST['co']!=$_POST['o_co']){  //co Country -> seçimli hale gelince değiştirilsin.
 	$data['co']=$_POST['co'];
 }
-if($_POST['resigndate']!=''){
-	echo "expdate:".date("Y-m-d H:i:s", strtotime($_POST['resigndate']));
+if($_POST['resigndate']!=$_POST['o_resigndate']){
+	//echo "expdate:".date("Y-m-d H:i:s", strtotime($_POST['resigndate']));
 	$data['accountExpires']=date("d/m/Y H:i:s", strtotime($_POST['resigndate']));
 }
 $ins=false; 
@@ -216,7 +252,7 @@ if($ini['usersource']=='LDAP'&&$data!=''){  //LDAP'a ***************************
 					if($company!=$department){ $newparent.=',OU='.$company; $department=$company; }
 					$newparent.=','.$ini['base_dn'];
 					//echo " newparent:".$newparent;
-					$sonuc=ldap_rename($conn, $o_userdn, $newdn, $newparent, true);
+					$sonuc=ldap_rename($conn, $o_user_dn, $newdn, $newparent, true);
 					if($sonuc){
 						$log.="dn changed!;";
 					}
@@ -228,12 +264,12 @@ if($ini['usersource']=='LDAP'&&$data!=''){  //LDAP'a ***************************
 					echo " Pass:".$s;
 				}				
 			}else{ 
-				echo $gtext['notupdated']; 
+				echo $gtext['notupdated']." "; 
 				//echo " --->".$o_user_dn." (".ldap_error($conn).") ";
 				$log.=$gtext['notupdated'].";dn:".$o_user_dn.";data:".implode(';',$data).";";
+				var_dump($data);
 			}
-		}else{ //no user -> insert------------------------------------------------------------
-			$data["distinguishedname"]=$distinguishedname;
+		}else{ //no user -> insert------------------------------------------------------------			
 			$sonuc=ldap_add($conn, $distinguishedname, $data); 
 			if(!$sonuc){  //"EkleneMEdi!"; 
 				echo $gtext['notinserted']."! ".$sonuc; 
@@ -254,6 +290,7 @@ if($ini['usersource']=='LDAP'&&$data!=''){  //LDAP'a ***************************
 					logger($logfile,$log); 
 					//exit; 
 				}
+				echo " ";
 				if($_POST['password']!=''){
 					$s=change_pass($distinguishedname,$newPassword, $_SESSION['user'],$_SESSION['pass']);
 					if(strpos($s,'!')>=0){	$pwdset=1; }
@@ -285,7 +322,7 @@ if($ini['usersource']=='LDAP'&&$data!=''){  //LDAP'a ***************************
 	}else{ echo $gtext['notfound']; }
 }
 //DB e yazılır...
-echo "\n<br>".$gtext['s_database']."-> ";
+echo "\n".$gtext['s_database']."-> ";
 //Databasede kullanıcı var mı, bakılır...
 unset($data['objectclass']);
 unset($data['samaccountname']);
@@ -309,8 +346,10 @@ if($_POST['sdate']!=''){
 if($_POST['resigndate']){
 	$data['resigndate']=$_POST['resigndate'];
 }
-if($data["useraccountcontrol"]=='544'){  $data['aktif']=1; }else{ $data['aktif']=0;}
+if($_POST['useraccountcontrol']=='on'||$dis==1){  $data['state']=1; }
+	else{ $data['state']=0;}
 //
+unset($data["samaccountname"]);
 if($ksay>0){ //güncellenir
 	$data["distinguishedname"]=$distinguishedname;
 	@$acursor = $collection->updateOne(
@@ -319,8 +358,8 @@ if($ksay>0){ //güncellenir
 		],
 		[ '$set' => $data ]
 	);
-	if($acursor->getModifiedCount()>0){ echo $gtext['updated']; $prop_act=1; $act='update'; }
-	else{ echo $gtext['notupdated']."->".$o_user_dn; $log.="{'update error':''};"; }
+	if($acursor->getModifiedCount()>0){ echo $gtext['updated'];  $act='update'; }
+	else{ echo $gtext['notupdated']; $log.="{'update error':''};"; }
 }else{
 	$data["username"]= $username;
 	@$acursor = $collection->insertOne(
@@ -358,43 +397,44 @@ if($ksay>0){ //güncellenir
 				$pdata
 			);
 			echo "<br>".$gtext['permission']."->";
-			if($pcursor->getInsertedCount()>0){ echo $gtext['inserted']; $prop_act=1; }else{ echo $gtext['notinserted']."! ->"; $log.="{'insert error yetki':''}"; } 
+			if($pcursor->getInsertedCount()>0){ echo $gtext['inserted']; $prop_act=1; }
+			else{ echo $gtext['notinserted']."! ->"; $log.="{'insert error yetki':''}"; } 
 		}
 	}
 }
-if($act!=""){ //personel activity
+/*/if($act!=''){ //personel activity
 	$act_collection = $db->personel_act;
-	$data['act']=$act;
-	$data["actdate"]=datem(date("Y-m-d H:i:s", strtotime("now")));
+	$datact=[];
+	$datact['act']=$act;
+	//değişen veriler alınır. $data 
+	$allkey=[];
+	$allkey=getkeys($data);
+	for($k=0;$k<count($allkey);$k++){
+		if($allkey[$k]!='_id'&&$allkey[$k]!='act'&&$allkey[$k]!='displayname'&&$allkey[$k]!='distinguishedname'&&$allkey[$k]!='actdate'){
+			$field=$allkey[$k];  //var_dump($field);
+			$val=$data->$field;
+			$dt.=$field.":".$val.";";
+		}
+	}
+	$datact['changedata']=$dt;  
+	$datact["actdate"]=datem(date("Y-m-d H:i:s", strtotime("now")));
 	$act_cursor = $act_collection->insertOne(
-		$data
-	);//*/
-}
+		$datact
+	);
+//}//*/
 if($prop_act==1){ //props activity
 	$pact_collection = $db->personel_prop_act;
 	$pact_cursor = $pact_collection->insertOne(
 		$pdata
 	);
 }
-function msgyaz($y, $data){
-	$s=substr_count($y, '{');
-	for($i=0;$i<$s;$i++){
-		$b=strpos($y,"{"); 
-		if($b!=false||$b!=-1){
-			$b2=strpos($y,"}");
-			$par=substr($y, $b+1, ($b2-$b-1)); 
-			$y=str_replace("{".$par."}", $data[$par], $y);
-		}
-	}
-	return $y;
-}
 echo "<br><br>";
 if($ins==true){
 	echo $gtext['s_message']." 1:<br>";
-	echo msgyaz($ini['uaddmsg1'], $data);	//user add message
+	echo msgyaz($ini['uaddmsg1'], $data, $ini['date_local']);	//user add message
 	echo "<br><br>";	
 	echo $gtext['s_message']." 2:<br>";
-	echo msgyaz($ini['uaddmsg2'], $data);  	//mail add message
+	echo msgyaz($ini['uaddmsg2'], $data, $ini['date_local']);  	//mail add message
 }
 logger($logfile, $log);
 ?>

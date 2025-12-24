@@ -9,7 +9,7 @@ if($user==""){
 $username=$_GET['u']; 
 $ksay=0; 
 $data=Array(); 
-if($ini['usersource']=='LDAP'){ 
+/*if($ini['usersource']=='LDAP'){ 
 	//get ous
 	$liste=Array("ou", "description");
 	$filter="ou=*";
@@ -20,13 +20,14 @@ if($ini['usersource']=='LDAP'){
 		$data[$ii]['ou']=$info[$ii]["ou"][0];
 		$data[$ii]['description']=$info[$ii]["description"][0];
 		$ksay++;
-	}//*/
-}else{ 
+	}
+}else{ //*/
+	//birim bilgileri getirilir-getting department infos
 	@$collection = $db->departments;
 	try{
 		@$cursor = $collection->find(
 			[
-				'dp' => ['$eq'=>'C']
+				'$and'=>[['dp' => 'C'],['status'=>'A']]
 			],
 			[
 				'limit' => 0,
@@ -40,19 +41,18 @@ if($ini['usersource']=='LDAP'){
 		);
 		if(isset($cursor)){	
 			foreach ($cursor as $formsatir) {
-				//echo $formsatir->ou." ".$formsatir->description."<br>";
 				$satir=[];
 				$satir['ou']=$formsatir->ou;
 				$satir['company']=$formsatir->company;
 				$satir['description']=$formsatir->description;
-				$data[]=$satir;
+				$fsatir[]=$satir;
 				$ksay++;
 			} //*/	
 		}
 	}catch(Exception $e){
 		
-	}	
-}
+	}
+//}
 ?>
 <!DOCTYPE html>
 <html lang="<?php echo $dil;?>">
@@ -77,7 +77,7 @@ if($ini['usersource']=='LDAP'){
 	<link href="../vendor/bootstrap-toggle/css/bootstrap-toggle.min.css" rel="stylesheet">    
 	<!-- Bootstrap core JavaScript-->
     <script src="/vendor/jquery/jquery.min.js"></script>
-    <script src="/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="/vendor/bootstrap/bootstrap.bundle.min.js"></script>
     <script src="/vendor/form-master/dist/jquery.form.min.js"></script>
 	<script src="/vendor/bootstrap-toggle/js/bootstrap-toggle.min.js"></script>
 
@@ -85,9 +85,9 @@ if($ini['usersource']=='LDAP'){
     <script src="/vendor/jquery-easing/jquery.easing.min.js"></script>
 
     <!-- Custom scripts for all pages-->
-    <script src="/js/sb-admin-2.min.js"></script>
+    <script src="/js/sb-admin-2.js"></script>
     <script src="ad_functions.js"></script>
-	<script src="/js/portal_functions.js"></script>
+	<script src="../js/portal_functions.js"></script>
 <?php include($docroot."/set_page.php"); ?>
 
 </head>
@@ -219,14 +219,14 @@ if($ini['usersource']=='LDAP'){
 							<td><?php echo $gtext['new']." ".$gtext['percompany'];/*New Company*/?>: </td>
 							<td>
 								<div  class="m-1">
-									<SELECT type="text" name="company" id="company">
-	<?php					for ($i=0; $i < $ksay; $i++){
-								$a=$data[$i]["ou"];
-								if($a[0]!="_"&&$data[$i]["description"]!=""){ 
-									echo "<option value='".$a."'>";
-									echo $data[$i]["description"]."</option>\n"; 
-								}
-							} ?>	
+									<SELECT type="text" name="company" id="company"><?php echo "\n";
+									for ($i=0; $i < $ksay; $i++){
+										$a=$fsatir[$i]["ou"];
+										if($a[0]!="_"&&$fsatir[$i]["description"]!=""){ 
+											echo "<option value='".$a."'>";
+											echo $fsatir[$i]["description"]."</option>\n"; 
+										}
+									} ?>
 									</SELECT>
 								</div>
 							</td>
@@ -236,7 +236,6 @@ if($ini['usersource']=='LDAP'){
 							<td>
 								<div  class="m-1">
 									<SELECT name="department" id="department" width="100"/>
-										<OPTION value="."></OPTION>
 									</SELECT>
 								</div>
 							</td>
@@ -246,7 +245,8 @@ if($ini['usersource']=='LDAP'){
 							<td>
 								<div  class="m-1">
 									<div id="newdmanager"></div>
-									<input type="hidden" name="manager" id="manager" value="...."/>
+									<input type="hidden" name="manager" id="manager" value=""/>
+									<input type="hidden" name="managerdn" id="managerdn" value=""/>
 								</div>
 							</td>
 						</tr>
@@ -257,9 +257,11 @@ if($ini['usersource']=='LDAP'){
 								<input type="button" id="clear" value="<?php echo $gtext['close'];/*Temizle*/?>" width="50" onclick="javascript:self.close();"/>
 							</td>
 						</tr>
+						<tr>
+							<td colspan="2"><small><div id="rp"></div></small></td>
+						</tr>
 						</table>
 						<div>* Mecburi alan.</div>
-						<div id="rp"></div>
                         </form>
                     </div>
 
@@ -299,6 +301,7 @@ if($ini['usersource']=='LDAP'){
 var disabledOU="<?php echo $ini['disabledOU']; ?>";
 var u="<?php echo $username; ?>";
 $('#useraccountcontrol').bootstrapToggle('on');
+var objdep=[]; 
 $(document).ready(function() {
 	var options={
 		type:	'POST',
@@ -306,15 +309,16 @@ $(document).ready(function() {
 		contentType: 'application/x-www-form-urlencoded;charset=utf-8',
 		beforeSubmit : function(){
 			if($('#department').val()==$('#o_department').val()){ alert('<?php echo $gtext['a_department'].' '.$gtext['a_mustchange'];?>!'); return false; }
-			var q=confirm('<?php echo $gtext['q_rusure'];/*Emin misiniz?*/?>');	//$('#rp').html('');
+			return confirm('<?php echo $gtext['q_rusure'];/*Emin misiniz?*/?>');	
 		},
-		success: function(data){ //console.log(data); //$('#rp').html(data);  
+		success: function(data){ //console.log(data);  
 			$('#record').attr("disabled", true); 
 			if(data=='login'){ alert('Please Login!'); location.href('../login.php'); }
 			var msg='<?php echo $gtext['a_OK'];/*OK*/?> ';
 			if(data.indexOf('!')>-1){ msg='<?php echo $gtext['u_error'];/*Error*/?>'; }
-			alert(msg+'\n'+data);
-			$('#rp').html(data.replace('\n','<br>')); //olmadı
+			alert(msg); 
+			var dat=data.replace(/\n/g,'<br>');
+			$('#rp').html(dat); //olmadı
 		}
 	}
 	$('#myForm').ajaxForm(options);
@@ -328,12 +332,6 @@ $(document).ready(function() {
 		}	
 	});
 	$('#username').on("blur", function(){ $('#usrkont').click(); });
-	$('#clear').on("click", function(){
-		$('#record').attr("disabled", false);
-		$('#company').change();
-		$('#department').change();
-		$('#rp').html("");
-	});
 	var kontt=0; var dep='';
 	function sleep(ms) {
 		return new Promise(resolve => setTimeout(resolve, ms));
@@ -352,31 +350,35 @@ $(document).ready(function() {
 				kontt=obj.length; 
 				$.each(obj, function(i, key, value){ 
 					var k=obj[i].key, v=obj[i].value; 
+					$('#'+k).val(v); 
+					$('#o_'+k).val(v);
 					if(keys.find(k=>k)) { 
-						$('#'+k).val(v); 
-						$('#o_'+k).val(v);
-						if(k=='samaccountname'){ 
+						switch(k){
+						case "samaccountname":
+							$('#'+k).val(v); $('#o_'+k).val(v);
 							if(u!=''){ $('#username').html(v); }else{ $('#username').val(v); }
 							$('#o_username').val(v);
-						}
-						if(k=='mail'){ 
-							if(u!=''){$('#mail').html(v);}else{ $('#mail').val(v);}
-							$('#o_mail').val(v);
-						}
-						if(k=='distinguishedname'){
+							break;
+						case "distinguishedname":
+							$('#'+k).val(v); $('#o_'+k).val(v);
 							var va=v.indexOf(disabledOU); 
 							if(va<0){ $('#record').val('Değiştir'); }
-						}
-						if(k=='company'){ 
-							$('#o_companydesc').html(getoudesc(v,''));
-						}
-						if(k=='department'){ 
+							break;
+						case "company":
+							$('#o_'+k).val(v);
+							getoudesc(v,'');
+							break;
+						case "department":
+							$('#o_'+k).val(v);
 							dep=v; 
-							$('#o_departmentdesc').html(getoudesc(v,'ou'));
-						}
-						if(k=='manager'){ 
-							$('#dmanager').html(v);  
-							$('#newdmanager').html(getoudesc(v,'managedby')); 
+							getoudesc(v,'ou');
+							break;
+						case "manager":
+							getoudesc(v,'managedby'); 
+							break;
+						default:
+							$('#'+k).val(v); 
+							$('#o_'+k).val(v);
 						}
 					}				
 				}); 
@@ -389,30 +391,6 @@ $(document).ready(function() {
 	if(u!=''){ 
 		bilgilerigetir(u);
 	}
-	$('#company').on("change", function(){ 
-		$.ajax({
-			url: "OUlist.php",
-			type: "POST",
-			datatype: 'json',
-			data: { ou: $('#company').val() },
-			success: function(response){  //console.log(response);
-				var $select=$('#department');
-				$select.find('option').remove();
-				var obj=JSON.parse(response);
-				$.each(obj, function(i, key, value, manager){
-					var s='<option value="'+obj[i].key+'"';
-					if(i==0){ s+=' selected '; }
-					s+='>'+obj[i].value+'</option>'; 
-					$select.append(s); 
-					if(i==0){ 
-						$('#manager').val(obj[i].manager); 
-						$('#newdmanager').html(obj[i].dmanager); 
-					}
-				});
-			}
-		});
-		$('#department').change();
-	});
 	function getoudesc(ou, dp){ 
 		$.ajax({
 			url: "OUdesc.php",
@@ -422,37 +400,62 @@ $(document).ready(function() {
 			success: function(response){  //console.log(response);
 				var obj=JSON.parse(response);
 				$.each(obj, function(i, value, manager){
-					if(dp==''){ $('#o_companydesc').html(obj[0].value); }
+					if(dp==''){ $('#o_companydesc').html(obj[i].value); }
 					else{ 
-						$('#o_departmentdesc').html(obj[0].value); 
-						$('#o_manager').val(obj[i].manager); 
+						$('#o_departmentdesc').html(obj[i].value); 
+						$('#o_manager').val(obj[i].managedby); 
+						$('#dmanager').html(obj[i].manager); 
 					}
 				});
 			}
 		});
 	}
-	$('#department').on("change", function(){
-		depch();
-	});
-	function depch(){
+	$('#company').on("change", function(){ 
 		$.ajax({
 			url: "OUlist.php",
 			type: "POST",
 			datatype: 'json',
-			data: { ou: $('#department').val(), dp:'ou' },
+			data: { ou: $('#company').val() },
 			success: function(response){  //console.log(response);
-				var objm=JSON.parse(response); 
-				$.each(objm, function(i, key, manager, dmanager){
-					$('#manager').val(objm[i].manager);
-					$('#newdmanager').html(objm[i].dmanager); 
+				var $select=$('#department');
+				$select.find('option').remove();
+				objdep=JSON.parse(response); 
+				$.each(objdep, function(i, key, value, manager, dmanager){
+					if(objdep[i].key!=dep){
+						var s='<option value="'+objdep[i].key+'"';
+						if(i==0){ s+=' selected '; }
+						s+='>'+objdep[i].value+'</option>'; 
+						$select.append(s); 
+					}
 				});
+				var val=$('#department').val(); 
+				$.each(objdep, function(i, key, manager, dmanager){ 
+					if(objdep[i].key==val){
+						$('#manager').val(objdep[i].dmanager);
+						var mdn=objdep[i].manager; if(mdn==''){ mdn=Array(); }
+						$('#managerdn').val(mdn); //dn
+						$('#newdmanager').html(objdep[i].dmanager); 
+					}
+				}); 
 			}
 		});
-	}
+		$('#department').change();
+	});
+	$('#department').on("change", function(){ 
+		var val=$('#department').val(); //console.log(val);
+		$.each(objdep, function(i, key, manager, dmanager){ 
+			if(objdep[i].key==val){
+				$('#manager').val(objdep[i].dmanager);
+				var mdn=objdep[i].manager; if(mdn==''){ mdn=Array(); }
+				$('#managerdn').val(mdn); //dn
+				$('#newdmanager').html(objdep[i].dmanager); 
+			}
+		});
+	});
 	$('#clear').on('click', function(){
 		location.reload();
 	});
-	$('#company').change(); depch(); 
+	$('#company').change();  
 	$('.dis').attr('disabled', true);
 $('form').find(':input').change(function(){ $('#record').prop("disabled", false ); });
 $('#cancel').on('click', function(){ $('#record').prop("disabled", true ); });

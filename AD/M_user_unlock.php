@@ -24,10 +24,11 @@ if($ldap_result){
 	   $userinfo['useraccountcontrol']=544;
 	   $dn=$info[0]['distinguishedname'][0];
 	   $sx=ldap_modify($conn, $dn, $userinfo);
+	   $log.=";ldap:";
 	   if($sx){ echo $gtext['a_unlocked'];/*"Açılmıştır."*/ $log.=$gtext['a_unlocked']; }
 	   else{ echo $gtext['a_notunlocked'];/*"AçılaMAdı!"*/ $log.=$gtext['a_notunlocked'];}
 	   //ikinci bir ldap varsa.
-	   if($ini['ldap_server2']!=''){
+	   if($ini['ldap_server2']!=''){ $log.=";ldap2:";
 			define('LDAP_SERVER2', $ini['ldap_server2']);  
 			$conn2=ldap_connect('ldap://'.LDAP_SERVER2); 
 			$sx2=ldap_modify($conn2, $dn, $userinfo);
@@ -39,9 +40,6 @@ if($ldap_result){
 }else{ echo $gtext['notfound'];/*"BulunaMAdı!"*/  $log.=$gtext['notfound']; }
 $log.=";";
 //
-$dosya=$docroot."/logs/personel.log"; 
-touch($dosya);
-$dosya = fopen($dosya, 'a');
-fwrite($dosya, $log);
-fclose($dosya); //*/
+$logfile='personel';
+logger($logfile,$log);
 ?>

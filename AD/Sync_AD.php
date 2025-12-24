@@ -2,7 +2,7 @@
 /*
 	User_sync: LDAP ile MongoDB senkronizasyonu LDAP->MongoDB
 */
-//error_reporting(0);
+error_reporting(0);
 $docroot=$_SERVER['DOCUMENT_ROOT'];
 include($docroot."/config/config.php");
 include("../sess.php");	
@@ -34,14 +34,14 @@ if($_SESSION['user']==""&&$_SESSION['y_admin']!=1){
 	<link href="/vendor/bootstrap-toggle/css/bootstrap-toggle.min.css" rel="stylesheet">
     <!-- Bootstrap core JavaScript-->
     <script src="/vendor/jquery/jquery.min.js"></script>
-    <script src="/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="/vendor/bootstrap/bootstrap.bundle.min.js"></script>
     <script src="/vendor/form-master/dist/jquery.form.min.js"></script>
 
     <!-- Core plugin JavaScript-->
     <script src="/vendor/jquery-easing/jquery.easing.min.js"></script>
 
     <!-- Custom scripts for all pages-->
-    <script src="/js/sb-admin-2.min.js"></script>
+    <script src="/js/sb-admin-2.js"></script>
 	<script src="/vendor/bootstrap-toggle/js/bootstrap-toggle.min.js"></script>
     <script src="/js/portal_functions.js"></script>
 <?php include($docroot."/set_page.php"); ?>
@@ -162,10 +162,12 @@ $(document).ready(function() {
 			target	: '#rt',
 			contentType: 'application/x-www-form-urlencoded;charset=utf-8',
 			beforeSubmit : function(){
-				var y=confirm('Are You Sure?');
+				var y=confirm('Are You Sure?'); 
+				if(y==false){ window.location.reload(); }
+				$('#per_pairing').prop('disabled', true);
 			},
 			success: function(data){  
-				if(data=='login'){ alert('Please Login!'); location.href('../login.php');}
+				if(data=='login'){ alert('Please Login!'); location.assign('../login.php');}
 				alert('<?php echo $gtext['a_OK'];/*İşlem tamamlandı!*/?>'); 
 			}
 		}
@@ -179,11 +181,13 @@ $(document).ready(function() {
 			url 	: './set_sync_ous.php',
 			target	: '#rt',
 			contentType: 'application/x-www-form-urlencoded;charset=utf-8',
-			beforeSubmit : function(){
-				var y=confirm('Are You Sure?');
+			beforeSubmit : function(){				
+				var y=confirm('Are You Sure?'); 
+				if(y==false){ window.location.reload(); }
+				$('#dep_pairing').prop('disabled', true);
 			},
 			success: function(data){ 
-				if(data=='login'){ alert('Please Login!'); location.href('../login.php');}
+				if(data=='login'){ alert('Please Login!'); location.assign('../login.php');}
 				alert('<?php echo $gtext['a_OK'];/*İşlem tamamlandı!*/?>');  
 			}
 		}

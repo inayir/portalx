@@ -2,6 +2,24 @@
 /*
 	Ayrıldıktan sonra geri gelen Kullanıcının hesabını açmak->Son birim klasörüne taşımak
 */
+function findmanager(){
+	/*DBden deparment manager bulunur...*/
+	@$collection = $db->personel;
+	@$cursor = $collection->findOne(
+		[
+			'samaccountname'=>$username
+		],
+		[
+			'limit' => 1,
+			'projection' => [
+				'displayname' => 1,
+				'givenname' => 1,
+				'telephonenumber' => 1
+			],
+		]
+	);
+}
+//*************
 include("../set_mng.php");
 //error_reporting(0);
 header('Content-Type:text/html; charset=utf8');
@@ -28,7 +46,7 @@ if($username!=''){
 				$o_user_dn=$info[0]['distinguishedname'][0];
 				//-------------------------------------------------------------------
 				$data=array(); 
-				$y=strpos($info[0]['givenname'][0], $ini['disabledname']); //echo $o_user_dn;
+				$y=strpos($info[0]['givenname'][0], $ini['disabledname']); //givennameden disabledname kesilir.
 				if($y!=''&&$y>=0){
 					$s=substr($info[0]['givenname'][0],($y+strlen($ini['disabledname'])));
 					$data["givenname"] = $s; 
@@ -40,33 +58,37 @@ if($username!=''){
 				$data['sn']=$sn;
 				$data["displayname"]	= $data["givenname"]." ".$sn;
 				//mail
-				$ym=strpos($info[0]['mail'][0], $ini['disabledmailuser']);
-				if($ym!=''&&$ym>=0){
-					$sm=substr($info[0]['mail'][0],($ym+strlen($ini['disabledmailuser'])));
-					$data["mail"] = $sm; 
-				}
+                if($ini['disabledmailuser']!=''){
+                    $ym=strpos($info[0]['mail'][0], $ini['disabledmailuser']);
+                    if($ym!=''&&$ym>=0){
+                        $sm=substr($info[0]['mail'][0],($ym+strlen($ini['disabledmailuser'])));
+                        $data["mail"] = $sm; 
+                    }
+                }
 				/*/Organization 
-				if($info[0]['manager'][0]!=""){
-					$data["manager"]=array(); //yönetici ile alakası kesilir...
-					$log.="<br>manager:deleted;";
+				if($info[0]['manager'][0]==""){
+					//souman?
+					$data["manager"]=""; //yönetici tekrar bulunur...
+					$log.="<br>manager:rewrite;";
 				}//*/
-				//telephones //Atribute Editor 
-				if($info[0]['pager'][0]!=""){
-					$data["telephoneNumber"]=$info[0]['pager'][0]; 
-					$log.="<br>telephoneNumber:deleted;";
-				}
-				if($info[0]['mobile'][0]!=""){
-					$data["mobile"]=$info[0]['pager'][0]; //pager alanından geri alınır
-					$data["pager"]=array(); //pager boşaltılır.
+				//telephones //Atribute Editor  //dahili telefon geri getirilmez. 
+				if($info[0]['otherTelephone'][0]!=""){
+					//$data["telephoneNumber"]=$info[0]['otherTelephone'][0]; 
+					$log.="<br>telephoneNumber:".$info[0]['otherTelephone'][0]." rewrite;";
+				}//*/
+				if($info[0]['mobile'][0]==""){
+					//$data["mobile"]=$info[0]['otherMobile'][0]; //otherMobile alanından geri alınır
+					//$data["otherMobile"]=array(); //otherMobile boşaltılır.
 					$log.=" reopen;";
-					if($data["mobile"]!=''){
-						$data["msDS-cloudExtensionAttribute10"]=$data["mobile"]; //vpn iptal
+					/*if($data["mobile"]==''){
+						$data["msDS-cloudExtensionAttribute10"]=$info[0]['msDS-cloudExtensionAttribute11'][0]; //vpn geri getirilir.
+						$data["msDS-cloudExtensionAttribute11"]="<not set>"; //vpn geri getirilir.
 					}
-					$log.=" user vpn set;";
+					$log.=" user vpn set;";//*/
 				}
 				//Disable the user
 				$data["useraccountcontrol"]="544";//*/
-				$log.=" user reopen;"; 
+				$log.=" user reopen;".print_r($data); 
 				//-------------------------
 				$log.="<br>".$gtext['user']." ";
 				$sonuc=ldap_mod_replace($conn, $o_user_dn, $data);
@@ -124,10 +146,8 @@ if($username!=''){
 		if(isset($cursor)){	
 			$ksay=count($cursor); 
 			foreach ($cursor as $formsatir){ 
-				$data["displayname"]=$ini['disabledname'].$formsatir->displayname;
-				$data["givenname"]=$ini['disabledname'].$formsatir->givenname;
 				$data["manager"]="";
-				$data["pager"]=$formsatir->telephonenumber;
+				$data["telephonenumber"]=$formsatir->otherTelephone;
 				$data["mobile"]="";
 				$data["telephonenumber"]="";
 				$data["useraccountcontrol"]="514";
@@ -147,13 +167,25 @@ if($username!=''){
 		],
 		[ '$set' => $data ]
 	);
-	if($acursor->getModifiedCount()>0){ echo "\n* ".$gtext['updated']; $log.=$gtext['updated'].";"; $prop_act=1; }
+	if($acursor->getModifiedCount()>0){ echo "\n* ".$gtext['updated']; $log.=$gtext['updated'].";";  }
 	else{ echo "\n* ".$gtext['notupdated']."->"; $log.=$gtext['notupdated']."{'update error':''};"; }
 	//personel_act dosyasına yazılır...
 	$act_collection = $db->personel_act;
-	$data['act_date']=datem(date("Y-m-d", strtotime("now").'T'.date("H:i:s", strtotime("now")).'.000+00:00'));
+	$datact['act']='reopen';
+	//değişen veriler alınır. $data 
+	$allkey=[];
+	$allkey=getkeys($data);
+	for($k=0;$k<count($allkey);$k++){
+		if($allkey[$k]!='_id'&&$allkey[$k]!='act'&&$allkey[$k]!='displayname'&&$allkey[$k]!='distinguishedname'&&$allkey[$k]!='actdate'){
+			$field=$allkey[$k];  //var_dump($field);
+			$val=$data->$field;
+			$dt.=$field.":".$val.";";
+		}
+	}
+	$datact['changedata']=$dt;  //*/
+	$datact['act_date']=datem(date("Y-m-d", strtotime("now").'T'.date("H:i:s", strtotime("now")).'.000+00:00'));
 	$act_cursor = $act_collection->insertOne(
-		$data
+		$datact
 	);
 	if($act_cursor->getModifiedCount()>0){ echo "\n* ".$gtext['updated']; $log.=$gtext['updated'].";"; $prop_act=1; }
 	else{ echo "\n* ".$gtext['notupdated']."->"; $log.=$gtext['notupdated']."{'update error':''};";  }

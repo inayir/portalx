@@ -2,8 +2,26 @@
 /*
 	set_user_sync: LDAP ile MongoDB senkronizasyonu LDAP->MongoDB
 */
-error_reporting(0);
+function in_multiarray($elem, $array,$field,$fieldget){ //search in multi array
+    $top = sizeof($array) - 1;
+    $bottom = 0;
+    while($bottom <= $top)
+    {
+        if($array[$bottom][$field][0] == $elem){ 
+			return $array[$bottom][$fieldget][0];
+        }else{ 
+            if(is_array($array[$bottom][$field][0])){
+                if(in_multiarray($elem, ($array[$bottom][$field][0]))){
+                    return $array[$bottom][$fieldget][0];
+				}
+			}
+		}
+        $bottom++;
+    }        
+    return false;
+}
 include("../set_mng.php");	
+error_reporting(0);
 include($docroot."/sess.php");	
 include($docroot."/ldap.php");
 if(!$bind){ echo "LDAP Server Not Found!"; exit; }
@@ -40,20 +58,20 @@ if(!$exists){
 }
 //
 $options = []; $insert=[]; $update=[];
-$liste=Array("displayname", "givenname", "sn", "sAMAccountName", "mail", "description", "physicalDeliveryOfficeName", "telephoneNumber", "mobile", "company", "department", "distinguishedname","manager", "title",'useraccountcontrol','msDS-cloudExtensionAttribute10','streetaddress','l','st','co',);
+$liste=Array("displayname", "givenname", "sn", "sAMAccountName", "mail", "description", "physicalDeliveryOfficeName", "telephoneNumber", "mobile", "company", "department", "distinguishedname","manager", "title","useraccountcontrol","msDS-cloudExtensionAttribute10","streetaddress","l","st","co");
 $upd=0; $ins=0;
 $filter = '(&(objectCategory=person)(samaccountname=*))'; 
 $result = ldap_search($conn, $dn, $filter, $liste);  
+$datact=[];
 if($result){
 	$entries = ldap_get_entries($conn, $result); 
 	$esay=$entries['count']; 
-	echo "SYNC Users:".$esay." user.<br>";
+	$msg=" ".$esay." user are matching...<br>";
 	for ($ix=1; $ix<$esay; $ix++){ 
-		$ksay=0; $updok=0; $propins=0; $yer=false; $username==''; $description="";  $msg="\n<br>";
+		$ksay=0; $updok=0; $propins=0; $yer=false; $username==''; $description="";  $msg.="\n<br>";
 		$syncok=0;
 		$username=$entries[$ix]['samaccountname'][0]; 
 		if ($username==""){ $username=$entries[$ix]['username'][0]; }
-		$msg.=$username;
 		if ($username!=""){ 
 			$displayname=$entries[$ix]['displayname'][0]; 	
 			$msg.=" ".$displayname;
@@ -66,13 +84,14 @@ if($result){
 				$description=ltrim($description, '0'); //soldaki sıfırlar atılır.
 				$log.=$description.";";
 				//description alanında # veya , varsa aktarılmaz.
-				if(strpos($description,'#')!=""&&strpos($description,'#')>=0){ $syncok=0; $log.="#0";}
+				//if(strpos($description,'#')!=""&&strpos($description,'#')>=0){ $syncok=0; $log.="#0";}
 				if(strpos($description,',')!=""&&strpos($description,',')>=0){ $syncok=0; $log.=",0";}
 				if(strpos($description,' ')!=""&&strpos($description,' ')>=0){ $syncok=0; $log.="s0";}
 				if($syncok==0){ $msg.="->uygun değil!"; $log.="description uygun değil!;"; }
-			}else{ $msg.="->description Boş!";$log.="->description boş!;"; $syncok=0; }
+			}else{ $msg.=$entries[$ix]['displayname'][0]."->description empty!";$log.="->description empty!;"; $syncok=0; }
 			
-		}else{ $msg.="->username Boş!"; $log.="->username bulunamadı!;";}
+		}else{ $msg.=$entries[$ix]['displayname'][0]."->username empty!"; $log.="->username NOT found!;";}
+		//
 		if($syncok==1){ 
 			$data=[];
 			$data['username'] = $username;
@@ -81,11 +100,16 @@ if($result){
 			$m="Yok";
 			$log.="manager:";
 			if(isset($entries[$ix]['manager'][0])){
-				$m=$entries[$ix]['manager'][0];
-				if(strpos($m,'CN=')>-1){ $m=substr($m, 3, strpos($m,',')-3); }
-				$log.=$m.";";
-			}else{ $log.="-;"; }
-			$data['manager'] 	= $m; 			
+				$m=$entries[$ix]['manager'][0]; //manager's dn 
+                //find manager's displayname. 
+				$sman=in_multiarray($m, $entries, 'distinguishedname', 'displayname')." ";
+                if($sman!=false){
+                    $m=$sman;
+                }else{
+                    if(strpos($m,'CN=')>-1){ $m=substr($m, 3, strpos($m,',')-3); }
+                }//*/
+			}else{ $log.="-;"; } 
+			$data['manager'] = $m; $log.=$m.";";
 			if(isset($entries[$ix]['givenname'][0])){
 				$data['givenname'] 	= $entries[$ix]['givenname'][0];
 				$log.="givenname:".$entries[$ix]['givenname'][0].";";
@@ -148,8 +172,8 @@ if($result){
 				$data['useraccountcontrol'] = $entries[$ix]['useraccountcontrol'][0];
 				$log.="enable:".$entries[$ix]['useraccountcontrol'][0].";";
 			}else{ $log.="office:-;";}
-			$data['tarih'] = datem(date("Y-m-d H:i:s", strtotime("now")));
-			//*/
+			$data['tarih'] = datem(date("Y-m-d H:i:s", strtotime("now"))); 
+			//user search in db
 			try{
 				@$cursor = $collection->findOne(
 					[
@@ -158,15 +182,21 @@ if($result){
 					[
 						'limit' => 1,
 						'projection' => [
+							'state'=>1,
 						],
 					]
 				);
-				if(isset($cursor)){	$ksay=count($cursor); }
+				if(isset($cursor)){	
+					$ksay=count($cursor); 						
+					$msg.=" state:".$cursor->state;
+					if($cursor->state<>'C'&&$cursor->state<>'A'){ $data['state']='A'; $msg.="-".$data['state'];}
+					$msg.=",";
+				}
 			}catch(Exception $e){
 				echo ldap_error($conn);
-			}
-			if($ksay>0){ //kayıt varsa güncellenir.	
-				$log.="ksay:".$ksay.";";  //print_r($data);
+			}//*/
+			if($ksay>0){ //there is a record, updates.				
+				$log.="ksay:".$ksay.";";  
 				try{
 					@$acursor = $collection->updateOne(
 						[
@@ -178,29 +208,29 @@ if($result){
 					echo ldap_error($conn);
 				}
 				if($acursor->getModifiedCount()>0){ 
-					$msg.="->".$gtext['updated']; $upd++; $log.="->".$gtext['updated'].";"; 
-					$act=1;
+					$msg.=$gtext['updated']."->"; $upd++; $log.="->".$gtext['updated'].";"; 
+					$datact['act']='sync-update';
 				}else{ 
-					$msg.="->".$gtext['notupdated']; $log.=";->".$gtext['notupdated']." {'update error':''}";
+					$msg.=$gtext['notupdated']."->"; $log.=";->".$gtext['notupdated']." {'update error':''}";
 				}
 			}else{  //Yeni kayıt
 				$data['pass']=$newpass;
+				$data['state']='A';
 				@$acursor = $collection->insertOne(
 					$data
 				);
 				if($acursor->getInsertedCount()>0){ 
-					$msg.="->".$gtext['inserted']; 
-					$log.="->".$gtext['inserted'].";"; 
+					$msg.=$gtext['inserted']."->"; 
+					$log.=$gtext['inserted']."->".";"; 
 					$ins++;  //personel eklendi
 					$propins=1;
-					$act=1;
+					$datact['act']='sync-insert';
 				}else{ 
-					$msg.="->".$gtext['notinserted']."->"; 
+					$msg.=$gtext['notinserted']."->"; 
 					$log.="->{'user insert error':''};"; 
 				}
 			}
-			echo $msg;
-			//personel_prop dosyasında yoksa eklenir...
+			//adding personel_prop table
 			if($propins==1){
 				$msg.=" || ".$gtext['permission']." ";
 				@$pcursor = $pcollection->findOne(
@@ -258,20 +288,36 @@ if($result){
 					} 
 				} 
 			}
-		}
-		echo $msg;
-		if($act==1){ //personel activity
-			$act_collection = $db->personel_act;
-			$act_cursor = $act_collection->insertOne(
-				$data
-			);
-		}
-		if($prop_act==1){ //props activity
-			$act_cursor = $act_collection->insertOne(
-				$pdata
-			);
+			//hep boş geldiği için hareeketler yazılamadı. ???
+			if($data['act']!=''){ //personel activity
+				$act_collection = $db->personel_act;
+				//değişen veriler alınır. $data 
+				$allkey=[];
+				$allkey=getkeys($data);
+				for($k=0;$k<count($allkey);$k++){
+					if($allkey[$k]!='_id'&&$allkey[$k]!='act'&&$allkey[$k]!='displayname'&&$allkey[$k]!='distinguishedname'&&$allkey[$k]!='actdate'){
+						$field=$allkey[$k];  //var_dump($field);
+						$val=$data->$field;
+						$dt.=$field.":".$val.";";
+					}
+				}
+				$datact['changedata']=$dt;  
+				$datact["actdate"]=datem(date("Y-m-d H:i:s", strtotime("now")));
+				$act_cursor = $act_collection->insertOne(
+					$datact
+				);
+			}//*/
+			if($prop_act==1){ //props activity
+				$act_cursor = $act_collection->insertOne(
+					$pdata
+				);
+			}
+		}else{
+			$msg.=" Sync NOK!";
 		}
 	}
+	$msg.=$username; 
+	echo $msg;
 	echo "\n<br> RESULT: ".$gtext['records'].": ".$upd." ".$gtext['updated'].", ".$ins." ".$gtext['inserted']."<br>";
 }else{ echo "Not Connected!"; }
 //

@@ -37,7 +37,7 @@ $info = ldap_get_entries($conn, $sr);
 	<!--JQuery-->
     <script src="/vendor/jquery/jquery.js"></script>
     <!-- Bootstrap core JavaScript-->
-    <script src="/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="/vendor/bootstrap/bootstrap.bundle.min.js"></script>
     <!-- Core plugin JavaScript-->
     <script src="/vendor/jquery-easing/jquery.easing.min.js"></script>
     <script src="/vendor/form-master/dist/jquery.form.min.js"></script>
@@ -149,7 +149,7 @@ var searchValue='<?php echo $_GET['sea'];?>';
 $(document).ready(function() {
 	var table=$('#per_ylist').DataTable( {
         language: {
-			url :"../vendor/datatables/"+dturl+".json",
+			url :"../vendor/datatables.net/"+dturl+".json",
 			buttons: {
 				pageLength: {
 					_: ' %d '+lang_row,

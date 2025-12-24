@@ -10,21 +10,17 @@ if($_SESSION['user']==""){
 } 
 require($docroot."/ldap.php");
 require($docroot."/app/php_functions.php");
-ldap_set_option($conn, LDAP_OPT_PROTOCOL_VERSION,3);
 ldap_set_option(NULL, LDAP_OPT_DEBUG_LEVEL, 7);
 $logfile='personel';
-$username=$_POST['username']; //
-//if($username==''){ @$username=$_GET['u']; }
+$username=$_POST['username']; //if($username==''){ @$username=$_GET['u']; }
 $displayname=$_POST['displayname']; 
-$o_userdn=$_POST['distinguishedname']; 
-//echo "u:".$username." o_userdn:".$o_userdn;
-//exit;
+$o_userdn=$_POST['distinguishedname']; //echo "u:".$username." o_userdn:".$o_userdn;//exit;
 //
-$msg=$gtext['user'].": ".$username;
+echo $gtext['user'].": ".$username;
 $log="\nMoving;username: ".$username.";dn: ".$o_userdn.";";
 if($username!=''){
 	if($ini['usersource']=='LDAP'){
-		$msg.="\n*LDAP: "; $log.="LDAP;";
+		$log.="LDAP;";
 		$data=array(); 
 		$name=str_return($displayname,1); //tr karakter olmayan isim. Dn üretmede kullanılmalı.
 		//newdn oluşturulur...
@@ -37,40 +33,48 @@ if($username!=''){
 		$data['o_department']=$_POST['o_department'];
 		$data['company']=$_POST['company']; 
 		$data['o_company']=$_POST['o_company']; 
-		$data['manager']=$_POST['manager'];
+		$data['manager']=$_POST['managerdn'];
 		//echo "dn:".$o_userdn."/ *newdn:".$newdn."/ *newparent:".$newparent.""; //exit;
-		//-------------------------
+		
+		//ldap moving-------------------------
 		$sonuc=ldap_rename($conn, $o_userdn, $newdn, $newparent, true);
+		echo "\n*LDAP: "; 
 		if($sonuc){
-			$msg.=" ".$gtext['moved'].", "; 
-			$log.="user moved!".";";
+			echo " ".$gtext['moved'].", "; $log.="user moved.;";
 			$dn=$newdn.','.$newparent;
-			//groups---------------------------------------------------------
 			require("./ldap_functions.php");
-			//remove user from security groups
-			$msg1=removefromgroups($dn); 
-			if($msg1!=""){ $msg.=$msg1; }else{ $msg.=" not removed group;"; }
-			//add user to new department groups.
+			//groups->removing: remove user from security groups
+			$msgremove="\n*".$gtext['ldap_groups'];
+			$msgremove.=removefromgroups($dn); 
+			echo $msgremove;  
+			//groups->adding: add user to new department groups.
 			$msg2=addtogroupsfromini($dn);
-			if($msg2!=""){ $msg.=$msg2; }else{ $msg.=" not add group;"; }
-			//end moving-data update
+			if($msg2!=""){ echo $msg2; }
+			//moving-data update to ldap
 			unset($data['o_department']);
 			unset($data['o_company']);
-			$sonuc1=ldap_mod_replace($conn, $dn, $data); //o_userdn!
-			if($sonuc1==1){ $log.="data ".$gtext['updated'].";";}else{ $log.="data ".$gtext['notupdated'].";";}
-			echo $msg;
+			$sonuc1=ldap_mod_replace($conn, $dn, $data); 
+			echo "\n**LDAP data ";
+			if($sonuc1==1){ echo $gtext['updated']; $log.=";\nLDAP data:".$gtext['updated'].";";}else{ echo $gtext['notupdated']; $log.=";\nLDAP data ".$gtext['notupdated'].";";}
+			echo " ".$msg;
 		}else{
 			//not moved!
-			$msg.=" ".$gtext['notmoved']."! ";
+			echo " ".$gtext['notmoved']."! ";
+			echo $msgremove;
+			//re-adding to old groups...
+			$data['department']=$_POST['o_department'];
+			$data['company']=$_POST['o_company']; 
+			$msg2=addtogroupsfromini($o_userdn);
+			echo $msg2;
 			$log.=$gtext['notmoved']."!".ldap_error($conn).";";
 			logger($logfile,$log);
-			echo $msg;
 			exit;
 		}
 	}
 	//Record to mongodb -----------------------------------------------
-	$log.="*DB;"; $msg="\nDB:";
+	echo "\n*DB:"; $log.="\n*DB;"; 
 	$data['distinguishedname']=$dn;
+	$data['manager']=$_POST['manager'];
 	//
 	@$collection = $db->personel;
 	@$cursor = $collection->updateOne(
@@ -80,23 +84,33 @@ if($username!=''){
 		[ '$set' => $data ]
 	);
 	if($cursor->getModifiedCount()>0){ 
-		$msg.=$gtext['updated']; 
+		echo $gtext['updated']; 
 		$log.=$gtext['updated'].";"; 
 		//personel_act dosyasına yazılır...
 		$act_collection = $db->personel_act;
-		$data['act']='move';
-		$data['actdate']=datem(date("Y-m-d", strtotime("now").'T'.date("H:i:s", strtotime("now")).'.000+00:00'));
+		$datact['act']='move';
+		//değişen veriler alınır. $data 
+		$allkey=[];
+		$allkey=getkeys($data);
+		for($k=0;$k<count($allkey);$k++){
+			if($allkey[$k]!='_id'&&$allkey[$k]!='act'&&$allkey[$k]!='displayname'&&$allkey[$k]!='distinguishedname'&&$allkey[$k]!='actdate'){
+				$field=$allkey[$k];  //var_dump($field);
+				$val=$data->$field;
+				$dt.=$field.":".$val.";";
+			}
+		}
+		$datact['changedata']=$dt;  //*/
+		$datact['actdate']=datem(date("Y-m-d", strtotime("now").'T'.date("H:i:s", strtotime("now")).'.000+00:00'));
 		$act_cursor = $act_collection->insertOne(
-			$data
+			$datact
 		);
-		if($act_cursor->getInsertedCount()>0){ $msg.=" ".$gtext['updated']; $log.=$gtext['updated'].";";  }
-		else{ $msg.=$gtext['notupdated']."!!->"; $log.=$gtext['notupdated']."{'update error':''};";  }
+		if($act_cursor->getInsertedCount()>0){ echo " ".$gtext['updated']; $log.=$gtext['updated'].";";  }
+		else{ echo $gtext['notupdated']."!!->"; $log.=$gtext['notupdated']."{'update error':''};";  }//*/
 	}else{ 
-		$msg.=$gtext['notupdated']."!"; 
+		echo $gtext['notupdated']."!"; 
 		$log.=$gtext['notupdated']."{'update error':''};"; 
-	}	
-	echo $msg; 
-}else{ echo " !".$gtext['u_fieldisnotblank']."!"; }  //Alanlar boş olamaz
+	}
+}else{ echo " !".$gtext['u_fieldmustnotblank']."!"; }  //Alanlar boş olamaz
 //
 logger($logfile,$log);
 ?>
