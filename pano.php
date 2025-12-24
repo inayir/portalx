@@ -57,11 +57,10 @@ foreach ($cursor as $formsatir) {
 	}
 	if($formsatir->pano_star!=null){ 
 		$satir['pano_starG']=$formsatir->pano_star->toDateTime()->format($ini['date_local']." H:i"); 
-		$satir['pano_star']=$formsatir->pano_star->toDateTime()->format("Y-m-d"); 
-		$satir['pano_star'].="T".$formsatir->pano_star->toDateTime()->format("H:i"); 
+		$satir['pano_star']=$formsatir->pano_star->toDateTime()->format("Y-m-d")." ".$formsatir->pano_star->toDateTime()->format("H:i"); 
 	}
 	$satir['msg_sahibi']=$formsatir->msg_sahibi;
-	$satir['aktif']=$formsatir->aktif;
+	$satir['state']=$formsatir->state;
 	$fsatir[]=$satir;
 }
 $fisay=count($fsatir); 
@@ -90,7 +89,7 @@ $json=addslashes(json_encode($fsatir));
 	<link href="/vendor/datatables/dataTables.bootstrap4.min.css" rel="stylesheet">
     <!-- Bootstrap core JavaScript-->
     <script src="/vendor/jquery/jquery.min.js"></script>
-    <script src="/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="/vendor/bootstrap/bootstrap.bundle.min.js"></script>
     <script src="/vendor/form-master/dist/jquery.form.min.js"></script>
 	<?php include($docroot."/set_page.php"); ?>
 </head>
@@ -118,7 +117,7 @@ $json=addslashes(json_encode($fsatir));
                     <!-- Page Heading -->
                     <div class="d-sm-flex align-items-center justify-content-between mb-4">
                         <h1 class="h3 mb-0 text-gray-800"><?php echo $gtext['pano'];/*İletişim Panosu*/?></h1>
-                        <a id="eklebtn" href="#" data-toggle="modal" data-target="#pano_Modal" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i class="fas fa-pen-fancy fa-sm text-white-50"></i> <?php echo $gtext['new_data'];/*Yeni Bilgi*/?></a>
+                        <a id="eklebtn" href="#" data-bs-toggle="modal" data-bs-target="#pano_Modal" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i class="fas fa-pen-fancy fa-sm text-white-50"></i> <?php echo $gtext['new_data'];/*Yeni Bilgi*/?></a>
                     </div>
 
                     <!-- Content Row -->
@@ -134,6 +133,7 @@ $json=addslashes(json_encode($fsatir));
 								</THEAD>
 								<TBODY>
 <?php for($i=0; $i<$fisay; $i++){ 
+	if($fsatir[$i]['state']=="D"&&$user!=$fsatir[$i]['msg_sahibi']){ continue; }
 		switch(($i%8)){
 			case 1: $cevre="primary"; break;
 			case 2: $cevre="secondary"; break;
@@ -143,8 +143,7 @@ $json=addslashes(json_encode($fsatir));
 			case 6: $cevre="danger"; break;
 			case 7: $cevre="light"; break;
 			case 8: $cevre="dark"; break;
-		}
-?>
+		} ?>
 								<TR>
 								<TD class="border border-<?php echo $cevre; ?> border-5 rounded">
 									<table>
@@ -165,13 +164,13 @@ $json=addslashes(json_encode($fsatir));
 											echo stripslashes($g); 
 											?></div>									
 										</td>
-									</tr>
+									</tr><?php if($user==$fsatir[$i]['msg_sahibi']){ ?>
 									<tr>
-										<td colspan="4"><?php if($user==$fsatir[$i]['msg_sahibi']){ ?>
+										<td colspan="4">
 											<button class="btn btn-primary m-1 border border-dark border-4" id="pano_edit" type="button" onClick="javascript:pedit('<?php echo $fsatir[$i]['_id']; ?>');"><?php echo $gtext['change'];/*Değiştir*/?></button>
-											<button class="btn btn-danger m-1 border border-dark border-5" id="pano_sil" type="button" onClick="javascript:psil('<?php echo $fsatir[$i]['_id']; ?>');"><?php echo $gtext['remove'];/*Çıkar*/?></button><?php }else{ ?><button class="btn btn-info m-1 border border-dark border-5" id="pano_cevp" type="button"><?php echo $gtext['pano_reply'];/*Cevap Ver*/?></button><?php } ?>
+											<button class="btn btn-danger m-1 border border-dark border-5" id="pano_sil" type="button" onClick="javascript:psil('<?php echo $fsatir[$i]['_id']; ?>');"><?php echo $gtext['remove'];/*Çıkar*/?></button><?php }else{ ?><button class="btn btn-info m-1 border border-dark border-5" id="pano_cevp" type="button"><?php echo $gtext['pano_reply'];/*Cevap Ver*/?></button>
 										</td>
-									</tr>
+									</tr><?php } ?>
 									</table>
 								</TD>
 								</TR>
@@ -204,7 +203,7 @@ $json=addslashes(json_encode($fsatir));
         <i class="fas fa-angle-up"></i>
     </a>
 <!-- ekle Modal-->
-			<div class="modal fade" id="pano_Modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+			<div class="modal fade" id="pano_Modal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
 				aria-hidden="true">
 				<div class="modal-dialog modal-xl" role="document">
 					<div class="modal-content">
@@ -212,7 +211,7 @@ $json=addslashes(json_encode($fsatir));
 						<input type="hidden" name="id" id="id" value="0" />
 						<div class="modal-header">
 							<h5 class="modal-title" id="exampleModalLabel"><?php echo $gtext['pano_msgchange'];/*Mesaj Değiştirme*/?></h5>
-							<button class="close" type="button" data-dismiss="modal" aria-label="<?php echo $gtext['close'];?>">
+							<button class="close" type="button" data-bs-dismiss="modal" aria-label="<?php echo $gtext['close'];?>">
 								<span aria-hidden="true">×</span>
 							</button>
 						</div>
@@ -237,8 +236,8 @@ $json=addslashes(json_encode($fsatir));
 						<div id="son_deg_tarp"></div>
 						</div>
 						<div class="modal-footer">
-							<button class="btn btn-secondary" type="reset" id="cancel" data-dismiss="modal"><?php echo $gtext['cancel']; ?></button>
 							<button class="btn btn-primary" id="msg_ekle" disabled type="submit"><?php echo $gtext['send']; ?></button>
+							<button class="btn btn-secondary" type="reset" id="cancel" data-bs-dismiss="modal"><?php echo $gtext['cancel']; ?></button>
 						</div>
 						</form>
 					</div>
@@ -250,7 +249,7 @@ $json=addslashes(json_encode($fsatir));
     <script src="/vendor/jquery-easing/jquery.easing.min.js"></script>
 
     <!-- Custom scripts for all pages-->
-    <script src="/js/sb-admin-2.min.js"></script>
+    <script src="/js/sb-admin-2.js"></script>
     <!-- Page level plugins -->
     <script src="/vendor/datatables/jquery.dataTables.min.js"></script>
     <script src="/vendor/datatables/dataTables.bootstrap4.min.js"></script>
@@ -263,7 +262,7 @@ var today='<?php echo $bugun;?>';
 $(document).ready(function(){	
 	$('#list').DataTable({
         "language": {
-			url :"../vendor/datatables/"+dturl+".json",
+			url :"../vendor/datatables.net/"+dturl+".json",
 		}
 	});
 	$('#msg_ekle').on("click", function(){ //ekle/değiştir ajaxform
@@ -272,7 +271,7 @@ $(document).ready(function(){
 			url 	: './set_panomsg.php',
 			contentType: 'application/x-www-form-urlencoded;charset=utf-8',
 			beforeSubmit : function(){
-				var y=confirm('<?php echo $gtext['q_save'];/*Kaydediliyor?*/?>');
+				var y=confirm('<?php echo $gtext['q_save'].'?';/*Kaydediliyor?*/?>');
 			},
 			success: function(data){ 
 				if(data!=''){ if(confirm(data)){ location.reload(); }}
@@ -288,7 +287,7 @@ function psil(msg){ //bilgiler silinir.
 		url: 'set_panomsg.php',
 		data: { 'isl': 'd', 'id': msg },
 		beforeSend : function(){
-			return confirm('<?php echo $gtext['q_save'];/*Kaydediliyor?*/?>');
+			return confirm('<?php echo $gtext['a_deleting'];/*Siliniyor?*/?>');
 		},
 		success: function (data){ 
 			alert(data); 
@@ -298,20 +297,20 @@ function psil(msg){ //bilgiler silinir.
 }
 function pedit(msg){ 
 	const result = obj.find(({ _id }) => _id.$oid === msg);	 
-	$('#id').val(result['_id'].$oid); console.log(result);
+	$('#id').val(result['_id'].$oid); 
 	$('#pano_konu').val(result['pano_konu']); 
 	$('#pano_gond').html(result['pano_gond']); 
-	$('#pano_star').val(result['pano_star']); //
-	console.log(result['pano_star']);
+	$('#pano_star').val(result['pano_star']); //console.log(result['pano_star']);
 	if(result['tarih']!=''){ $('#altyazi').prop('display', 'inline'); }
 	$('#tarihp').html(result['tarih']); 
 	$('#son_deg_tarp').html(result['son_deg_tar']); 
 	$('#msg_ekle').html('<?php echo $gtext['change'];/*Değiştir*/?>');
 	isl='E';
-	$('#eklebtn').click(); 
+	//$('#eklebtn').click(); 
+	$('#pano_Modal').modal('show');
 }
 $('#eklebtn').on('click', function(){	
-	//$('#pano_star').val(today); //*/
+	$('#pano_star').val(today); //*/
 });
 $('#pano_star').on('blur', function(){
 	var tar=$('#tarih').val();

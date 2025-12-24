@@ -1,0 +1,58 @@
+PortalX Kurulumu:
+
+Windows Sunucu için kurulum detayları:
+1. Web Sunucu: PortalX; IIS ya da Apache gibi web sunucu yazılmları ile çalışır ancak PHP kodlarını çalıştıracak şekilde ayar yapılmalıdır. Fazla bilgi sahibi değilseniz Xampp web sunucusunu öneriyoruz. İlgili indirme sitelerinden xampp-windows-x64-8.0.30-0-VS16-installer.exe (64bit bir sunucu işletim sistemi için.) indirilip kurulacaktır. 
+NOT: Xampp kurulurken UAC hatası çıkarsa msconfig/Tools/Change UAC den uyarılar kapatılır.
+NOT: PHP 8.30 versiyon MongoDB çalıştırmak için gereklidir. 
+
+2. Mongodb ilgili sitelerden indirilip kurulur. 64bit bir sunucu işletim sistemi için Örnek: mongodb-windows-x86_64-8.2.1-signed.msi
+
+3. Apache virtual hostlar kurulum dosyasına; 	
+	##---PORTAL
+	<VirtualHost *:80>
+		##ServerAdmin webmaster@dummy-host2.example.com
+		DocumentRoot "C:/PORTALX"
+		ServerName portal
+		##ErrorLog "logs/dummy-host2.example.com-error.log"
+		##CustomLog "logs/dummy-host2.example.com-access.log" common
+		<Directory "C:/PORTALX/">
+			Options Indexes FollowSymLinks MultiViews
+			AllowOverride none
+			Order Deny,Allow
+			Allow from all
+			Require all granted
+		</Directory>
+	</VirtualHost>
+	##---------------------------------
+	Örnek Apache virtual hostlar dosyası: C:\Xampp\Apache\conf\extra\httpd-vhosts.conf şeklindedir. C:\Xampp\Apache yolu web sunucuyu hangi klasöre kurduysanız orasıdır.
+	ifadesinin eklenmesi gerekir. 
+	* Buradaki "DocumentRoot C:\PORTALX" kurulum dizinini gösterir, başka dizinde çalışmasını isterseniz değiştirebilirsiniz. Bu dizinde SYSTEM kullanıcısına (yetki yoksa) tam yetki verilmelidir.
+	* "ServerName portal" ifadesi de sitenizin adres satırında görünen yoludur. DNS kayıtlarına bu adı eklemelisiniz. Örnek: http://portal.domain.com.tr 
+	DNS'e kayıt ekleme Örneği: Bir AAA kaydı yapılır, listede siteadi A 192.168.0.100 şeklinde görünür. Siteadi ifadesi sizin siteye koyacağınız isimdir.
+
+4. Site çalıştıktan sonra ilgili klasör içine indirdiğiniz PortalX dosyaları kopyalanır.
+
+5. İlk olarak http://Install.php komutu çalıştırılır. Bu komut kurulumları yapar, gerekli yönergeleri ekranda gösterir. Site kurulum sonrasında normal şekilde ve hata vermeden açılmazsa kurulumlar aşağıdaki gibi manuel olarak yapılmalıdır:
+	a) Mongodb PHP Library dosyasının php\ext dizini altında olup olmadığını (php_mongodb.dll) kontrol ediniz. İlk çalıştırma esnasında bu dosya kopyalanacaktır. Eğer yoksa sunucunun PHP'yi çalıştırdığı dizin altında php/ext dizinine bu dosyaları kopyalayınız. MongoDB Php Library dosyaları config/ext klasörü altında bulunmaktadır.
+	b)Kurulum sonrasında php.ini dosyasında şu satırlar yoksa eklenir:
+		extension=ldap
+		extension=php_mongodb.dll   
+	c). Composer kurulur. Komut satırından install.bat dosyası çalıştırılarak composer kurulur.
+
+6. Install sayfasında kurulum aşamaları: 
+	a) Sunucu ayarları yapıldıktan sonra yukarıda belirlenen web sayfası adresi adres satırına girilir, sayfa ilk sefer açıldığında kurulum işlemleri başlar. Arkaplanda işlemler yapılır. 
+	b) İkinci aşamada sistemin çalışma parametrelerin girilmesi için ayarlar sayfası gelir.
+	c) Üçüncü olarak yetkili kullanıcı oluşturulması istenir. Dikkat! Bir adet yetkili kullanıcı açılması mecburidir. 
+	d) Bu işlemler bitince sayfaya yönlendirileceksiniz. 
+
+7. Kullanıcıların kendilerine özgü işlemler yapabilmesi için kullanıcı eklenmelidir. 
+	Not: Bu işlem Ayarlar/Kullanıcılar sayfasından tek tek elle kullanıcı girilerek yapılabildiği gibi, LDAP/Active Directory kullanan sistemi olan bir işletmede LDAP'tan aktarım şeklinde de yapılabilmektedir. 
+	* Yetkili Kullanıcı personel kayıtlarını ve birim tanımlarını indirme işlemini yapabilir, kullanıcılara Portal işlemlerinde gerekli yetkileri tanımlayabilir. 
+	* LDAP'ta kayıtlı bir kullanıcı ayarlar sayfasında yetkili kullanıcı olarak girilebilir. Aktarım sonrasında Portal yetkili kullanıcısı gibi bu kullanıcı da işlem yapabilir.
+
+8. PortalX üstünden LDAP/Active Directory yönetimi de yapılabilir. Personel ve Birim ekleme, personelin hesabını kapatma, kilit açma, birimlere yönetici atama vb. işlemler yapılabilir. Ayarlarda "Alan Adı Ayarları/Kullanıcı Doğrulama Kaynağı" seçeneğinde "LDAP" seçili ise açılan kullanıcı hem LDAP hem de PortalX veritabanına kaydedilecektir.
+
+9. İşlemler tamamlanınca haber ve bilgiler girilmelidir. Haber ya da bilgi girilmeden önce boş bir sayfa gelecektir.
+
+10. Sistemin kullanımı için Users_guide.pdf dosyası hazırlanmıştır. (Dokümanlar İngilizce ve Türkçe olarak hazırlanmıştır.)
+

@@ -4,510 +4,33 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "0fd6b34bae43813b78bb06741a031a00",
+    "content-hash": "250b957f83037785d62afbe8519e7edd",
     "packages": [
         {
-            "name": "components/jquery",
-            "version": "v3.7.1",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/components/jquery.git",
-                "reference": "8edc7785239bb8c2ad2b83302b856a1d61de60e7"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/components/jquery/zipball/8edc7785239bb8c2ad2b83302b856a1d61de60e7",
-                "reference": "8edc7785239bb8c2ad2b83302b856a1d61de60e7",
-                "shasum": ""
-            },
-            "type": "component",
-            "extra": {
-                "component": {
-                    "scripts": [
-                        "jquery.js"
-                    ],
-                    "files": [
-                        "jquery.min.js",
-                        "jquery.min.map",
-                        "jquery.slim.js",
-                        "jquery.slim.min.js",
-                        "jquery.slim.min.map"
-                    ]
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "JS Foundation and other contributors"
-                }
-            ],
-            "description": "jQuery JavaScript Library",
-            "homepage": "http://jquery.com",
-            "support": {
-                "forum": "http://forum.jquery.com",
-                "irc": "irc://irc.freenode.org/jquery",
-                "issues": "https://github.com/jquery/jquery/issues",
-                "source": "https://github.com/jquery/jquery",
-                "wiki": "http://docs.jquery.com/"
-            },
-            "time": "2023-09-22T01:43:46+00:00"
-        },
-        {
-            "name": "composer/package-versions-deprecated",
-            "version": "1.11.99.5",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/composer/package-versions-deprecated.git",
-                "reference": "b4f54f74ef3453349c24a845d22392cd31e65f1d"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/composer/package-versions-deprecated/zipball/b4f54f74ef3453349c24a845d22392cd31e65f1d",
-                "reference": "b4f54f74ef3453349c24a845d22392cd31e65f1d",
-                "shasum": ""
-            },
-            "require": {
-                "composer-plugin-api": "^1.1.0 || ^2.0",
-                "php": "^7 || ^8"
-            },
-            "replace": {
-                "ocramius/package-versions": "1.11.99"
-            },
-            "require-dev": {
-                "composer/composer": "^1.9.3 || ^2.0@dev",
-                "ext-zip": "^1.13",
-                "phpunit/phpunit": "^6.5 || ^7"
-            },
-            "type": "composer-plugin",
-            "extra": {
-                "class": "PackageVersions\\Installer",
-                "branch-alias": {
-                    "dev-master": "1.x-dev"
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "PackageVersions\\": "src/PackageVersions"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Marco Pivetta",
-                    "email": "ocramius@gmail.com"
-                },
-                {
-                    "name": "Jordi Boggiano",
-                    "email": "j.boggiano@seld.be"
-                }
-            ],
-            "description": "Composer plugin that provides efficient querying for installed package versions (no runtime IO)",
-            "support": {
-                "issues": "https://github.com/composer/package-versions-deprecated/issues",
-                "source": "https://github.com/composer/package-versions-deprecated/tree/1.11.99.5"
-            },
-            "funding": [
-                {
-                    "url": "https://packagist.com",
-                    "type": "custom"
-                },
-                {
-                    "url": "https://github.com/composer",
-                    "type": "github"
-                },
-                {
-                    "url": "https://tidelift.com/funding/github/packagist/composer/composer",
-                    "type": "tidelift"
-                }
-            ],
-            "time": "2022-01-17T14:14:24+00:00"
-        },
-        {
-            "name": "datatables.net/datatables.net",
-            "version": "2.1.8",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/DataTables/Dist-DataTables.git",
-                "reference": "155c47bc13a0b44c1084887d597e33bddbff268b"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/DataTables/Dist-DataTables/zipball/155c47bc13a0b44c1084887d597e33bddbff268b",
-                "reference": "155c47bc13a0b44c1084887d597e33bddbff268b",
-                "shasum": ""
-            },
-            "require": {
-                "components/jquery": ">=1.7"
-            },
-            "type": "library",
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "SpryMedia",
-                    "homepage": "https://datatables.net"
-                }
-            ],
-            "description": "DataTables is a plug-in for the jQuery Javascript library. It is a highly flexible tool, based upon the foundations of progressive enhancement, which will add advanced interaction controls to any HTML table. This is jQuery DataTables",
-            "homepage": "http://www.datatables.net/",
-            "keywords": [
-                "datatables",
-                "jquery",
-                "table"
-            ],
-            "support": {
-                "forum": "https://datatables.net/forums",
-                "source": "https://github.com/DataTables/Dist-DataTables"
-            },
-            "time": "2024-10-04T10:00:46+00:00"
-        },
-        {
-            "name": "datatables.net/datatables.net-bs4",
-            "version": "2.1.8",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/DataTables/Dist-DataTables-Bootstrap4.git",
-                "reference": "db510208c84584a1cf89a31607ef7a00083abf44"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/DataTables/Dist-DataTables-Bootstrap4/zipball/db510208c84584a1cf89a31607ef7a00083abf44",
-                "reference": "db510208c84584a1cf89a31607ef7a00083abf44",
-                "shasum": ""
-            },
-            "require": {
-                "datatables.net/datatables.net": ">=1.12.1",
-                "twbs/bootstrap": "4.*"
-            },
-            "type": "library",
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "SpryMedia",
-                    "homepage": "https://datatables.net"
-                }
-            ],
-            "description": "DataTables is a plug-in for the jQuery Javascript library. It is a highly flexible tool, based upon the foundations of progressive enhancement, which will add advanced interaction controls to any HTML table. This is DataTables with styling for [Bootstrap4](https://getbootstrap.com/docs/4.6/getting-started/introduction/)",
-            "homepage": "http://www.datatables.net/",
-            "keywords": [
-                "bootstrap",
-                "bootstrap4",
-                "datatables",
-                "jquery",
-                "table"
-            ],
-            "support": {
-                "forum": "https://datatables.net/forums",
-                "source": "https://github.com/DataTables/Dist-DataTables-Bootstrap4"
-            },
-            "time": "2024-10-04T10:02:22+00:00"
-        },
-        {
-            "name": "datatables.net/datatables.net-buttons",
-            "version": "3.1.2",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/DataTables/Dist-DataTables-Buttons.git",
-                "reference": "c92939fe0b630dd0177294c470688bc6854631d7"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/DataTables/Dist-DataTables-Buttons/zipball/c92939fe0b630dd0177294c470688bc6854631d7",
-                "reference": "c92939fe0b630dd0177294c470688bc6854631d7",
-                "shasum": ""
-            },
-            "require": {
-                "datatables.net/datatables.net": ">=1.12.1"
-            },
-            "type": "library",
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "SpryMedia",
-                    "homepage": "https://datatables.net"
-                }
-            ],
-            "description": "The Buttons extension for DataTables provides a common set of options, API methods and styling to display buttons on a page that will interact with a DataTable. It also provides plug-ins for file export (HTML5 and Flash), print view and column visibility. Other libraries, such as Editor and Select also provide buttons specific to their use cases. This is Buttons for DataTables",
-            "homepage": "http://www.datatables.net/",
-            "keywords": [
-                "Column Visibility",
-                "buttons",
-                "csv",
-                "datatables",
-                "excel",
-                "jquery",
-                "pdf",
-                "print",
-                "table"
-            ],
-            "support": {
-                "forum": "https://datatables.net/forums",
-                "source": "https://github.com/DataTables/Dist-DataTables-Buttons"
-            },
-            "time": "2024-08-30T13:15:18+00:00"
-        },
-        {
-            "name": "datatables.net/datatables.net-buttons-bs4",
-            "version": "3.1.2",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/DataTables/Dist-DataTables-Buttons-Bootstrap4.git",
-                "reference": "a7e22b6d62b9412dffa4c6274924052c167ab20a"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/DataTables/Dist-DataTables-Buttons-Bootstrap4/zipball/a7e22b6d62b9412dffa4c6274924052c167ab20a",
-                "reference": "a7e22b6d62b9412dffa4c6274924052c167ab20a",
-                "shasum": ""
-            },
-            "require": {
-                "datatables.net/datatables.net-bs4": ">=1.12.1",
-                "datatables.net/datatables.net-buttons": ">=2.2.3"
-            },
-            "type": "library",
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "SpryMedia",
-                    "homepage": "https://datatables.net"
-                }
-            ],
-            "description": "The Buttons extension for DataTables provides a common set of options, API methods and styling to display buttons on a page that will interact with a DataTable. It also provides plug-ins for file export (HTML5 and Flash), print view and column visibility. Other libraries, such as Editor and Select also provide buttons specific to their use cases. This is Buttons for DataTables with styling for [Bootstrap4](https://getbootstrap.com/docs/4.6/getting-started/introduction/)",
-            "homepage": "http://www.datatables.net/",
-            "keywords": [
-                "Column Visibility",
-                "bootstrap",
-                "bootstrap4",
-                "buttons",
-                "csv",
-                "datatables",
-                "excel",
-                "jquery",
-                "pdf",
-                "print",
-                "table"
-            ],
-            "support": {
-                "forum": "https://datatables.net/forums",
-                "source": "https://github.com/DataTables/Dist-DataTables-Buttons-Bootstrap4"
-            },
-            "time": "2024-08-30T13:15:56+00:00"
-        },
-        {
-            "name": "datatables.net/datatables.net-colreorder",
-            "version": "2.0.4",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/DataTables/Dist-DataTables-ColReorder.git",
-                "reference": "4c778c3155417a04649e7c985f5192b0e0e58d7e"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/DataTables/Dist-DataTables-ColReorder/zipball/4c778c3155417a04649e7c985f5192b0e0e58d7e",
-                "reference": "4c778c3155417a04649e7c985f5192b0e0e58d7e",
-                "shasum": ""
-            },
-            "require": {
-                "datatables.net/datatables.net": ">=1.12.1"
-            },
-            "type": "library",
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "SpryMedia",
-                    "homepage": "https://datatables.net"
-                }
-            ],
-            "description": "ColReorder allows the end user to modify the column order of a table through drop-and-drag of column headers. This is ColReorder for DataTables",
-            "homepage": "http://www.datatables.net/",
-            "keywords": [
-                "colreorder",
-                "datatables",
-                "jquery",
-                "reorder",
-                "table"
-            ],
-            "support": {
-                "forum": "https://datatables.net/forums",
-                "source": "https://github.com/DataTables/Dist-DataTables-ColReorder"
-            },
-            "time": "2024-07-08T10:45:15+00:00"
-        },
-        {
-            "name": "datatables.net/datatables.net-colreorder-bs4",
-            "version": "2.0.4",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/DataTables/Dist-DataTables-ColReorder-Bootstrap4.git",
-                "reference": "3effab28158bb627943bbef5f4c752ddff63ba41"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/DataTables/Dist-DataTables-ColReorder-Bootstrap4/zipball/3effab28158bb627943bbef5f4c752ddff63ba41",
-                "reference": "3effab28158bb627943bbef5f4c752ddff63ba41",
-                "shasum": ""
-            },
-            "require": {
-                "datatables.net/datatables.net-bs4": ">=1.12.1",
-                "datatables.net/datatables.net-colreorder": ">=1.5.6"
-            },
-            "type": "library",
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "SpryMedia",
-                    "homepage": "https://datatables.net"
-                }
-            ],
-            "description": "ColReorder allows the end user to modify the column order of a table through drop-and-drag of column headers. This is ColReorder for DataTables with styling for [Bootstrap4](https://getbootstrap.com/docs/4.6/getting-started/introduction/)",
-            "homepage": "http://www.datatables.net/",
-            "keywords": [
-                "bootstrap",
-                "bootstrap4",
-                "colreorder",
-                "datatables",
-                "jquery",
-                "reorder",
-                "table"
-            ],
-            "support": {
-                "forum": "https://datatables.net/forums",
-                "source": "https://github.com/DataTables/Dist-DataTables-ColReorder-Bootstrap4"
-            },
-            "time": "2024-07-08T10:45:51+00:00"
-        },
-        {
-            "name": "datatables.net/datatables.net-rowreorder",
-            "version": "1.5.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/DataTables/Dist-DataTables-RowReorder.git",
-                "reference": "f48fdf95100daa34b4f729a3c32687bfae8ddb2f"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/DataTables/Dist-DataTables-RowReorder/zipball/f48fdf95100daa34b4f729a3c32687bfae8ddb2f",
-                "reference": "f48fdf95100daa34b4f729a3c32687bfae8ddb2f",
-                "shasum": ""
-            },
-            "require": {
-                "datatables.net/datatables.net": ">=1.12.1"
-            },
-            "type": "library",
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "SpryMedia",
-                    "homepage": "https://datatables.net"
-                }
-            ],
-            "description": "RowReorder adds end user reordering of rows in a DataTable through click-and-drag mouse and touch operations. RowReorder provides full support for Editor allowing end users to update sequential information in a fast and easy manner. This is RowReorder for DataTables",
-            "homepage": "http://www.datatables.net/",
-            "keywords": [
-                "Row Reordering",
-                "datatables",
-                "jquery",
-                "rowreorder",
-                "table"
-            ],
-            "support": {
-                "forum": "https://datatables.net/forums",
-                "source": "https://github.com/DataTables/Dist-DataTables-RowReorder"
-            },
-            "time": "2024-02-14T12:01:21+00:00"
-        },
-        {
-            "name": "datatables.net/datatables.net-rowreorder-bs4",
-            "version": "1.5.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/DataTables/Dist-DataTables-RowReorder-Bootstrap4.git",
-                "reference": "9de106710fe9b5c469fb7d38d13e35c38013dd48"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/DataTables/Dist-DataTables-RowReorder-Bootstrap4/zipball/9de106710fe9b5c469fb7d38d13e35c38013dd48",
-                "reference": "9de106710fe9b5c469fb7d38d13e35c38013dd48",
-                "shasum": ""
-            },
-            "require": {
-                "datatables.net/datatables.net-bs4": ">=1.12.1",
-                "datatables.net/datatables.net-rowreorder": ">=1.2.8"
-            },
-            "type": "library",
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "SpryMedia",
-                    "homepage": "https://datatables.net"
-                }
-            ],
-            "description": "RowReorder adds end user reordering of rows in a DataTable through click-and-drag mouse and touch operations. RowReorder provides full support for Editor allowing end users to update sequential information in a fast and easy manner. This is RowReorder for DataTables with styling for [Bootstrap4](https://getbootstrap.com/docs/4.6/getting-started/introduction/)",
-            "homepage": "http://www.datatables.net/",
-            "keywords": [
-                "Row Reordering",
-                "bootstrap",
-                "bootstrap4",
-                "datatables",
-                "jquery",
-                "rowreorder",
-                "table"
-            ],
-            "support": {
-                "forum": "https://datatables.net/forums",
-                "source": "https://github.com/DataTables/Dist-DataTables-RowReorder-Bootstrap4"
-            },
-            "time": "2024-02-14T12:01:54+00:00"
-        },
-        {
             "name": "jean85/pretty-package-versions",
-            "version": "1.6.0",
+            "version": "2.1.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Jean85/pretty-package-versions.git",
-                "reference": "1e0104b46f045868f11942aea058cd7186d6c303"
+                "reference": "4d7aa5dab42e2a76d99559706022885de0e18e1a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Jean85/pretty-package-versions/zipball/1e0104b46f045868f11942aea058cd7186d6c303",
-                "reference": "1e0104b46f045868f11942aea058cd7186d6c303",
+                "url": "https://api.github.com/repos/Jean85/pretty-package-versions/zipball/4d7aa5dab42e2a76d99559706022885de0e18e1a",
+                "reference": "4d7aa5dab42e2a76d99559706022885de0e18e1a",
                 "shasum": ""
             },
             "require": {
-                "composer/package-versions-deprecated": "^1.8.0",
-                "php": "^7.0|^8.0"
+                "composer-runtime-api": "^2.1.0",
+                "php": "^7.4|^8.0"
             },
             "require-dev": {
-                "phpunit/phpunit": "^6.0|^8.5|^9.2"
+                "friendsofphp/php-cs-fixer": "^3.2",
+                "jean85/composer-provided-replaced-stub-package": "^1.0",
+                "phpstan/phpstan": "^2.0",
+                "phpunit/phpunit": "^7.5|^8.5|^9.6",
+                "rector/rector": "^2.0",
+                "vimeo/psalm": "^4.3 || ^5.0"
             },
             "type": "library",
             "extra": {
@@ -530,7 +53,7 @@
                     "email": "alessandro.lai85@gmail.com"
                 }
             ],
-            "description": "A wrapper for ocramius/package-versions to get pretty versions strings",
+            "description": "A library to get pretty versions strings of installed dependencies",
             "keywords": [
                 "composer",
                 "package",
@@ -539,40 +62,41 @@
             ],
             "support": {
                 "issues": "https://github.com/Jean85/pretty-package-versions/issues",
-                "source": "https://github.com/Jean85/pretty-package-versions/tree/1.6.0"
+                "source": "https://github.com/Jean85/pretty-package-versions/tree/2.1.1"
             },
-            "time": "2021-02-04T16:20:16+00:00"
+            "time": "2025-03-19T14:43:43+00:00"
         },
         {
             "name": "mongodb/mongodb",
-            "version": "1.8.0",
+            "version": "1.12.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/mongodb/mongo-php-library.git",
-                "reference": "953dbc19443aa9314c44b7217a16873347e6840d"
+                "reference": "e4a7594ac4b31635fa77455c4038a7013024ba28"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/mongodb/mongo-php-library/zipball/953dbc19443aa9314c44b7217a16873347e6840d",
-                "reference": "953dbc19443aa9314c44b7217a16873347e6840d",
+                "url": "https://api.github.com/repos/mongodb/mongo-php-library/zipball/e4a7594ac4b31635fa77455c4038a7013024ba28",
+                "reference": "e4a7594ac4b31635fa77455c4038a7013024ba28",
                 "shasum": ""
             },
             "require": {
                 "ext-hash": "*",
                 "ext-json": "*",
-                "ext-mongodb": "^1.8.1",
-                "jean85/pretty-package-versions": "^1.2",
-                "php": "^7.0 || ^8.0",
+                "ext-mongodb": "^1.13.0",
+                "jean85/pretty-package-versions": "^1.2 || ^2.0.1",
+                "php": "^7.2 || ^8.0",
                 "symfony/polyfill-php80": "^1.19"
             },
             "require-dev": {
-                "squizlabs/php_codesniffer": "^3.5, <3.5.5",
-                "symfony/phpunit-bridge": "5.x-dev"
+                "doctrine/coding-standard": "^9.0",
+                "squizlabs/php_codesniffer": "^3.6",
+                "symfony/phpunit-bridge": "^5.2"
             },
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "1.8.x-dev"
+                    "dev-master": "1.12.x-dev"
                 }
             },
             "autoload": {
@@ -607,32 +131,32 @@
             ],
             "support": {
                 "issues": "https://github.com/mongodb/mongo-php-library/issues",
-                "source": "https://github.com/mongodb/mongo-php-library/tree/1.8.0"
+                "source": "https://github.com/mongodb/mongo-php-library/tree/1.12.0"
             },
-            "time": "2020-11-25T12:26:02+00:00"
+            "time": "2022-03-23T20:18:39+00:00"
         },
         {
             "name": "symfony/polyfill-php80",
-            "version": "v1.30.0",
+            "version": "v1.33.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/polyfill-php80.git",
-                "reference": "77fa7995ac1b21ab60769b7323d600a991a90433"
+                "reference": "0cc9dd0f17f61d8131e7df6b84bd344899fe2608"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/polyfill-php80/zipball/77fa7995ac1b21ab60769b7323d600a991a90433",
-                "reference": "77fa7995ac1b21ab60769b7323d600a991a90433",
+                "url": "https://api.github.com/repos/symfony/polyfill-php80/zipball/0cc9dd0f17f61d8131e7df6b84bd344899fe2608",
+                "reference": "0cc9dd0f17f61d8131e7df6b84bd344899fe2608",
                 "shasum": ""
             },
             "require": {
-                "php": ">=7.1"
+                "php": ">=7.2"
             },
             "type": "library",
             "extra": {
                 "thanks": {
-                    "name": "symfony/polyfill",
-                    "url": "https://github.com/symfony/polyfill"
+                    "url": "https://github.com/symfony/polyfill",
+                    "name": "symfony/polyfill"
                 }
             },
             "autoload": {
@@ -673,7 +197,7 @@
                 "shim"
             ],
             "support": {
-                "source": "https://github.com/symfony/polyfill-php80/tree/v1.30.0"
+                "source": "https://github.com/symfony/polyfill-php80/tree/v1.33.0"
             },
             "funding": [
                 {
@@ -685,75 +209,24 @@
                     "type": "github"
                 },
                 {
+                    "url": "https://github.com/nicolas-grekas",
+                    "type": "github"
+                },
+                {
                     "url": "https://tidelift.com/funding/github/packagist/symfony/symfony",
                     "type": "tidelift"
                 }
             ],
-            "time": "2024-05-31T15:07:36+00:00"
-        },
-        {
-            "name": "twbs/bootstrap",
-            "version": "v4.6.2",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/twbs/bootstrap.git",
-                "reference": "e5643aaa89eb67327a5b4abe7db976f0ea276b70"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/twbs/bootstrap/zipball/e5643aaa89eb67327a5b4abe7db976f0ea276b70",
-                "reference": "e5643aaa89eb67327a5b4abe7db976f0ea276b70",
-                "shasum": ""
-            },
-            "replace": {
-                "twitter/bootstrap": "self.version"
-            },
-            "type": "library",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "3.3.x-dev"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Mark Otto",
-                    "email": "markdotto@gmail.com"
-                },
-                {
-                    "name": "Jacob Thornton",
-                    "email": "jacobthornton@gmail.com"
-                }
-            ],
-            "description": "The most popular front-end framework for developing responsive, mobile first projects on the web.",
-            "homepage": "https://getbootstrap.com/",
-            "keywords": [
-                "JS",
-                "css",
-                "framework",
-                "front-end",
-                "mobile-first",
-                "responsive",
-                "sass",
-                "web"
-            ],
-            "support": {
-                "issues": "https://github.com/twbs/bootstrap/issues",
-                "source": "https://github.com/twbs/bootstrap/tree/v4.6.2"
-            },
-            "time": "2022-07-19T15:13:44+00:00"
+            "time": "2025-01-02T08:10:11+00:00"
         }
     ],
     "packages-dev": [],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": {},
+    "stability-flags": [],
     "prefer-stable": false,
     "prefer-lowest": false,
-    "platform": {},
-    "platform-dev": {},
+    "platform": [],
+    "platform-dev": [],
     "plugin-api-version": "2.6.0"
 }

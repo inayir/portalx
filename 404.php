@@ -23,7 +23,7 @@ include($docroot."/sess.php");
 
     <!-- Custom styles for this template-->
     <link href="/css/sb-admin-2.css" rel="stylesheet">
-<?php include("/set_page.php"); ?>
+<?php include($docroot."/set_page.php"); ?>
 </head>
 
 <body id="page-top">
@@ -32,7 +32,7 @@ include($docroot."/sess.php");
     <div id="wrapper">
 
         <!-- Sidebar -->
-        <?php include($docroot."/sidebar.php"); ?>
+        <?php //include($docroot."/sidebar.php"); ?>
         <!-- End of Sidebar -->
 
         <!-- Content Wrapper -->
@@ -42,7 +42,7 @@ include($docroot."/sess.php");
             <div id="content">
 
                 <!-- Topbar -->
-                <?php include($docroot."/topbar.php"); ?>
+                <?php //include($docroot."/topbar.php"); ?>
                 <!-- End of Topbar -->
 
                 <!-- Begin Page Content -->
@@ -50,6 +50,7 @@ include($docroot."/sess.php");
 
                     <!-- 404 Error Text -->
                     <div class="text-center"><br><br>
+						<img class="mb-4 img-error" src="<?php echo @$ini['logo']; ?>" />
                         <div class="error mx-auto">404</div>
                         <p class="lead text-gray-800 mb-5"><?php echo $gtext['u_pgnotfound'];/*Sayfa Bulunamadı!*/?></p>
                         <a href="/index.php">&larr; <?php echo $gtext['back'];/*Geri*/?></a>
@@ -59,32 +60,24 @@ include($docroot."/sess.php");
                 <!-- /.container-fluid -->
 
             </div>
-            <!-- End of Main Content -->
-
-            <!-- Footer -->
-			<?php include($docroot."/footer.php"); ?>
-            <!-- End of Footer -->
+            <!-- End of Main Content -->   
 
         </div>
         <!-- End of Content Wrapper -->
-
+		<!-- Footer -->
+		<?php include($docroot."/footer.php"); ?>
+		<!-- End of Footer -->
     </div>
     <!-- End of Page Wrapper -->
-
-    <!-- Scroll to Top Button-->
-    <a class="scroll-to-top rounded" href="#page-top">
-        <i class="fas fa-angle-up"></i>
-    </a>
-
     <!-- Bootstrap core JavaScript-->
     <script src="/vendor/jquery/jquery.min.js"></script>
-    <script src="/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="/vendor/bootstrap/bootstrap.bundle.min.js"></script>
 
     <!-- Core plugin JavaScript-->
     <script src="/vendor/jquery-easing/jquery.easing.min.js"></script>
 
     <!-- Custom scripts for all pages-->
-    <script src="/js/sb-admin-2.min.js"></script>
+    <script src="/js/sb-admin-2.js"></script>
 
 </body>
 

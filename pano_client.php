@@ -113,7 +113,7 @@ fclose($dosya);
                     <!-- Page Heading -->
                     <div class="d-sm-flex align-items-center justify-content-between mb-4">
                         <h1 class="h3 mb-0 text-gray-800">Personel Haberleşme Panosu</h1>
-                        <a id="eklebtn" href="#" data-toggle="modal" data-target="#pano_Modal" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i class="fas fa-pen-fancy fa-sm text-white-50"></i> Yeni Bilgi</a>
+                        <a id="eklebtn" href="#" data-bs-toggle="modal" data-bs-target="#pano_Modal" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i class="fas fa-pen-fancy fa-sm text-white-50"></i> Yeni Bilgi</a>
                     </div>
 
                     <!-- Content Row -->
@@ -185,7 +185,7 @@ fclose($dosya);
         <i class="fas fa-angle-up"></i>
     </a>
 <!-- ekle Modal-->
-				<div class="modal fade" id="pano_Modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+				<div class="modal fade" id="pano_Modal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
 					aria-hidden="true">
 					<div class="modal-dialog modal-xl" role="document">
 						<div class="modal-content">
@@ -193,7 +193,7 @@ fclose($dosya);
 							<input type="hidden" name="id" id="id" value="0" />
 							<div class="modal-header">
 								<h5 class="modal-title" id="exampleModalLabel">Org.Şema Ekleme</h5>
-								<button class="close" type="button" data-dismiss="modal" aria-label="<?php echo $gtext['close'];?>">
+								<button class="close" type="button" data-bs-dismiss="modal" aria-label="<?php echo $gtext['close'];?>">
 									<span aria-hidden="true">×</span>
 								</button>
 							</div>
@@ -215,7 +215,7 @@ fclose($dosya);
 							<div id="altyazi" style="display:none;">Giriş Tarihi:<span id="tarihp"></span> - Son Değ.Tarihi:<span id="son_deg_tarp"></span></div>
 							</div>
 							<div class="modal-footer">
-								<button class="btn btn-secondary" type="reset" id="cancel" data-dismiss="modal"><?php echo $gtext['cancel']; ?></button>
+								<button class="btn btn-secondary" type="reset" id="cancel" data-bs-dismiss="modal"><?php echo $gtext['cancel']; ?></button>
 								<button class="btn btn-primary" id="msg_ekle" disabled type="submit"><?php echo $gtext['send']; ?></button>
 							</div>
 							</form>
@@ -225,14 +225,14 @@ fclose($dosya);
 			<!-- ekle modal sonu-->
     <!-- Bootstrap core JavaScript-->
     <script src="/vendor/jquery/jquery.min.js"></script>
-    <script src="/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="/vendor/bootstrap/bootstrap.bundle.min.js"></script>
     <script src="/vendor/form-master/dist/jquery.form.min.js"></script>
 
     <!-- Core plugin JavaScript-->
     <script src="/vendor/jquery-easing/jquery.easing.min.js"></script>
 
     <!-- Custom scripts for all pages-->
-    <script src="/js/sb-admin-2.min.js"></script>
+    <script src="/js/sb-admin-2.js"></script>
     <!-- Page level plugins -->
     <script src="/vendor/datatables/jquery.dataTables.min.js"></script>
     <script src="/vendor/datatables/dataTables.bootstrap4.min.js"></script>

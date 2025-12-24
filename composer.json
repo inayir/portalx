@@ -1,10 +1,10 @@
 {
-    "name": "mongodb/mongodb",
-    "description": "MongoDB",
+    "name": "tecnickcom/tc-lib-pdf",
+    "description": "TCPDF",
     "type": "library",
     "autoload": {
         "psr-4": {
-            "Mongodb\\Mongodb\\": "AUTOLOAD"
+            "Tecnickcom\\TcLibPdf\\": "AUTOLOAD"
         }
     },
     "require": {}

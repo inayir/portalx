@@ -9,7 +9,7 @@ use function is_object;
 use function MongoDB\BSON\fromPHP;
 use function MongoDB\BSON\toRelaxedExtendedJSON;
 use function printf;
-require __DIR__ . '/vendor/autoload.php';//*/
+require __DIR__ . '/vendor/autoload.php';
 
 include('get_ini.php');
 if(isset($ini['MongoConnection'])){

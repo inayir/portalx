@@ -1,0 +1,9 @@
+PORTALX 
+
+PortalX, kurumlar için Intranet portali şeklinde kullanılabilecek bir açık kaynak kodlu yazılımdır.
+PortalX ayarları ile istenilen şekilde kullanılabilir. 
+PortalX MIT lisansı ile lisanslanmıştır. Yazılım üzerinde değişiklik yapma izni tanınmıştır ancak değişiklik yapılan ürünler hiç bir türlü pazarlanamaz. 
+PortalX kurulumu için bu dizindeki INSTALL.txt dosyasına bakınız.
+Bu hizmetin güvenliğini sağlamak kurumun yükümlülüğündedir. Eğer PortalX dış erişime açılmayacaksa sunucu dışarıdan erişilemeyecek şekilde yaapılandırılmalıdır. 
+
+Destek için info@e-baski.com adresine mail gönderiniz.

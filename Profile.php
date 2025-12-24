@@ -4,12 +4,13 @@ include("sess.php");
 if($_SESSION['user']==""){
 	//header('Location: login.php');
 }
+$username=$_SESSION['user'];
 @$collection = $db->personel; //
 	try{
 		$cursor = $collection->aggregate([
 			[
 				'$match'=>[
-					'username'=> $_SESSION['user']
+					'username'=> $username
 				],
 			],
 			['$lookup'=>
@@ -35,31 +36,11 @@ if($_SESSION['user']==""){
 					'compname' => '$comps.description',
 				],
 			],
-			['$sort' => [
-					'givenname' => 1,
-					'sn' => 1,
-					'mail' => 1,
-					'description' => 1,
-					'title' => 1,
-					'department' => 1,
-					'company' => 1,
-					'manager' => 1,
-					'physicaldeliveryofficename' => 1,
-					'mobile' => 1,
-					'telephonenumber' => 1,
-					'sdate' => 1,
-					'streetaddress' => 1,
-					'district' => 1,
-					'st' => 1,
-					'co' => 1,
-					'distinguishedname' => 1,
-					'picture' => 1,
-				],
-			],
 		]);
 		if(isset($cursor)){ 
 			foreach($cursor as $formsatir){
-				
+				if(@$formsatir->picture!=''){ $foto=$formsatir->picture; }
+				else{ $foto='/img/profil_av.png';}
 			}
 		}else{
 			echo "Hata oluştu.";
@@ -92,7 +73,7 @@ if($_SESSION['user']==""){
 	<link href="/vendor/bootstrap-toggle/css/bootstrap-toggle.min.css" rel="stylesheet">
     <script src="/vendor/jquery/jquery.min.js"></script>
     <!-- Bootstrap core JavaScript-->
-    <script src="/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="/vendor/bootstrap/bootstrap.bundle.min.js"></script>
     <script src="/vendor/form-master/dist/jquery.form.min.js"></script>
     <!-- Core plugin JavaScript-->
     <script src="/vendor/jquery-easing/jquery.easing.min.js"></script>
@@ -131,7 +112,7 @@ if($_SESSION['user']==""){
                     <!-- Content Row -->
                     <div class="row">
 						<div class="w-50">
-							<form name="formp" method="POST" action="AD/set_user.php">
+							<form name="formp" method="POST" action="/AD/set_user.php">
 							<table class="table table-striped">
 							<tr>
 								<td><?php echo $gtext['username']; ?>:</td>
@@ -209,7 +190,7 @@ if($_SESSION['user']==""){
 							<tr>
 								<td><?php echo $gtext['profilepicture']; ?>:</td>
 								<td>
-									<img src="<?php echo $formsatir->picture; ?>" style="width: 100px;">
+									<img src='<?php echo $foto; ?>' style='width: 100px;'>
 									<button class="btn btn-outline-info"><?php echo $gtext['ch_picture'];/*Resim Değiştir*/?></button>
 								</td>
 							</tr><?php if($ini['usercanedit']==1){ ?>
@@ -294,19 +275,19 @@ if($_SESSION['user']==""){
     </a>
 
     <!-- Logout Modal-->
-    <div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+    <div class="modal fade" id="logoutModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
         aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="exampleModalLabel"><?php echo $gtext['q_rusure'];/*Ready to Leave?*/?></h5>
-                    <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                    <button class="close" type="button" data-bs-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">×</span>
                     </button>
                 </div>
                 <div class="modal-body"><?php echo $gtext['u_logout'];/*Select "Logout" below if you are ready to end your current session.*/?></div>
                 <div class="modal-footer">
-                    <button class="btn btn-secondary" type="button" data-dismiss="modal"><?php echo $gtext['cancel']; ?></button>
+                    <button class="btn btn-secondary" type="button" data-bs-dismiss="modal"><?php echo $gtext['cancel']; ?></button>
                     <a class="btn btn-primary" href="login.html"><?php echo $gtext['logout']; /*Logout*/?></a>
                 </div>
             </div>
@@ -331,7 +312,7 @@ if($_SESSION['user']==""){
 			beforeSend : function(){
 				//kontroller yapılacak...
 				if(($('#gpass').val()=='')||($('#pass').val()=='')||($('#repass').val()=='')){ 
-					alert('<?php echo $gtext['u_fieldisnotblank'];?>');
+					alert('<?php echo $gtext['u_fieldmustnotblank'];?>');
 					return false;
 				}
 				if($('#pass').val()!=$('#repass').val()){ 
@@ -346,7 +327,7 @@ if($_SESSION['user']==""){
 			}
 		}); 
 	});
-	$('.upd').on("click", function(){ 
+	$('#profile-update').on("click", function(){ 
 		$.ajax({
 			type	: 'POST',
 			url 	: '/AD/set_user.php',
@@ -355,10 +336,9 @@ if($_SESSION['user']==""){
 			beforeSend : function(){
 				var y=confirm('Emin Misiniz? ');
 			},
-			success: function(data){ //
-			console.log('Dönüş :'+data); 
+			success: function(data){ //console.log('Dönüş :'+data); 
 				if(data.indexOf('!')>-1){ alert('<?php echo $gtext['u_error'];?>\n'+data); }
-				//else { alert(data); location.reload(); }
+				else { if(confirm(data)){ location.reload(); } }
 			}
 		}); 
 	});

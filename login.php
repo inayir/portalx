@@ -4,16 +4,17 @@
 */
 include('set_mng.php');
 include($docroot."/sess.php");
-session_start();
+//session_start();
 //
 @$dn=$ini['dom_dn']; 
 if($dn==""){ $dn=$ini['base_dn']; }
 $userok=0;
 @$referrer_page=$_POST['referrer_page'];
+if($referrer_page==""){ @$referrer_page=$_SESSION['referrer_page']; }
 if($referrer_page==""){ @$referrer_page=$_SERVER['HTTP_REFERER']; }
 if($referrer_page==""){ @$referrer_page="/index.php"; }
 $_SESSION['referrer_page']=$referrer_page;
-$_SESSION["user"]=="";
+@$_SESSION["user"]=="";
 if(isset($_POST['ldap-username'])){
 	@$username=$_POST['ldap-username']; 
 	@$password=$_POST['pass']; 
@@ -89,6 +90,7 @@ if(isset($_POST['ldap-username'])){
 					'y_addinfohaber' => 1,
 					'y_addinfoser' => 1,
 					'y_addinfomenu' => 1,
+					'y_fixtures' => 1,
 					'y_bq' => 1,
 					'y_bo' => 1,
 					'y_link01' => 1,
@@ -104,6 +106,7 @@ if(isset($_POST['ldap-username'])){
 				$_SESSION["y_addinfohaber"]=$cursorp->y_addinfohaber;
 				$_SESSION["y_addinfoser"]=$cursorp->y_addinfoser;
 				$_SESSION["y_addinfomenu"]=$cursorp->y_addinfomenu;
+				$_SESSION['y_fixtures']=$cursorp->y_fixtures;
 				$_SESSION["y_bq"]=$cursorp->y_bq;
 				$_SESSION["y_bo"]=$cursorp->y_bo;   //*/
 				$_SESSION["y_admin"]=$cursorp->y_admin;
@@ -115,14 +118,19 @@ if(isset($_POST['ldap-username'])){
 				$_SESSION["y_addinfohaber"]=1;
 				$_SESSION["y_addinfoser"]=1;
 				$_SESSION["y_addinfomenu"]=1;
+				$_SESSION['y_fixtures']=1;
 				$_SESSION["y_bq"]=1;
 				$_SESSION["y_bo"]=1;  
 				$_SESSION["y_admin"]=1;
 			}
 		}
-		if($_SESSION["user"]!=""){ 
-			$_SESSION['LAST_ACTIVITY'] = time(); 
-			header("Location: ".$_SESSION['referrer_page']); 
+		if($_SESSION["user"]!=""){
+			if($_SESSION['referrer_page']=""){
+				$_SESSION['LAST_ACTIVITY'] = time(); 
+				header("Location: ".$_SESSION['referrer_page']); 
+			}else{
+				header("Location: index.php");
+			} 
 		}
 	}
 }
@@ -148,10 +156,11 @@ if($userok==0){
 
     <!-- Custom styles for this template-->
     <link href="/css/sb-admin-2.css" rel="stylesheet">
+<?php include($docroot."/set_page.php"); ?>
 
 </head>
 
-<body class="bg-gradient-primary">
+<body class="bg-gradient-secondary">
 
     <div class="container">
 
@@ -210,13 +219,13 @@ if($userok==0){
 
     <!-- Bootstrap core JavaScript-->
     <script src="/vendor/jquery/jquery.min.js"></script>
-    <script src="/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="/vendor/bootstrap/bootstrap.bundle.min.js"></script>
 
     <!-- Core plugin JavaScript-->
     <script src="/vendor/jquery-easing/jquery.easing.min.js"></script>
 
     <!-- Custom scripts for all pages-->
-    <script src="/js/sb-admin-2.min.js"></script>
+    <script src="/js/sb-admin-2.js"></script>
 
 </body>
 

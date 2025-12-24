@@ -1,10 +1,7 @@
 <?php
-function searchtext($contents,$searchfor){
-	$pattern = preg_quote($searchfor, '/'); 
-	$pattern = "/^.*$pattern.*\$/m";
-	$x=preg_match_all($pattern, $contents, $matches);
-	if (!$x){ return $searchfor."\n"; }	
-}
+/*
+Installing...
+*/
 //error_reporting(0);
 $docroot=$_SERVER['DOCUMENT_ROOT'];
 $lang=explode(',', $_SERVER['HTTP_ACCEPT_LANGUAGE']);
@@ -28,51 +25,53 @@ $_SESSION['k']='admin'; //echo "k:".$_SESSION['k'];
 //
 if(@$_POST['go']!=""){
 	if($step==1){ 
-		//STEP 1: extension_dir php.ini den okunur.	dosya bulunan yola taşınır.
-		$extension_dir=ini_get('extension_dir');
-		//move php_mongodb.dll file to $extension_dir
-		$file = $docroot.'\config\ext\php_mongodb.dll';
-		$newfile = $extension_dir.'\php_mongodb.dll';
-		$msg="<div>";
-		if(!file_exists($newfile)){
-			if (!copy($file, $newfile)) {
-				$msg.="Failed to copy: ".$file.", Please copy file to ".$extension_dir."\n";
-			}else{
-				$msg.="Copied:".$file."  to ".$extension_dir."\n";
+		//STEP 1: copying extension files to ext directory.
+		$fromdir = $docroot.'\config\ext';
+		$extension_dir=ini_get('extension_dir')."\\";
+		//finding files...
+		$files = scandir($fromdir);
+		$msg="";
+		for($i=0;$i<count($files);$i++){
+			if($files[$i]!="."&&$files[$i]!=".."){ 
+				$msg.="<div>";
+				$file = $fromdir.'\\'.$files[$i];
+				$newfile = $extension_dir.'\\'.$files[$i];
+				$msg.=$file." -> ".$newfile.": ";
+				if(!file_exists($newfile)){
+					if (!copy($file, $newfile)) {
+						$msg.="Failed to copy ";
+					}else{
+						$msg.="Copied";
+					}
+				}
+				$msg.="</div>";//*/
 			}
 		}
-		$msg.="</div>
-		<div>";
-		//move php_mongodb.pdb file to $extension_dir
-		$file = $docroot.'\config\ext\php_mongodb.pdb';
-		$newfile = $extension_dir.'\php_mongodb.pdb';
-		if(!file_exists($newfile)){
-			if (!copy($file, $newfile)) {
-				$msg.="Failed to copy: ".$file.", Please copy file to ".$extension_dir."\n";
-			}else{
-				$msg.="Copied:".$file."  to ".$extension_dir."\n";
-			}
-		}
-		$msg.="</div>";
 		//writing settings to ******* php.ini ...
 		$php_ini_file=php_ini_loaded_file();
-		$contents = file_get_contents($php_ini_file);
-		$ayar="";
-		$ayar.=searchtext($contents,'extension=ldap');
-		$ayar.=searchtext($contents,'extension=php_mongodb.dll'); 
-		$ayar.=searchtext($contents,'extension=php_com_dotnet.dll'); 
-		$ayar="\n".$ayar;
-		//writing to php.ini:  extension=ldap extension=php_mongodb.dll
-		if($ayar!=""){
-			$msg.="<div>Written settings to php.ini</div>";
-			touch($php_ini_file);
-			$dosya=fopen($php_ini_file, 'a');
-			fwrite($dosya, $ayar); 
-			fclose($dosya); 
-			//web srv must restart 
-			$msg.="<div>Please restart web server, then go to next step...</div>";
-			//$step=2;
+		$contents = file($php_ini_file);
+		$findme=[];
+		$findme[]='extension=ldap';
+		$findme[]='extension=php_mongodb.dll';
+		$findme[]='[PHP_COM_DOTNET]';
+		$findme[]='extension=php_com_dotnet.dll';
+		//
+		$a=0;
+		for($i=0;$i<count($contents);$i++){
+			$satir=$contents[$i];
+			if(strpos($satir, $findme[$a])){ 
+				if(strpos($satir, ";")>=0){ $satir=str_replace(";", "", $satir); }
+				$a++;
+			}
+			$content[]=$satir;
 		}
+		if($a<count($findme)){
+			for($i=$a;$i<(count($findme)-$a)+2;$i++){
+				//echo $findme[$i]."<br>";
+				$content[]=$findme[$i]."\n";		
+			}
+		}
+		file_put_contents($php_ini_file,implode("",$content));
 		//composer install
 		$phpdir=substr($extension_dir, 0, strpos($extension_dir, '\ext'));
 		$cmd="PATH";
@@ -134,9 +133,9 @@ $msg.="<br>";
     <!-- Custom styles for this template-->
     <link href="css/sb-admin-2.css" rel="stylesheet">
     <!-- Bootstrap core JavaScript-->
-	<link href="/vendor/bootstrap/css/bootstrap.css" rel="stylesheet">
+	<link href="/vendor/bootstrap/bootstrap.css" rel="stylesheet">
     <script src="/vendor/jquery/jquery.min.js"></script>
-    <script src="/vendor/bootstrap/js/bootstrap.min.js"></script>
+    <script src="/vendor/bootstrap/bootstrap.min.js"></script>
     <script src="/vendor/form-master/dist/jquery.form.min.js"></script>
 	<!-- Core plugin JavaScript-->
     <script src="/vendor/jquery-easing/jquery.easing.min.js"></script>

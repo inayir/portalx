@@ -3,7 +3,7 @@
 	Pano Mesajlarını kaydeder/siler.
 */
 include("set_mng.php");
-//error_reporting(0);
+error_reporting(0);
 header('Content-Type:text/html; charset=utf8');
 include("sess.php");
 $log=$gtext['pano_messages'].";";
@@ -17,12 +17,17 @@ if($_SESSION["user"]==""){ echo "login"; exit; }
 @$isl=$_POST['isl'];
 @$collection=$client->$db->personel_pano;
 if($isl=='d'){ //Silinecek...
-	@$cursor = $collection->deleteOne(
+	$del=[];
+	$del['state']='D'; //deleted...
+	@$cursor = $collection->updateOne(
 		[
 			'_id' => new \MongoDB\BSON\ObjectId($_POST['id'])
+		],
+		[
+			'$set'=>$del
 		]
 	);
-	if($cursor->getDeletedCount()>0){ echo $gtext['deleted']; /*"Silindi.";*/ $r=true; }else{ echo $gtext['notdeleted']; /*"SilineMEdi!";*/ 
+	if($cursor->getModifiedCount()>0){ echo $gtext['deleted']; /*"Silindi.";*/ $r=true; }else{ echo $gtext['notdeleted']; /*"SilineMEdi!";*/ 
 	$log.="{'delete error':''}"; }
 }else{
 	$pmdata=[]; @$ksay=0;
@@ -57,7 +62,7 @@ if($isl=='d'){ //Silinecek...
 	}
 	if($ksay>0){ //UPDATE : kayıt varsa güncellenir.
 		$pmdata['son_deg_tar']=datem(date("Y-m-d", strtotime("now")).'T00:00:00.000+00:00');
-		$pmdata['aktif']=1;
+		$pmdata['state']=1;
 		@$cursor = $collection->UpdateOne(
 			[
 				'_id' => $id
@@ -68,13 +73,13 @@ if($isl=='d'){ //Silinecek...
 			echo $gtext['updated']; //"Güncellendi."; 
 			$log.=$gtext['updated'].";"; 
 		}else{ 
-			echo $gtext['notupdated'];*/ 
+			echo $gtext['notupdated']; 
 			$log.=$gtext['notupdated'].";"; 
 		}
 	}else{  //INSERT : Kayıt yoksa eklenir...
 		$pmdata['msg_sahibi']=$user;
 		$pmdata['tarih']=datem(date("Y-m-dTH:i:s", strtotime("now")).'.000+00:00');
-		$pmdata['aktif']=1;
+		$pmdata['state']=1;
 		@$cursor = $collection->insertOne(
 			$pmdata
 		);
