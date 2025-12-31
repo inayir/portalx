@@ -2,7 +2,7 @@
 /*
 Installing...
 */
-//error_reporting(0);
+error_reporting(0);
 $docroot=$_SERVER['DOCUMENT_ROOT'];
 $lang=explode(',', $_SERVER['HTTP_ACCEPT_LANGUAGE']);
 $dila=explode('-', $lang[0]); 
@@ -55,8 +55,9 @@ if(@$_POST['go']!=""){
 		$findme[]='extension=php_mongodb.dll';
 		$findme[]='[PHP_COM_DOTNET]';
 		$findme[]='extension=php_com_dotnet.dll';
+		$findme[]='extension=gd2';
 		//
-		$a=0;
+		$a=0; $content=[];
 		for($i=0;$i<count($contents);$i++){
 			$satir=$contents[$i];
 			if(strpos($satir, $findme[$a])){ 

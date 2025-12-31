@@ -7,14 +7,14 @@ NOT: PHP 8.30 versiyon MongoDB çalıştırmak için gereklidir.
 
 2. Mongodb ilgili sitelerden indirilip kurulur. 64bit bir sunucu işletim sistemi için Örnek: mongodb-windows-x86_64-8.2.1-signed.msi
 
-3. Apache virtual hostlar kurulum dosyasına; 	
-	##---PORTAL
+3. Apache virtual hostlar kurulum dosyasına aşağıdaki satırlar eklenmelidir: 	
+	##---PORTALX
 	<VirtualHost *:80>
-		##ServerAdmin webmaster@dummy-host2.example.com
+		##ServerAdmin webmaster@dummy-host2.alanadiniz.com
 		DocumentRoot "C:/PORTALX"
-		ServerName portal
-		##ErrorLog "logs/dummy-host2.example.com-error.log"
-		##CustomLog "logs/dummy-host2.example.com-access.log" common
+		ServerName portalx
+		##ErrorLog "logs/dummy-host2.alanadiniz.com-error.log"
+		##CustomLog "logs/dummy-host2.alanadiniz.com-access.log" common
 		<Directory "C:/PORTALX/">
 			Options Indexes FollowSymLinks MultiViews
 			AllowOverride none
@@ -23,6 +23,24 @@ NOT: PHP 8.30 versiyon MongoDB çalıştırmak için gereklidir.
 			Require all granted
 		</Directory>
 	</VirtualHost>
+	!!! Buradaki C:\PORTALX yolu sunucudaki yolunuzdur. ServerName portalx ifadesindeki portalx ise subdomain adıdır. Sayfanız dışarıya açık olacaksa bunu tam url şeklinde yani portalx.alanadiniz.com şeklinde yazmalısınız.
+	Sunucuda eğer SSL isteniyorsa aşağıdaki kod da eklenmelidir:
+	<VirtualHost *:443>
+		##ServerAdmin webmaster@dummy-host2.alanadiniz.com
+		DocumentRoot "C:/PORTALX"
+		ServerName portalx
+		SSLEngine On
+		SSLCertificateFile conf/ssl/server.crt
+		SSLCertificateKeyFile conf/ssl/server.key
+		<Directory "C:/PORTALX/">
+			Options Indexes FollowSymLinks MultiViews
+			AllowOverride none
+			Order Deny,Allow
+			Allow from all
+			Require all granted
+		</Directory>
+	</VirtualHost>
+	!!! Yukarıdaki SSLCertificateFile conf/ssl/server.crt satırındaki conf/ssl/ sertifikanın olduğu klasör, server.key ise sertifika dosyasıdır. Lutfen klasörünüze göre uyarlayınız.
 	##---------------------------------
 	Örnek Apache virtual hostlar dosyası: C:\Xampp\Apache\conf\extra\httpd-vhosts.conf şeklindedir. C:\Xampp\Apache yolu web sunucuyu hangi klasöre kurduysanız orasıdır.
 	ifadesinin eklenmesi gerekir. 

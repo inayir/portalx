@@ -11,11 +11,11 @@ NOTE: PHP ver 8.30 is mandatory for MongoDB.
 3. The following rows must added to C:\Xampp\Apache\conf\extra\httpd-vhosts.conf file:	
 	##---PORTAL
 	<VirtualHost *:80>
-		##ServerAdmin webmaster@dummy-host2.example.com
+		##ServerAdmin webmaster@dummy-host2.yourdomain.com
 		DocumentRoot "C:/PORTAL"
 		ServerName portal
-		##ErrorLog "logs/dummy-host2.example.com-error.log"
-		##CustomLog "logs/dummy-host2.example.com-access.log" common
+		##ErrorLog "logs/dummy-host2.yourdomain.com-error.log"
+		##CustomLog "logs/dummy-host2.yourdomain.com-access.log" common
 		<Directory "C:/PORTAL/">
 			Options Indexes FollowSymLinks MultiViews
 			AllowOverride none
@@ -24,10 +24,28 @@ NOTE: PHP ver 8.30 is mandatory for MongoDB.
 			Require all granted
 		</Directory>
 	</VirtualHost>
+	C:\PORTALX is a directory in your server. Called as portalx in ServerName portalx line is a subdomain name. If your site is open to internet, you must write as fully qualified domain name. For Example: portalx.yourdomain.com.
+	Sunucuda eğer SSL isteniyorsa aşağıdaki kod da eklenmelidir:
+	<VirtualHost *:443>
+		##ServerAdmin webmaster@dummy-host2.yourdomain.com
+		DocumentRoot "C:/PORTALX"
+		ServerName portalx
+		SSLEngine On
+		SSLCertificateFile conf/ssl/server.crt
+		SSLCertificateKeyFile conf/ssl/server.key
+		<Directory "C:/PORTALX/">
+			Options Indexes FollowSymLinks MultiViews
+			AllowOverride none
+			Order Deny,Allow
+			Allow from all
+			Require all granted
+		</Directory>
+	</VirtualHost>
+	!!! In line SSLCertificateFile conf/ssl/server.crt 'conf/ssl/' is a folder for certificate and server.key is certificate file. Please adopt your folder and file.
 	##---------------------------------
-	* "DocumentRoot C:\PORTAL" points to install directory, if you wish use other names. The SYSTEM user (if not authorized) must be given full permissions in this directory.
+	* "DocumentRoot C:\PORTAL" points to install directory, if you wish use other names. The SYSTEM user (if not authorized) must be given full permissions in this folder.
 	* "ServerName portal" is an URL for your site. 
-	* This name must add to DNS record. Example: http://portal.example.com 
+	* This name must add to DNS record. Example: http://portal.yourdomain.com 
 	Example for adding A record to DNS: Adding an A record, this record seen as; "portal A 192.168.0.100" in records list. Portal or other name for your choice.
 
 4. After the site runs, the PortalX files you downloaded are copied into the relevant folder.
