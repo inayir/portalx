@@ -3,19 +3,19 @@
 	LDAP/AD ile login 
 */
 include('set_mng.php');
-include($docroot."/sess.php");
-//session_start();
+session_start();
+include('get_ini.php');
+include('set_lang.php');
 //
 @$dn=$ini['dom_dn']; 
 if($dn==""){ $dn=$ini['base_dn']; }
-$userok=0;
+$userok=0; 
 @$referrer_page=$_POST['referrer_page'];
-if($referrer_page==""){ @$referrer_page=$_SESSION['referrer_page']; }
-if($referrer_page==""){ @$referrer_page=$_SERVER['HTTP_REFERER']; }
-if($referrer_page==""){ @$referrer_page="/index.php"; }
-$_SESSION['referrer_page']=$referrer_page;
+if($referrer_page==""){ @$referrer_page=$_SESSION['referrer_page']; } //$msg.="SESSION "; }
+if($referrer_page==""){ @$referrer_page="/index.php"; $_SESSION['referrer_page']=$referrer_page; } //$msg="BOŞ "; 
+   
 @$_SESSION["user"]=="";
-if(isset($_POST['ldap-username'])){
+if(isset($_POST['ldap-username'])&&isset($_POST['pass'])){
 	@$username=$_POST['ldap-username']; 
 	@$password=$_POST['pass']; 
 	if($ini['usersource']=='LDAP'){  //Kullanıcı doğrulaması LDAP/AD 
@@ -124,12 +124,12 @@ if(isset($_POST['ldap-username'])){
 				$_SESSION["y_admin"]=1;
 			}
 		}
-		if($_SESSION["user"]!=""){
-			if($_SESSION['referrer_page']=""){
+		if($_SESSION["user"]!=""){ 
 				$_SESSION['LAST_ACTIVITY'] = time(); 
+			if($_SESSION['referrer_page']!=""){
 				header("Location: ".$_SESSION['referrer_page']); 
 			}else{
-				header("Location: index.php");
+				header("Location: /index.php"); 
 			} 
 		}
 	}
@@ -156,12 +156,27 @@ if($userok==0){
 
     <!-- Custom styles for this template-->
     <link href="/css/sb-admin-2.css" rel="stylesheet">
-<?php include($docroot."/set_page.php"); ?>
+<?php include("set_page.php"); ?>
 
 </head>
 
 <body class="bg-gradient-secondary">
 
+<script>
+function forgot_pass(){ 
+	var u=$('#ldap-username').val(); 
+	if(u!=''){
+		var yol='/forgot_pass_mail.php';
+		window.open(yol+'?u='+u,'_tab');
+	}else{
+		alert('<?php echo $gtext['write_user']; ?>');
+		$('#ldap-username').focus();
+	}
+}
+$('#ldap-username').on('KeyPress', function(data){
+	if(data=='@'){ alert('Sadece kullanıcı giriniz.');}
+});
+</script>
     <div class="container">
 
         <!-- Outer Row -->
@@ -178,19 +193,19 @@ if($userok==0){
                                 <div class="p-5">
                                     <div class="text-center">
                                         <h1 class="h4 text-gray-900 mb-4"><?php echo $ini['firm']; ?></h1>
-                                        <h5 class="h5 text-gray-900 mb-4"><?php echo $gtext['login'];/*Giriş*/?></h5>
+                                        <h5 class="h5 text-gray-900 mb-4"><?php echo $gtext['login']." ".$gtext['login'];/*Giriş*/?></h5>
                                     </div>
                                     <form class="user" method="POST" action="">
                                         <div class="form-group">
 											<p><?php echo $gtext['write_user'].":";/*Kullanıcı Giriniz:*/?></p>
                                             <input type="text" class="form-control form-control-user"
-                                                name="ldap-username" id="ldap-username" aria-describedby="emailHelp"
+                                                name="ldap-username" id="ldap-username"
                                                 placeholder="<?php echo $gtext['write_user_placeholder'];/*Kullanıcı adınız...*/?>">
                                         </div>
                                         <div class="form-group">
 											<p><?php echo $gtext['write_pass'].":";/*Şifre Giriniz:*/?></p>
                                             <input type="password" class="form-control form-control-user"
-                                                name="pass" id="pass" placeholder="Şifreniz...">
+                                                name="pass" id="pass" placeholder="<?php echo $gtext['u_pass'];/*Şifreniz...*/?>...">
                                             <input type="hidden" name="referrer_page" id="referrer_page" value="<?php echo $referrer_page; ?>">
                                         </div>
                                         <!--div class="form-group">
@@ -200,11 +215,11 @@ if($userok==0){
                                             </div>
                                         </div-->
                                         <button type="Submit" class="btn btn-primary btn-user btn-block"><?php echo $gtext['p_login'];/*Giriniz*/?></button>
+										<hr>
+										<div class="text-center">
+											<a class="small" href="" onClick="forgot_pass();"><?php echo $gtext['forgotten_pass'];/*Şifremi Unuttum*/?></a>
+										</div>
                                     </form>
-                                    <!--hr>
-                                    <div class="text-center">
-                                        <a class="small" href="forgot-password.html">Şifremi Unuttum</a>
-                                    </div-->
                                 </div>
                             </div>
                         </div>
@@ -226,7 +241,6 @@ if($userok==0){
 
     <!-- Custom scripts for all pages-->
     <script src="/js/sb-admin-2.js"></script>
-
 </body>
 
 </html>

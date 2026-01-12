@@ -30,6 +30,6 @@ if($ini['usersource']=='LDAP'){
 				//if(!$bind){ echo "No LDAP Connection!"; }
 			}//*/
 		}//else{ echo "-99"; /*nok*/  }
-	}else{ header('Location: \login.php');  }
+	}//else{ header('Location: \login.php');  }
 }
 ?>

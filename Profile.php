@@ -1,8 +1,9 @@
 <?php
 include("set_mng.php");
+error_reporting(0);
 include("sess.php");
 if($_SESSION['user']==""){
-	//header('Location: login.php');
+	header('Location: login.php');
 }
 $username=$_SESSION['user'];
 @$collection = $db->personel; //

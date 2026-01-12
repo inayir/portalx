@@ -26,8 +26,7 @@
 				}
 			} 
 			$avtr=$_SESSION['picture'];
-			if($avtr==''){ $avtr="/img/undraw_profile.svg"; }
-			?>							
+			if($avtr==''){ $avtr="/img/undraw_profile.svg"; } ?>
 						</SELECT>
                         </form>
 						</div>
@@ -49,7 +48,7 @@
                                     <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
                                     <?php echo $gtext['myfixtures'];/*Demirbaşlarım*/?>
                                 </a></li><?php } ?>
-                                <li><a class="dropdown-item" href="Profile.php#passform">
+                                <li><a class="dropdown-item" href="/Profile.php#passform">
                                     <i class="fas fa-key fa-sm fa-fw mr-2 text-gray-400"></i>
                                     <?php echo $gtext['chng_pass'];/*Şifre Değiştir*/?>
                                 </a></li>

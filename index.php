@@ -26,7 +26,7 @@ if(!$exists){
 $cursor = $collection->aggregate([
 	[
 		'$match'=>[
-			'$and'=>[['dh'=>'H'],['dh_sgtar'=>['$gte'=>$bugun]]],
+			'$and'=>[['dh'=>'H'],['dh_sgtar'=>['$gte'=>$bugun]],['lang'=>$dil]],
 		],
 	],
 	[
@@ -65,7 +65,7 @@ $fisay=count($fsatir); //echo "fisay:".$fisay; //var_dump($fsatir); //exit;
 $cursord = $collection->aggregate([
 	[
 		'$match'=>[
-			'$and'=>[['dh'=>'D'],['dh_sgtar'=>['$gte'=>$bugun]]],
+			'$and'=>[['dh'=>'D'],['dh_sgtar'=>['$gte'=>$bugun]],['lang'=>$dil]],
 		],
 	],
 	[
@@ -152,17 +152,36 @@ for($a=1;$a<=12;$a++){
 	<link href="/vendor/bootstrap/bootstrap.min.css" rel="stylesheet">
     <!-- Custom styles for this template-->
     <link href="css/sb-admin-2.css" rel="stylesheet">
-	<script src="/js/portal_functions.js"></script>
-	<!-- Core plugin JavaScript-->
+<?php include("set_page.php"); ?>
 <style>
 .title {
-	text-shadow: 3px 2px 1px #fff;
+	text-shadow: 3px 2px 1px #000;
 }
 .carousel-control-prev-icon{width: 3em;height: 3em; }
 .carousel-control-next-icon{width: 3em;height: 3em; }
-</style>
+.carousel .carousel-item {
+    min-height:40%;
+    max-height:50%;
+}
 
-<?php include("set_page.php"); ?>
+.carousel-item img {
+    object-fit:cover;
+    max-height:50%;
+	position: relative;
+}
+.carousel{ position: relative }
+.carousel-indicators{ position: absolute }
+.carousel-indicators { bottom: 10rem; }
+.carousel-caption {
+  right: 1%;
+  left: auto;
+  top: 30%;
+  bottom: 20%;
+  transform: translateY(-50%);
+  z-index: 10;
+  text-align: center;
+}
+</style>
 </head>
 
 <body id="page-top">
@@ -187,19 +206,18 @@ for($a=1;$a<=12;$a++){
 							<!--div class="d-sm-flex align-items-center justify-content-between mb-4 shadow">
 								<h1 class="h3 mb-1 m-1 text-gray-800">Anasayfa</h1>
 							</div-->
-							<div id="ci" class="carousel slide" data-bs-ride="carousel">
+							<div id="ci" class="carousel carousel-dark slide carousel-fade" data-bs-ride="carousel">
 							  <div class="carousel-indicators"><?php  for($i=0; $i<$fisay; $i++){ ?><button type="button" data-bs-target="#ci" data-bs-slide-to="<?php echo $i; ?>" <?php if($i==0){ echo 'class="active" aria-current="true"'; } ?> ></button><?php } ?></div>
 							  <div class="carousel-inner"><?php 
 							  for($ii=0; $ii<$fisay; $ii++){ 
 							  if($fsatir[$ii]['dh_resim']!="") { $resimyolu=$fsatir[$ii]['dh_resim']; }
 							  else{ $resimyolu='img/undraw_posting_photo.svg'; } //echo "resimyolu:".$fsatir[$ii]['dh_resim'];?>
-								<div class="carousel-item p-2 <?php if($ii==0){ echo 'active'; } ?>">
+								<div class="carousel-item p-2<?php if($ii==0){ echo ' active'; } ?> data-bs-interval="10000">
 								  <a target="_blank" rel="nofollow" href="Corporate/dh_card?u=<?php echo $fsatir[$ii]['_id']; ?>">
-								  <img class="d-block w-100" src="<?php echo $resimyolu; ?>" alt="slide"><?php
-								  if($fsatir[$ii]['dh_capt_on']==1){ ?>
-								  <div class="carousel-caption d-none d-md-block d-lg-block">
-									<h4 class="text-center title"><?php echo $fsatir[$ii]['dh_baslik']; ?></h4>
-									<p class="text-center title"><?php $hhi=$fsatir[$ii]['dh_icerik']; echo substr($hhi, 0, 80); if(strlen($hhi)>80){ echo "...<br><small>".$gtext['n_more']."</small>";}?></p>
+								  <img class="d-block w-100" style="height: 50%;" src="<?php echo $resimyolu; ?>" alt="slide"><?php if($fsatir[$ii]['dh_capt_on']==1){ ?>
+								  <div class="carousel-caption d-md-block d-lg-block">
+									<h4 class="title"><?php echo $fsatir[$ii]['dh_baslik']; ?></h4>
+									<p  class="title"><?php $hhi=$fsatir[$ii]['dh_icerik']; echo substr($hhi, 0, 80); if(strlen($fsatir[$ii]['dh_icerik'])>80){ echo "...<br><small>".$gtext['n_more']."</small>";}?></p>
 								  </div>
 								  <?php } ?>
 								  </a>
@@ -224,56 +242,56 @@ for($a=1;$a<=12;$a++){
 					<div class="row"><?php $cla="col-xl-12 col-lg-12 mb-6"; if($ini['menuofday']==1){ $cla="col-xl-9 col-lg-8 mb-4"; } ?>
                         <div class="<?php echo $cla; ?>">
 							<!-- Acordeon-- Dropdown Kurumsal Duyurular -->
-								<div class="accordion" id="accoKD">
-								<!-- Card Header - Dropdown -->
-									<div
-										class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-										<h6 class="m-0 font-weight-bold text-primary">Kurumsal Duyurular</h6>
-										<div class="dropdown no-arrow">
-											<a class="dropdown-toggle" href="#" role="button" id="dropdownKDLink"
-												data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-												<i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
-											</a>
-											<div class="dropdown-menu dropdown-menu-right shadow animated--fade-in"
-												aria-labelledby="dropdownKDLink">
-												<a class="dropdown-item" href="Corporate/dh_all.php?dh=K">Tüm Kurumsal Duyurular</a>
-											</div>
+							<div class="accordion" id="accoKD">
+							<!-- Card Header - Dropdown -->
+								<div
+									class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+									<h6 class="m-0 font-weight-bold text-primary">Kurumsal Duyurular</h6>
+									<div class="dropdown no-arrow">
+										<a class="dropdown-toggle" href="#" role="button" id="dropdownKDLink"
+											data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+											<i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
+										</a>
+										<div class="dropdown-menu dropdown-menu-right shadow animated--fade-in"
+											aria-labelledby="dropdownKDLink">
+											<a class="dropdown-item" href="Corporate/dh_all.php?dh=K">Tüm Kurumsal Duyurular</a>
 										</div>
 									</div>
-				<?php if($fisayd>0){ 
-							for($ik=0; $ik<$fisayd; $ik++){ ?>
-								  <div class="card">
-									<div class="card-header" id="heading<?php echo $ik;?>">
-									  <h2 class="mb-0">
-										<button class="btn btn-link" type="button" data-bs-toggle="collapse" data-bs-target="#collapse<?php echo $ik; ?>" aria-expanded="false" aria-controls="collapse<?php echo $ik;?>">
-										  <?php echo $fsatird[$ik]['dh_baslik']; ?>
-										</button>
-									  </h2>
-									</div>
+								</div>
+			<?php if($fisayd>0){ 
+						for($ik=0; $ik<$fisayd; $ik++){ ?>
+							  <div class="card">
+								<div class="card-header" id="heading<?php echo $ik;?>">
+								  <h2 class="mb-0">
+									<button class="btn btn-link" type="button" data-bs-toggle="collapse" data-bs-target="#collapse<?php echo $ik; ?>" aria-expanded="false" aria-controls="collapse<?php echo $ik;?>">
+									  <?php echo $fsatird[$ik]['dh_baslik']; ?>
+									</button>
+								  </h2>
+								</div>
 
-									<div id="collapse<?php echo $ik;?>" class="collapse <?php if($ik==0){ echo "show"; }?>" aria-labelledby="heading<?php echo $ik;?>" data-parent="#accoKD">
-									  <div class="card-body">
-										<?php echo $fsatird[$ik]['dh_icerik']; ?><br>
-										<a target="_blank" rel="nofollow" href="Corporate/dh_card?u=<?php echo $fsatird[$ik]['_id']; ?>">
-											<span class="text-center"><?php echo $gtext['more']; /*Devamı*/?>...</span>
-											</a>
-									  </div>
-									</div>
+								<div id="collapse<?php echo $ik;?>" class="collapse <?php if($ik==0){ echo "show"; }?>" aria-labelledby="heading<?php echo $ik;?>" data-parent="#accoKD">
+								  <div class="card-body">
+									<?php echo $fsatird[$ik]['dh_icerik']; ?><br>
+									<a target="_blank" rel="nofollow" href="Corporate/dh_card?u=<?php echo $fsatird[$ik]['_id']; ?>">
+										<span class="text-center"><?php echo $gtext['more']; /*Devamı*/?>...</span>
+										</a>
 								  </div>
-					<?php 	} 
-						}  
-								if($fisayk>0){ ?>
+								</div>
+							  </div>
+				<?php 	} 
+					}  
+							if($fisayk>0){ ?>
 								<div class="text-center border-top p-2">
 									<div><a target="_blank" rel="nofollow" href="Corporate/dh_all.php?dh=K"><?php echo $gtext['all']." ".$gtext['organizational']." ".$gtext['announcements']; /*Tüm Kurumsal Duyurular*/?></div></a>
 									<hr>
 								</div>
-								<?php } ?>
-								</div>							
-								<!-- Acordeon Sonu-->							
+							<?php } ?>
+							</div>							
+							<!-- Acordeon Sonu-->							
 						</div>
-						
-							<!-- menuofday -->
-							<?php if($ini['menuofday']==1){ ?>
+
+						<!-- menuofday -->
+<?php if($ini['menuofday']==1){ ?>
                         <div class="col-xl-3 col-lg-4">
                             <div class="card shadow mb-4 h-100">
                                 <!-- Card Header - Dropdown -->
@@ -360,6 +378,18 @@ for($a=1;$a<=12;$a++){
         <i class="fas fa-angle-up"></i>
     </a>
 <script>
+$.fn.normalizeHeight = function () {
+    $(this).css("height", Math.max.apply(null, $(this).children().map(function () {
+        return $(this).height();
+    })) + "px");
+
+    return this;
+};
+$("#slider .carousel-inner").normalizeHeight();
+
+$(window).on('resize', function () {
+  $("#slider .carousel-inner").normalizeHeight();
+});
 </script>
 </body>
 
