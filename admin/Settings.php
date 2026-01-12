@@ -21,6 +21,210 @@ if(!$y||$_SESSION['user']==''){ echo "yetki gerekir...";
 }
 $MongoDB=$ini['MongoDB'];
 if($MongoDB==''){ $MongoDB="DB01"; }
+$timezone=$ini['timezone']; if($timezone==''){ $timezone="Europe/Istanbul"; }
+$timezones=[];
+//AMerica
+$timezones[]="America/Adak";
+$timezones[]="America/Anchorage";
+$timezones[]="America/Anguilla";
+$timezones[]="America/Antigua";
+$timezones[]="America/Araguaina";
+$timezones[]="America/Argentina/Buenos_Aires";
+$timezones[]="America/Argentina/Catamarca";
+$timezones[]="America/Argentina/Cordoba";
+$timezones[]="America/Argentina/Jujuy";
+$timezones[]="America/Argentina/La_Rioja";
+$timezones[]="America/Argentina/Mendoza";
+$timezones[]="America/Argentina/Rio_Gallegos";
+$timezones[]="America/Argentina/Salta";
+$timezones[]="America/Argentina/San_Juan";
+$timezones[]="America/Argentina/San_Luis";	
+$timezones[]="America/Argentina/Tucuman";
+$timezones[]="America/Argentina/Ushuaia";
+$timezones[]="America/Aruba";
+$timezones[]="America/Asuncion";
+$timezones[]="America/Atikokan";
+$timezones[]="America/Bahia";
+$timezones[]="America/Bahia_Banderas";
+$timezones[]="America/Barbados";
+$timezones[]="America/Belem";
+$timezones[]="America/Belize";
+$timezones[]="America/Blanc-Sablon";
+$timezones[]="America/Boa_Vista";
+$timezones[]="America/Bogota";
+$timezones[]="America/Boise";
+$timezones[]="America/Cambridge_Bay";
+$timezones[]="America/Campo_Grande";
+$timezones[]="America/Cancun";
+$timezones[]="America/Caracas";
+$timezones[]="America/Cayenne";
+$timezones[]="America/Cayman";
+$timezones[]="America/Chicago";
+$timezones[]="America/Chihuahua";
+$timezones[]="America/Ciudad_Juarez";
+$timezones[]="America/Costa_Rica";
+$timezones[]="America/Coyhaique";
+$timezones[]="America/Creston";
+$timezones[]="America/Cuiaba";
+$timezones[]="America/Curacao";
+$timezones[]="America/Danmarkshavn";
+$timezones[]="America/Dawson";
+$timezones[]="America/Dawson_Creek";
+$timezones[]="America/Denver";
+$timezones[]="America/Detroit";
+$timezones[]="America/Dominica";
+$timezones[]="America/Edmonton";
+$timezones[]="America/Eirunepe";
+$timezones[]="America/El_Salvador";
+$timezones[]="America/Fort_Nelson";
+$timezones[]="America/Fortaleza";
+$timezones[]="America/Glace_Bay";
+$timezones[]="America/Goose_Bay";
+$timezones[]="America/Grand_Turk";
+$timezones[]="America/Grenada";
+$timezones[]="America/Guadeloupe";
+$timezones[]="America/Guatemala";
+$timezones[]="America/Guayaquil";
+$timezones[]="America/Guyana";
+$timezones[]="America/Halifax";
+$timezones[]="America/Havana";
+$timezones[]="America/Hermosillo";
+$timezones[]="America/Indiana/Indianapolis";
+$timezones[]="America/Indiana/Knox";
+$timezones[]="America/Indiana/Marengo";
+$timezones[]="America/Indiana/Petersburg";
+$timezones[]="America/Indiana/Tell_City";
+$timezones[]="America/Indiana/Vevay";
+$timezones[]="America/Indiana/Vincennes";
+$timezones[]="America/Indiana/Winamac";
+$timezones[]="America/Inuvik";
+$timezones[]="America/Iqaluit";
+$timezones[]="America/Jamaica";
+$timezones[]="America/Juneau";
+$timezones[]="America/Kentucky/Louisville";
+$timezones[]="America/Kentucky/Monticello";
+$timezones[]="America/Kralendijk";
+$timezones[]="America/La_Paz";
+$timezones[]="America/Lima";
+$timezones[]="America/Los_Angeles";
+$timezones[]="America/Lower_Princes";
+$timezones[]="America/Maceio";
+$timezones[]="America/Managua";
+$timezones[]="America/Manaus";
+$timezones[]="America/Marigot";
+$timezones[]="America/Martinique";
+$timezones[]="America/Matamoros";
+$timezones[]="America/Mazatlan";
+$timezones[]="America/Menominee";
+$timezones[]="America/Merida";
+$timezones[]="America/Metlakatla";
+$timezones[]="America/Mexico_City";
+$timezones[]="America/Miquelon";
+$timezones[]="America/Moncton";
+$timezones[]="America/Monterrey";
+$timezones[]="America/Montevideo";
+$timezones[]="America/Montserrat";
+$timezones[]="America/Nassau";
+$timezones[]="America/New_York";
+$timezones[]="America/Nome";
+$timezones[]="America/Noronha";
+$timezones[]="America/North_Dakota/Beulah";
+$timezones[]="America/North_Dakota/Center";
+$timezones[]="America/North_Dakota/New_Salem";
+$timezones[]="America/Nuuk";
+$timezones[]="America/Ojinaga";
+$timezones[]="America/Panama";
+$timezones[]="America/Paramaribo";
+$timezones[]="America/Phoenix";
+$timezones[]="America/Port-au-Prince";
+$timezones[]="America/Port_of_Spain";
+$timezones[]="America/Porto_Velho";
+$timezones[]="America/Puerto_Rico";
+$timezones[]="America/Punta_Arenas";
+$timezones[]="America/Rankin_Inlet";
+$timezones[]="America/Recife";
+$timezones[]="America/Regina";
+$timezones[]="America/Resolute";
+$timezones[]="America/Rio_Branco";
+$timezones[]="America/Santarem";
+$timezones[]="America/Santiago";
+$timezones[]="America/Santo_Domingo";
+$timezones[]="America/Sao_Paulo";
+$timezones[]="America/Scoresbysund";
+$timezones[]="America/Sitka";
+$timezones[]="America/St_Barthelemy";
+$timezones[]="America/St_Johns";
+$timezones[]="America/St_Kitts";
+$timezones[]="America/St_Lucia";
+$timezones[]="America/St_Thomas";
+$timezones[]="America/St_Vincent";
+$timezones[]="America/Swift_Current";
+$timezones[]="America/Tegucigalpa";
+$timezones[]="America/Thule";
+$timezones[]="America/Tijuana";
+$timezones[]="America/Toronto";
+$timezones[]="America/Tortola";
+$timezones[]="America/Vancouver";
+$timezones[]="America/Whitehorse";
+$timezones[]="America/Winnipeg";
+$timezones[]="America/Yakutat";
+//Europe
+$timezones[]="Europe/Amsterdam";
+$timezones[]="Europe/Andorra";
+$timezones[]="Europe/Astrakhan";
+$timezones[]="Europe/Athens";
+$timezones[]="Europe/Belgrade";
+$timezones[]="Europe/Berlin";
+$timezones[]="Europe/Bratislava";
+$timezones[]="Europe/Brussels";
+$timezones[]="Europe/Bucharest";
+$timezones[]="Europe/Budapest";
+$timezones[]="Europe/Busingen";
+$timezones[]="Europe/Chisinau";
+$timezones[]="Europe/Copenhagen";
+$timezones[]="Europe/Dublin";
+$timezones[]="Europe/Gibraltar";
+$timezones[]="Europe/Guernsey";
+$timezones[]="Europe/Helsinki";
+$timezones[]="Europe/Isle_of_Man";
+$timezones[]="Europe/Istanbul";
+$timezones[]="Europe/Jersey";
+$timezones[]="Europe/Kaliningrad";
+$timezones[]="Europe/Kirov";
+$timezones[]="Europe/Kyiv";
+$timezones[]="Europe/Lisbon";
+$timezones[]="Europe/Ljubljana";
+$timezones[]="Europe/London";
+$timezones[]="Europe/Luxembourg";
+$timezones[]="Europe/Madrid";
+$timezones[]="Europe/Malta";
+$timezones[]="Europe/Mariehamn";
+$timezones[]="Europe/Minsk";
+$timezones[]="Europe/Monaco";
+$timezones[]="Europe/Moscow";
+$timezones[]="Europe/Oslo";
+$timezones[]="Europe/Paris";
+$timezones[]="Europe/Podgorica";
+$timezones[]="Europe/Prague";
+$timezones[]="Europe/Riga";
+$timezones[]="Europe/Rome";
+$timezones[]="Europe/Samara";
+$timezones[]="Europe/San_Marino";
+$timezones[]="Europe/Sarajevo";
+$timezones[]="Europe/Saratov";
+$timezones[]="Europe/Simferopol";
+$timezones[]="Europe/Skopje";
+$timezones[]="Europe/Sofia";
+$timezones[]="Europe/Stockholm";
+$timezones[]="Europe/Tallinn";
+$timezones[]="Europe/Tirane";
+$timezones[]="Europe/Ulyanovsk";
+$timezones[]="Europe/Vaduz";
+$timezones[]="Europe/Vatican";
+$timezones[]="Europe/Vienna";
+$timezones[]="Europe/Vilnius";
+$timezones[]="Europe/Volgograd";
+$timezones[]="Europe/Warsaw";
 ?>
 <!DOCTYPE html>
 <html lang="<?php echo $dil;?>">
@@ -155,9 +359,21 @@ if($MongoDB==''){ $MongoDB="DB01"; }
 										</td>
 									</tr>
 									<tr>
+										<td><?php echo $gtext['s_timezone'];/*TimeZone*/?></td>
+                                        <td>
+											<SELECT class="form-control" type="text" name="timezone" id="timezone"><?php
+											for($tz=0;$tz<count($timezones);$tz++){ 
+												echo '<OPTION value="'.$timezones[$tz].'" ';
+												if($timezone==$timezones[$tz]){ echo "selected"; } 
+												echo '>'.$timezones[$tz].'</OPTION>'; 
+											} ?>
+											</SELECT>
+										</td>
+									</tr>
+									<tr>
 										<td><?php echo $gtext['s_act_seperator'];/*Hareketler Ayracı*/?></td>
                                         <td><?php $as=@";"; if($as==''){ $as="<br>"; }?>
-											<input class="form-control" type="text" name="act_seperator" id="act_seperator" value="<?php echo $as; ?>"/>
+											<input class="form-control" name="act_seperator" id="act_seperator" value="<?php echo $as; ?>"/>
 											<br>
 											<small><?php echo $gtext['s_act_seperator_ex'];/*Örnek: <br>*/?></small>
 										</td>

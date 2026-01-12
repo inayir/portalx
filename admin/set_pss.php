@@ -2,7 +2,7 @@
 /*
 	Pano Mesajlarını kaydeder/siler.
 */
-function pcont($p){
+function querycontrol($p){
 	global $gtext;
 	$cont=array(" ","OR ","AND ","(SELECT");
 	for($i=0;$i<count($cont);$i++){  
@@ -14,30 +14,35 @@ function pcont($p){
 	}
 	return true;
 }
+function getkeys($gelenarr){
+	return array_keys(json_decode(json_encode($gelenarr),true));
+}
 include("../set_mng.php");
 error_reporting(0);
 include($docroot."/sess.php");
-if($_SESSION["user"]==""){ echo "login"; exit; }
+$b=$_POST['b']; 
+if($b!='pr'&&$_SESSION["user"]==""){ echo "login"; exit; }
 //
+if($ini['usersource']=='LDAP'){ include($docroot."/ldap.php"); }
 header('Content-Type:text/html; charset=utf8');
-include($docroot."/ldap.php");
 //
 $log="";
 include($docroot."/app/php_functions.php");
 $logfile='personel';
 @$trace=0; 
+//filtrelenir...
 @$username=$_POST['u']; 
 if($username==''){ @$username=$_POST['username']; } 
 if($username==''){ @$username=$_POST['usernamen']; } 
-echo $gtext['user']." ";
+if($username==''){ @$username=$_POST['ldap-username']; } 
+echo $gtext['user']." "; 
 @$gpass=$_POST['gpass'];
-@$newPassword=$_POST['pass'];  if($newPassword==""){ $newPassword="Akss2024.."; }
+@$newPassword=$_POST['pass'];  
 @$renewPassword=$_POST['repass']; 
-//@$distinguishedName=$_POST['dn'];  
 //
 $data=[]; @$ksay=0; 
 //
-if(pcont($newPassword)==false||pcont($renewPassword)==false){ echo $gtext['u_passnotacceptable']; logger($logfile,$log); exit; }
+if(querycontrol($newPassword)==false||querycontrol($renewPassword)==false){ echo $gtext['u_passnotacceptable']; logger($logfile,$log); exit; }
 $log.="Pass;";
 if($newPassword==""){  
 	echo $gtext['u_passnotchanged']."(null)"; 
@@ -45,7 +50,6 @@ if($newPassword==""){
 	logger($logfile,$log);
 	exit;
 }//*/
-@$collection = $db->personel;
 //old pass auth from DB...
 @$collection = $db->personel;
 @$cursor = $collection->findOne(
@@ -58,14 +62,14 @@ if($newPassword==""){
 	]
 );
 if(isset($cursor)){	 
-	$distinguishedname=$cursor->distinguishedname;
+	@$distinguishedname=$cursor->distinguishedname;
 }else{ 
 	echo $gtext['notfound']." (".$username.")"; 
 	exit;
 }
 //old pass auth from DB...
 if($gpass!=''){
-	if(pcont($gpass)==false){ echo $gtext['u_passnotacceptable']; logger($logfile,$log); exit; }
+	if(querycontrol($gpass)==false){ echo $gtext['u_passnotacceptable']; logger($logfile,$log); exit; }
 	if($cursor->pass!=@$gpass){ //"Geçerli şifreniz yanlış! Şifre DeğiştirileMEdi!";
 		echo $gtext['u_passnotchanged']."!";
 		$log.="gpass: nok;";
@@ -117,7 +121,7 @@ if($ini['usersource']=='LDAP'){
 }
 //DB
 $log.="DB:";
-/*$data['pass']=tirnakayarla($newPassword); 
+$data['pass']=tirnakayarla($newPassword); 
 $data['lastpassdate']=datem(date("Y-m-d", strtotime("now")).'T'.date("H:i:s", strtotime("now")).'.000+00:00');
 //*/
 $data['aktif']=1;
@@ -134,20 +138,35 @@ if($cursor->getModifiedCount()>0){
 	$datact=[];
 	$datact['act']='set_pss';
 	//değişen veriler alınır. $data 
+	unset($data['lastpassdate']);
 	$allkey=[];
-	$allkey=getkeys($data);
+	$allkey=getkeys($data); $dt="";
 	for($k=0;$k<count($allkey);$k++){
 		if($allkey[$k]!='_id'&&$allkey[$k]!='act'&&$allkey[$k]!='displayname'&&$allkey[$k]!='distinguishedname'&&$allkey[$k]!='actdate'){
-			$field=$allkey[$k];  //var_dump($field);
-			$val=$data->$field;
+			$field	=$allkey[$k];  
+			$val	=$data->$field;
 			$dt.=$field.":".$val.";";
 		}
 	}
-	$datact['changedata']=$dt;  //*/
+	$datact['changedata']=$dt;  
 	$datact['act_date']=datem(date("Y-m-d", strtotime("now").'T'.date("H:i:s", strtotime("now")).'.000+00:00'));
 	$act_cursor = $act_collection->insertOne(
 		$datact
-	);
+	);//*/
+	//if pass reset
+	if($b=='pr'){
+		$lstime=$_POST['lstime'];
+		$datals=[];
+		$datals['used']='Y';
+		$colpr=$db->mail_links;
+		$cursorpr=$colpr->UpdateOne(
+			[
+				'$and'=>[['username' => $username],['lstime' => $lstime]]
+			],
+			[ '$set' => $datals ]
+		);
+		if($cursorpr->getModifiedCount()>0){ echo "...";}
+	}
 }else{ 
 	echo $gtext['u_passnotchanged']."!";/*"Şifre değiştirileMEdi.";*/ 
 	$log.="u_passnotchanged->nok;"; 
