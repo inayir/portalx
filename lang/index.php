@@ -32,10 +32,10 @@ if(file_exists($tolangfile)){ include($tolangfile);	}
         rel="stylesheet">
     <link href="/css/sb-admin-2.css" rel="stylesheet">
     <!-- Bootstrap core JavaScript-->
-	<link href="/vendor/bootstrap/css/bootstrap.css" rel="stylesheet"> 
+	<link href="/vendor/bootstrap/bootstrap.css" rel="stylesheet"> 
 	<!-- Bootstrap core JavaScript-->
     <script src="/vendor/jquery/jquery.min.js"></script>
-    <script src="/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="/vendor/bootstrap/bootstrap.bundle.min.js"></script>
     <script src="/vendor/form-master/dist/jquery.form.min.js"></script>
 
     <!-- Core plugin JavaScript-->

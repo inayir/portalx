@@ -2,6 +2,7 @@
 /*
 	Translating lang1 -> lang2  
 */
+error_reporting(0);
 $docroot=$_SERVER['DOCUMENT_ROOT'];
 include($docroot."/config/config.php");
 include($docroot."/sess.php");
@@ -13,15 +14,15 @@ $dil=$dila[1];
 //
 @$lang=$_POST['lang'];
 if($lang==""){ @$lang=$_GET['lang']; }
+if($lang==''){ $lang='EN'; }
+//
 @$tolang=$_POST['tolang'];
 if($tolang==""){ $tolang=$_GET['tolang']; }
 if($tolang==""){ $tolang=$dil; }
 //
-if($lang==''){ $lang='EN'; }
-//if($tolang==''){ $tolang='EN'; }
-//
-$langfile=$docroot.'/lang/'.$lang.'.php';
+$langfile=$docroot.'/lang/'.$lang.'.php'; //from
 include($langfile);
+//
 $text=$gtext;
 $tolangfile=$docroot.'/lang/'.$tolang.'.php';
 if(file_exists($tolangfile)){ include($tolangfile);	}
@@ -33,14 +34,14 @@ if(isset($_POST['savebtn'])){
 	$posts=$_POST;
 	$keyso=array_keys($posts); 
 	$valso=array_values($posts); 
-	for($p=0;$p<count($keyso);$p++){
-		if($keyso[$p]=='lang'||$keyso[$p]=='tolang'||$keyso[$p]=='savebtn'){
-		}else{
+	for($p=0;$p<(count($keyso)-2);$p++){
+		if($keyso[$p]!='lang'||$keyso[$p]!='tolang'||$keyso[$p]!='savebtn'){
 			$v=$valso[$p];
 			$v=str_replace("'","\'",$v);
 			$s.="$"."gtext['".$keyso[$p]."']='".$v."'; \n";
 		}
 	}
+	echo $tolangfile." ";
 	if(fwrite($tolangfil, $s) == FALSE){ echo "Can NOT Save!"; }else{ echo "Saved.";  }
 	fclose($tolangfil); 	
 	exit;
@@ -68,10 +69,10 @@ $fromkeys=array_keys($text);
         rel="stylesheet">
     <link href="/css/sb-admin-2.css" rel="stylesheet">
     <!-- Bootstrap core JavaScript-->
-	<link href="/vendor/bootstrap/css/bootstrap.css" rel="stylesheet"> 
+	<link href="/vendor/bootstrap/bootstrap.css" rel="stylesheet"> 
 	<!-- Bootstrap core JavaScript-->
     <script src="/vendor/jquery/jquery.min.js"></script>
-    <script src="/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="/vendor/bootstrap/bootstrap.bundle.min.js"></script>
     <script src="/vendor/form-master/dist/jquery.form.min.js"></script>
 
     <!-- Core plugin JavaScript-->
