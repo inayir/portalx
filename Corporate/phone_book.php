@@ -216,7 +216,7 @@ $(document).ready(function() {
 						if(uinf["telephonenumber"]!=''){
 						tab1+="<tr><td><?php echo $gtext['telephonenumber']; /*Dahili Tel*/?> </td><td><b>"+uinf["telephonenumber"]+"</b></td></tr>"; }
 						tab1+="<tr><td><?php echo $gtext['mobile']; /*GSM*/?> </td><td>"+uinf["mobile"]+"</td></tr>";
-						if(uinf["manager"]!=''){
+						if(uinf["manager"]!=''&&uinf["manager"]!='-'){
 							tab1+="<tr><td><?php echo $gtext['manager']; /*Manager*/?> </td><td>"+uinf["manager"]+" <button class='btn btn-outline-dark' onclick='javascript:seabyname("+i+");'><i class='fas fa-info-circle'></i></button></td></tr>";
 						}
 						tab1+="</table></td></tr>";

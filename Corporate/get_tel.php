@@ -110,7 +110,7 @@ if($fisay>0){
 			for($ii=0; $ii<count($liste); $ii++){
 				if($ii>0){ $js1.=','; }
 				$tag=$liste[$ii];
-				$js1.='"'.$tag.'":"'.$fsatir[$i][$tag].'"';
+				$js1.='"'.$tag.'":"'.trim($fsatir[$i][$tag]).'"';
 			}
 			$js1.='}';
 			$s++;

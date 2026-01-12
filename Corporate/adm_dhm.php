@@ -22,22 +22,6 @@ $cursor = $collection->aggregate([
 	[
 		'$match'=>['dh'=>$dh]
 	],
-    ['$lookup'=>
-		[
-			'from'=>"personel",
-			'localField'=>"username",
-			'foreignField'=>"username",
-			'as'=>"persons"
-		]
-	],
-	['$unwind'=>'$persons'],
-	[
-       '$addFields'=> [
-			'adsoyad'=> '$persons.adisoyadi',
-			'brm'=> '$persons.birim',
-			'email'=> '$persons.email',
-		],
-    ],
 	[
 		'$sort' => [
 		  'dh_ytar' => -1, 
@@ -49,8 +33,6 @@ foreach ($cursor as $formsatir) {
 	try{
 		$satir=[]; 
 		$satir['_id']=$formsatir->_id;  
-		$satir['adsoyad']=$formsatir->adsoyad; 
-		$satir['email']=$formsatir->email; 
 		$satir['dh_sdkullanici']=$formsatir->dh_sdkullanici;//*/
 		if(@$formsatir->dh_baslik!=null){ $satir['dh_baslik']=$formsatir->dh_baslik;	}	
 		if(@$formsatir->dh_icerik!=null){ 
@@ -61,6 +43,7 @@ foreach ($cursor as $formsatir) {
 		if($formsatir->dh_sgtar!=null){ 
 			$satir['dh_sgtar']=$formsatir->dh_sgtar->toDateTime()->format($ini['date_local']); 
 		}
+		$satir['lang']=$formsatir->lang;
 		$satir['aktif']=$formsatir->aktif;
 		$fsatir[]=$satir;
 		//echo "|||"; var_dump($satir); echo "<br><br>";
@@ -154,6 +137,7 @@ $json=addslashes(json_encode($fsatir));
 							<table id="list" class="table table-striped" cellspacing="0">
 							<thead>
 							<tr>
+							<th class="text-center"><?php echo $gtext['lang'];/*Dil*/?></th>
 							<th class="text-center"><?php echo $gtext['a_title'];/*Başlık*/?></th>
 							<th class="text-center"><?php echo $gtext['contentsummary'];/*İçerik Özeti*/?></th>
 							<th class="text-center" title='Yayım Tarihi'><?php echo $gtext['pubdate'];/*Yayım Tar*/?></th>
@@ -166,7 +150,8 @@ $json=addslashes(json_encode($fsatir));
 	<?php
 			for($i=0; $i<$fisay; $i++){ 
 				echo "<tr>";
-				echo "<td>".$fsatir[$i]['dh_baslik']."</td>";
+				echo "<td>".$fsatir[$i]['lang']."</td>";
+				echo "<td>".$fsatir[$i]['dh_baslik']."<br>".$fsatir[$i]['_id']."</td>";
 				echo "<td>";			
 					if($fsatir[$i]['dh_icerik']!=""){ 
 						$ic=substr($fsatir[$i]['dh_icerik'], 0, 80); 

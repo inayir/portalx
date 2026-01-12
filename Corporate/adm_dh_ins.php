@@ -43,6 +43,7 @@ if($id!=""){ 	//zduyuru_haber dosyasından liste getirilir.
 		if($formsatir->dh_sdtar!=null){ $satir['dh_sdtar']=$formsatir->dh_sdtar->toDateTime()->format($ini['date_local']." H:i"); }
 		$satir['dh_capt_on']=$formsatir->dh_capt_on;
 		$dh=$formsatir->dh;
+		$satir['lang']=$formsatir->lang;
 		$satir['aktif']=$formsatir->aktif;
 		//$fsatir[]=$satir;
 	}
@@ -80,7 +81,7 @@ switch($dh){ //D Duyuru, K Kurumsal, H haber
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title><?php echo $dha.$gtext['ins_edit']; ?></title>
+    <title><?php echo $dha." ".$gtext['ins_edit']; ?></title>
 
     <!-- Custom fonts for this template-->
     <link href="/vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
@@ -164,8 +165,22 @@ switch($dh){ //D Duyuru, K Kurumsal, H haber
 									<label class="form-check-label" for="dh_capt_on_0"> <?php echo $gtext['hidden'];/*Gizli*/?></label>
 								</div>
 							</td>
-							<td class="text-right"></td>
+							<td class="text-right"><?php echo $gtext['lang'];/*Dil*/?></td>
 							<td>
+								<SELECT class="form-input-sm" name="lang" id="lang"><?php 
+			$dir    = $docroot.'\lang';
+			$files1 = scandir($dir);
+			$f=0;
+			while($f<count($files1)){
+				if($files1[$f]=='index.php'||$files1[$f]=='translate.php'||$files1[$f]=='.'||$files1[$f]=='..'){ $f++; }
+				else{ 
+					$flang=substr($files1[$f],0,strpos($files1[$f],'.php')); $f++; 
+					echo "<OPTION value=".$flang." ";
+					if($satir['lang']==$flang){ echo "selected"; }
+					echo ">".$flang."</OPTION>";
+				}
+			}  ?>
+								</SELECT>
 							</td>
 						</tr>
 						<tr>
@@ -205,10 +220,6 @@ switch($dh){ //D Duyuru, K Kurumsal, H haber
 									<label class="form-check-label" for="dh_D"><?php echo $gtext['announcement'];/*Duyuru*/?></label>
 								</div>
 								<div class="form-check form-check-inline">
-									<input class="form-check-input" type="radio" name="dh" id="dh_K" value="K" <?php if($dh=='K'){ echo "checked"; }?> />
-									<label class="form-check-label" for="dh_K"><?php echo $gtext['organizational']." ".$gtext['announcement'];/*Kurumsal Duyuru*/?></label>
-								</div>
-								<div class="form-check form-check-inline">
 									<input class="form-check-input" type="radio" name="dh" id="dh_H" value="H" <?php if($dh=='H'){ echo "checked"; }?> />
 									<label class="form-check-label" for="dh_H"> <?php echo $gtext['news'];/*Haber*/?></label>
 								</div>
@@ -231,13 +242,16 @@ switch($dh){ //D Duyuru, K Kurumsal, H haber
 							<?php } ?>
 						</div>
 						<div class="modal-footer">
-							<button class="btn btn-secondary" type="button" id="cancel" data-bs-dismiss="modal"><?php echo $gtext['cancel']; ?></button>
+							<button class="btn btn-secondary" type="button" id="cancel" data-bs-dismiss="modal"><i class='fas fa-pause-circle fa-sm text-white-50'></i> <?php echo $gtext['cancel']; ?></button>
 							<button class="btn btn-primary" type="submit" id="ekle" disabled><?php 
 							if($id==""){ 
 								echo "<i class='fas fa-plus-circle fa-sm text-white-50'></i> ".$gtext['insert'];/*Insert*/ }
 							else{ 
-								echo "<i class='fas fa-plus-circle fa-sm text-white-50'></i> ".$gtext['edit'];/*"Değiştir";*/ 
+								echo "<i class='fas fa-edit fa-sm text-white-50'></i> ".$gtext['edit'];/*"Değiştir";*/ 
 							}?></button>
+							<?php if($id!=""){ ?>
+							<button class="btn btn-default" type="button" id="clone"><i class='fas fa-clone fa-sm text-black-50'></i> <?php echo $gtext['clone'];/*"Çoğalt";*/ ?></button>
+							<?php } ?>
 							<button class="btn btn-danger" name="delete" id="delete" type="button"><?php echo "<i class='fas fa-minus-circle fa-sm text-white-50'></i> ".$gtext['delete'];/*Sil*/?></button>
 						</div>
 						</form>
@@ -281,6 +295,11 @@ switch($dh){ //D Duyuru, K Kurumsal, H haber
 <script>
 var uid="<?php echo $dh_uid; ?>";
 $(document).ready(function() {
+	$('#clone').on("click", function(){ //Çoğalt
+		$('#_id').val('');
+		$('#ekle').html("<?php echo "<i class='fas fa-plus-circle fa-sm text-white-50'></i> ".$gtext['insert'];/*Insert*/ ?>").attr('disabled','disabled');
+		alert('Çoğaltıldı, değişiklikleri yaparak ekleyebilirsiniz...');
+	});
 	$('#ekle').on("click", function(){ //ekle/değiştir ajaxform
 		var opt={
 			type	: 'POST',
@@ -289,10 +308,9 @@ $(document).ready(function() {
 			beforeSubmit : function(){
 				var y=confirm('<?php echo $gtext['q_rusure'];/*Emin Misiniz?*/?>');
 			},
-			success: function(data){ //
-				console.log('Değiştirme :'+data); 
+			success: function(data){ //console.log('Değiştirme :'+data); 
 				if(data.indexOf('!')>-1){ alert('<?php echo $gtext['u_error'];/*Bir hata oluştu!*/?>\n'+data); }
-				//else { alert(data); location.reload(); }
+				else { alert(data); location.reload(); }
 			}
 		}
 		$('#form_dh').ajaxForm(opt); //*/
@@ -320,7 +338,7 @@ $(document).ready(function() {
 
 $('form').find(':input').change(function(){ $('#ekle').prop("disabled", false ); });
 $('#cancel').on('click', function(){ $('#ekle').prop("disabled", true ); });
-if(uid!=''){ $('#ekle').html('Değiştir'); $('#delete').prop("disabled", false  ); }
+if(uid!=''){ $('#ekle').html("<?php echo "<i class='fas fa-edit fa-sm text-white-50'></i> ".$gtext['edit'];/*"Değiştir";*/ ?>"); $('#delete').prop("disabled", false  ); }
 else{ $('#dh_ytar').val('<?php echo $now; ?>'); $('#dh_sgtar').val('<?php echo $sgtar; ?>'); }
 </script>
 </body>

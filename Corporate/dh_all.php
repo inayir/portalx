@@ -10,10 +10,9 @@ include($docroot."/sess.php");
 //
 $dh=$_GET['dh'];
 switch($dh){ //D Duyuru, K Kurumsal, H haber
-	case "D" : $dha=" Duyurular"; $dhi="bullhorn"; break; 
-	case "K" : $dha=" Kurumsal Duyurular"; $dhi="bullhorn"; break;
-	case "H" : $dha=" Haberler"; $dhi="paper-plane"; break;
-	default : $dh="D"; $dha=" Duyuru"; $dhi="bullhorn";
+	case "D" : $dha=" ".$gtext['announcements']; $dhi="bullhorn"; break; //Duyurular
+	case "H" : $dha=" ".$gtext['announcements']; $dhi="paper-plane"; break;	//Haberler
+	default : $dh="D"; $dha=" ".$gtext['announcement']; $dhi="bullhorn"; //Duyuru
 }
 $biryil=datem(date("Y.m.d 00:00:00", strtotime("+1 year")));
 @$collection=$db->k_dhaber;
@@ -21,7 +20,7 @@ $biryil=datem(date("Y.m.d 00:00:00", strtotime("+1 year")));
 $cursor = $collection->aggregate([
 	[
 		'$match'=>[
-			'$and'=>[['dh'=>$dh],['dh_sgtar'=>['$gte'=>$biryil]]],
+			'$and'=>[['dh'=>$dh],['dh_sgtar'=>['$gte'=>$biryil]],['lang'=>$dil]],
 		],
 	],
 	[
@@ -48,6 +47,7 @@ foreach ($cursor as $formsatir) {
 		if($formsatir->dh_sgtar!=null){ 
 			$satir['dh_sgtar']=$formsatir->dh_sgtar->toDateTime()->format($ini['date_local']); 
 		}
+		$satir['lang']=$formsatir->lang;
 		$satir['aktif']=$formsatir->aktif;
 		$fsatir[]=$satir;
 	}catch(Exception $e){
@@ -98,11 +98,7 @@ $fisay=count($fsatir); //echo "fisay:".$fisay; //var_dump($fsatir); exit;
             <div id="content">
 
                 <!-- Topbar -->
-                <?php include("../topbar.php"); 
-/*/pservis dosyasından liste getirilir.
-$dhq="SELECT * FROM zduyuru_haber WHERE dh='".$dh."' AND aktif=1 ORDER BY dh_ytar DESC ";
-$dhresult = $baglan->query($dhq);//*/
-?>
+                <?php include("../topbar.php"); ?>
                     
                 <!-- End of Topbar -->
 
@@ -111,11 +107,8 @@ $dhresult = $baglan->query($dhq);//*/
 
                     <!-- Page Heading -->
                     <div class="d-sm-flex align-items-center justify-content-between mb-4">
-                        <h1 class="h3 mb-0 text-gray-800"><i class='fas fa-<?php echo $dhi."'></i> ".$dha; ?></h1>
-						<!--a href="adm_dh_ekle.php?dh=D" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i
-                                class="fas fa-bullhorn fa-sm text-white-50"></i> Duyuru Ekle </a-->
+                        <h1 class="h3 mb-0 text-gray-800"><i class='fas fa-<?php echo $dhi;?>'></i><?php echo $dha; ?></h1>
                     </div>
-
                     <!-- Content Row -->
                     <div class="row">
                       <div class="card shadow mb-4 w-100">
@@ -123,27 +116,33 @@ $dhresult = $baglan->query($dhq);//*/
 						  <div class="table-responsive">
 							<table id="duyuru_list" class="table table-striped" width="100%" cellspacing="0">
 							<thead>
-								<th class="text-center"></th>
-								<th class="text-center w-75">Haber</th>
-								<th title='İşlemler'></th>
+								<th class="text-center"><?php echo $gtext['lang']; /*Dil*/?></th>
+								<th class="text-center"><?php echo $gtext['preview']; /*Önizleme*/?></th>
+								<th class="text-center"><?php echo $gtext['news']; /*Haber*/?></th>
+								<th class="text-center"><?php echo $gtext['dates']; /*Tarihler*/?></th>
+								<th title='<?php echo $gtext['processes']; /*İşlemler*/?>'></th>
 							</thead>
 							<tfoot>
-								<th class="text-center"></th>
-								<th class="text-center">Haber</th>
-								<th title='İşlemler'></th>
+								<th class="text-center"><?php echo $gtext['lang']; /*Dil*/?></th>
+								<th class="text-center"><?php echo $gtext['preview']; /*Önizleme*/?></th>
+								<th class="text-center"><?php echo $gtext['news']; /*Haber*/?></th>
+								<th class="text-center"><?php echo $gtext['dates']; /*Tarihler*/?></th>
+								<th title='<?php echo $gtext['processes']; /*İşlemler*/?>'></th>
 							</tfoot>
 							<tbody>
 					<?php
 						if ($fisay>0) {
 							for($i=0; $i<$fisay; $i++){ ?>
 								<tr>
+									<td><?php echo $fsatir[$i]['lang']; ?></td>
 									<td><?php 
 									if($fsatir[$i]['dh_resim']!="") { ?>
 									<img class="img-fluid" style="width: 250px;"
 									src="<?php echo $fsatir[$i]['dh_resim']; ?>" alt="..."><?php } ?></td>
 									<td><?php echo $fsatir[$i]['dh_baslik']; 
 									$hhi=$fsatir[$i]['dh_icerik']; echo "<br><small>".substr($hhi, 0, 150);if(strlen($hhi)>80){ echo "...";} ?></small></td>
-									<td><a class='btn btn-primary' target='_blank' href='/Corporate/dh_card.php?u=<?php echo $fsatir[$i]['_id']; ?>'><i class='fas fa-eye fa-sm text-white-50'></i> Gör</a></td>
+									<td><?php echo "<p title='".$gtext['pubdate']."'>".$fsatir[$i]['dh_ytar']."</p><p title='".$gtext['lvdate']."'>".$fsatir[$i]['dh_sgtar']."</p>"; ?></td>
+									<td><a class='btn btn-primary' target='_blank' href='/Corporate/dh_card.php?u=<?php echo $fsatir[$i]['_id']; ?>'><i class='fas fa-eye fa-sm text-white-50'></i> <?php echo $gtext['see'];/*Gör*/?></a></td>
 								</tr><?php 
 							}
 						}

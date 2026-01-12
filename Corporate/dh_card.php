@@ -133,6 +133,9 @@ switch($dh){ //D Duyuru, K Kurumsal, H haber
 									} ?>
                                 </div>
                             </div>
+                        <div class="text-center">
+							<button class="btn btn-default" onClick='window.close();'>Kapat</button>
+                        </div>
                         </div>
 
                 </div>

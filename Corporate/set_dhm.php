@@ -19,7 +19,7 @@ $sonuc=false;
 @$sil=$_POST['del'];
 
 @$collection=$client->$db->k_dhaber;
-$q=[]; @$ksay=0;  
+$data=[]; @$ksay=0;  
 if($sil==1){
 	@$cursor = $collection->deleteOne(
 		[
@@ -36,55 +36,59 @@ if($sil==1){
 	//not: resimler silinmez.
 }else{
 	if(isset($_POST['dh'])){
-		$q['dh']=$_POST['dh']; 
-		$logarr.="{{'dh':".$q['dh']."}"; 
+		$data['dh']=$_POST['dh']; 
+		$logarr.="{{'dh':".$data['dh']."}"; 
 	}
 	if(isset($_POST['dh_baslik'])){ 
-		$q['dh_baslik']=addslashes($_POST['dh_baslik']); 	
-		$logarr.=",{'dh_baslik':".$q['dh_baslik']."}"; 
+		$data['dh_baslik']=addslashes($_POST['dh_baslik']); 	
+		$logarr.=",{'dh_baslik':".$data['dh_baslik']."}"; 
 	}
 	if(isset($_POST['dh_capt_on'])){ 
-		$q['dh_capt_on']=$_POST['dh_capt_on']; 
-		$logarr.=",{'dh_capt_on':".$q['dh_capt_on']."}"; 
+		$data['dh_capt_on']=$_POST['dh_capt_on']; 
+		$logarr.=",{'dh_capt_on':".$data['dh_capt_on']."}"; 
 	}
 	if(isset($_POST['dh_icerik'])){ 
-		$q['dh_icerik']=addslashes($_POST['dh_icerik']); 	
-		$logarr.=",{'dh_icerik':".$q['dh_icerik']."}"; 
+		$data['dh_icerik']=addslashes($_POST['dh_icerik']); 	
+		$logarr.=",{'dh_icerik':".$data['dh_icerik']."}"; 
 	}
 	if(isset($_POST['dh_dlink'])){ 	
-		$q['dh_dlink']=addslashes($_POST['dh_dlink']); 
-		$logarr.=",{'dh_dlink':".$q['dh_dlink']."}"; 
+		$data['dh_dlink']=addslashes($_POST['dh_dlink']); 
+		$logarr.=",{'dh_dlink':".$data['dh_dlink']."}"; 
 	}
 	if(isset($_POST['dh_url'])){ 	
-		$q['dh_url']=addslashes($_POST['dh_url']); 	
-		$logarr.=",{'dh_url':".$q['dh_url']."}"; 
+		$data['dh_url']=addslashes($_POST['dh_url']); 	
+		$logarr.=",{'dh_url':".$data['dh_url']."}"; 
 	}
 	if(isset($_POST['dh_ytar'])){ 	
-		$q['dh_ytar']=datem(date("Y-m-d H:i:s", strtotime($_POST['dh_ytar']))); 	
-		$logarr.=",{'dh_ytar':".$q['dh_ytar']."}"; 
+		$data['dh_ytar']=datem(date("Y-m-d H:i:s", strtotime($_POST['dh_ytar']))); 	
+		$logarr.=",{'dh_ytar':".$data['dh_ytar']."}"; 
 	}
 	if(isset($_POST['dh_sgtar'])){	
-		$q['dh_sgtar']=datem(date("Y-m-d H:i:s", strtotime($_POST['dh_sgtar']))); 	
-		$logarr.=",{'dh_sgtar':".$q['dh_sgtar']."}"; 
+		$data['dh_sgtar']=datem(date("Y-m-d H:i:s", strtotime($_POST['dh_sgtar']))); 	
+		$logarr.=",{'dh_sgtar':".$data['dh_sgtar']."}"; 
 	}
 	if(isset($_POST['dh_sdtar'])){ 	
-		$q['dh_sdtar']=datem(date("Y-m-d H:i:s", strtotime($_POST['dh_sdtar']))); 	
-		$logarr.=",{'dh_sdtar':".$q['dh_sdtar']."}"; 
+		$data['dh_sdtar']=datem(date("Y-m-d H:i:s", strtotime($_POST['dh_sdtar']))); 	
+		$logarr.=",{'dh_sdtar':".$data['dh_sdtar']."}"; 
+	}
+	if(isset($_POST['lang'])){ 	
+		$data['lang']=strval($_POST['lang']); 
+		$logarr.=",{'lang':".$data['lang']."}"; 
 	}
 	if(isset($_POST['aktif'])){ 	
-		$q['aktif']=strval($_POST['aktif']); 
-		$logarr.=",{'aktif':".$q['aktif']."}"; 
+		$data['aktif']=strval($_POST['aktif']); 
+		$logarr.=",{'aktif':".$data['aktif']."}"; 
 	}
 	//
 	$r=false;
 	if($id!=""){ //UPDATE : kayıt varsa güncellenir.
 		if(isset($_FILES['dh_resim'])){ $r=true; } //echo "yuklenen resim var. ";}
-		$q['dh_sdkullanici']=$user; $logarr.=",{'dh':".$q['dh_sdkullanici']."}"; 
+		$data['dh_sdkullanici']=$user; $logarr.=",{'dh':".$data['dh_sdkullanici']."}"; 
 		@$cursor = $collection->updateOne(
 			[
 				'_id' => new \MongoDB\BSON\ObjectId($id)
 			],
-			[ '$set' => $q]
+			[ '$set' => $data]
 		);
 		if($cursor->getModifiedCount()>0){ 
 			echo $gtext['updated']; $r=true; 
@@ -94,9 +98,9 @@ if($sil==1){
 			$log.=$gtext['notupdated']."{'update error':''};"; 
 		}
 	}else{ //INSERT : Kayıt yoksa eklenir...
-		$q['kullanici']=$user;
+		$data['kullanici']=$user;
 		@$cursor = $collection->insertOne(
-			$q
+			$data
 		);
 		if($cursor->getInsertedCount()>0){ 
 			echo $gtext['inserted']; $r=true; 
