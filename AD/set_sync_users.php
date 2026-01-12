@@ -97,7 +97,7 @@ if($result){
 			$data['username'] = $username;
 			$data['displayname']= $displayname; 
 			$data['description']= $description;
-			$m="Yok";
+			$m="-";
 			$log.="manager:";
 			if(isset($entries[$ix]['manager'][0])){
 				$m=$entries[$ix]['manager'][0]; //manager's dn 
