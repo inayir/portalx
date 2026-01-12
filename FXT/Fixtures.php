@@ -440,14 +440,21 @@ function getfar(){
 					</button>
 				</div>
 				<div class="modal-body align-items-center">
-					<div class="border printTable" id="printTable">
+					<div class="border" id="printTable">
 					<table>
 					<tr>
-						<td><span><?php echo $gtext['code'];?>:</span><span class="f_code"></span></td>
-						<td rowspan="2"><div class="p-2" style="border:0.1mm solid;" id="divkarekod" width="20"></div></td>
+						<td>
+							<span><?php echo $gtext['code'];?>:</span><span id="f_code"></span>
+						</td>
+						<td rowspan="2"><div class=" align-items-right">
+							<div class="p-2" id="divkarekod" width="20"></div>
+							</div>
+						</td>
 					</tr>
 					<tr>
-						<td><span><?php echo $gtext['serialnumbershort'];?>:</span><span class="f_serial"></span></td>
+						<td>
+							<span><?php echo $gtext['serialnumbershort'];?>:</span><span id="f_serial"></span>
+						</td>
 					</tr>
 					</table>
 					</div>
@@ -746,43 +753,36 @@ function mplus(){
 }
 
 function printlabel(code, desc, sn){ //label print penceresini aç 
-	$('.f_code').html(code);  //fixture code 
-	$('.f_serial').html(sn);  //fixture code 
-	$('#divkarekod').html('');
-	$('#divkarekod').qrcode({width: 64,height: 64,render:"table",text: code}); //creates qrcode
+	$('#f_code').html(code);  //fixture code 
+	$('#f_serial').html(sn);  //fixture serialnumber
+	//$('#divkarekod').qrcode({width: 64,height: 64,render:"table",text: code}); //creates qrcode
 	$('#label101Modal').modal('show'); 
 }
 <!--
 function printContent(id){
 	/*Source: https://stackoverflow.com/questions/11634153/how-to-add-a-print-button-to-a-web-page */
 	var str=document.getElementById(id).innerHTML;
-	console.log(str);
-	newwin=window.open('','printwin');
+	var code=$('#f_code').html(); 
+	newwin=window.open('','printwin','left=100,top=100,width=800,height=400');
 	newwin.document.write('<HTML moznomarginboxes mozdisallowselectionprint>\n<HEAD>\n');
 	newwin.document.write('<TITLE>Print Label</TITLE>\n');
+	newwin.document.write('<script src="/vendor/jquery/jquery.js"></script>');
 	newwin.document.write('<script type="text/javascript" src="/vendor/jquery-qrcode/jquery.qrcode.min.js"></script>');
 	newwin.document.write('<script>\n');
 	newwin.document.write('function chkstate(){\n');
-	newwin.document.write('if(document.readyState=="complete"){\n');
-	newwin.document.write('window.close()\n');
+	newwin.document.write('  if(document.readyState=="complete"){ window.close(); }else{ setTimeout("chkstate()",2000);}\n');
 	newwin.document.write('}\n');
-	newwin.document.write('else{\n');
-	newwin.document.write('setTimeout("chkstate()",2000)\n');
-	newwin.document.write('}\n');
-	newwin.document.write('}\n');
-	newwin.document.write('function print_win(){\n');
-	newwin.document.write('window.print();\n');
-	newwin.document.write('chkstate();\n');
-	newwin.document.write('}\n');
+	newwin.document.write('function print_win(){ window.print(); chkstate();}\n');
 	newwin.document.write('<\/script>\n');
 	newwin.document.write('	<style>\n');
-	newwin.document.write('@page{ width: 55mm; height: 25mm; margin:0.5mm; border: 0.1mm solid; border-radius:2mm; }\n');
-	newwin.document.write('@media print { size: 35mm 25mm; }\n');
+	newwin.document.write('@page{ size: 55mm 25mm; margin:0.3mm; border: 0.1mm solid; border-radius:2mm; }\n');
+	newwin.document.write('@media print { size: 55mm 25mm; }\n');
+	newwin.document.write('span {font-size: 6vw;}\n');
 	newwin.document.write('</style>\n');
 	newwin.document.write('</HEAD>\n');
 	newwin.document.write('<BODY onload="print_win()">\n');
 	newwin.document.write(str);
-	newwin.document.write('<script>$("#divkarekod").qrcode({width: 64,height: 64,render:"table",text: code});</script>');
+	newwin.document.write('<script>$("#divkarekod").qrcode({width: 64,height: 64, text: "'+code+'"});</script>');
 	newwin.document.write('</BODY>\n');
 	newwin.document.write('</HTML>\n');
 	newwin.document.close();
