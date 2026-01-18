@@ -1,0 +1,204 @@
+{
+  "displayname":"İTFAİYE",
+  "description":"#2525",
+  "telephonenumber":"2525",
+  "mobile":"90332 224 06 00",
+  "company":"DHAD",
+  "department":"DestekHizmetleriveGuvenlikMd",
+  "title":"Phone",
+  "bgcolor":"danger",
+  "color":"white",
+  "order":"1"
+}
+{
+  "displayname":"Acil Durum",
+  "description":"#1115",
+  "telephonenumber":"1115",
+  "mobile":"90332 224 06 00",
+  "company":"DHAD",
+  "department":"DestekHizmetleriveGuvenlikMd",
+  "title":"Phone",
+  "bgcolor":"danger",
+  "color":"white",
+  "order":"2"
+}
+{
+  "displayname":"REVİR",
+  "description":"#4200",
+  "telephonenumber":"4200",
+  "mobile":"90332 224 06 00",
+  "company":"DHAD",
+  "department":"DestekHizmetleriveGuvenlikMd",
+  "title":"Phone",
+  "bgcolor":"success",
+  "color":"white",
+  "order":"3"
+}
+{
+  "displayname":"Sekreterya",
+  "description":"#1111",
+  "telephonenumber":"1111",
+  "mobile":"90332 224 06 00",
+  "company":"DHAD",
+  "department":"DestekHizmetleriveGuvenlikMd",
+  "title":"Phone",
+  "bgcolor":"default",
+  "color":"default",
+  "order":"4"
+}
+{
+  "displayname":"Ana Nizamiye",
+  "description":"#1112",
+  "telephonenumber":"1112",
+  "mobile":"90332 224 06 00",
+  "company":"DHAD",
+  "department":"DestekHizmetleriveGuvenlikMd",
+  "title":"Phone",
+  "bgcolor":"default",
+  "color":"black",
+  "order":"5"
+}
+{
+  "displayname":"Güvenlik Amiri",
+  "description":"#1119",
+  "telephonenumber":"1119",
+  "mobile":"90332 224 06 00",
+  "company":"DHAD",
+  "department":"DestekHizmetleriveGuvenlikMd",
+  "title":"Phone",
+  "bgcolor":"default",
+  "color":"black",
+  "order":"6"
+}
+{
+  "displayname":"B Blok Giriş",
+  "description":"#1113",
+  "telephonenumber":"1113",
+  "mobile":"90332 224 06 00",
+  "company":"DHAD",
+  "department":"DestekHizmetleriveGuvenlikMd",
+  "title":"Phone",
+  "bgcolor":"default",
+  "color":"black",
+  "order":"7"
+}
+{
+  "displayname":"A Kapı",
+  "description":"#1118",
+  "telephonenumber":"1118",
+  "mobile":"90332 224 06 00",
+  "company":"DHAD",
+  "department":"DestekHizmetleriveGuvenlikMd",
+  "title":"Phone",
+  "bgcolor":"default",
+  "color":"black",
+  "order":"8"
+}
+{
+  "displayname":"B Kapı",
+  "description":"#1116",
+  "telephonenumber":"1116",
+  "mobile":"90332 224 06 00",
+  "company":"DHAD",
+  "department":"DestekHizmetleriveGuvenlikMd",
+  "title":"Phone",
+  "bgcolor":"default",
+  "color":"black",
+  "order":"9"
+}
+{
+  "displayname":"B Nizamiye(Personel Giriş)",
+  "description":"#1117",
+  "telephonenumber":"1117",
+  "mobile":"90332 224 06 00",
+  "company":"DHAD",
+  "department":"DestekHizmetleriveGuvenlikMd",
+  "title":"Phone",
+  "bgcolor":"default",
+  "color":"black",
+  "order":"10"
+}
+{
+  "displayname":"İVEDİK Güvenlik",
+  "description":"#1114",
+  "telephonenumber":"1114",
+  "mobile":"90332 224 06 00",
+  "company":"DHAD",
+  "department":"DestekHizmetleriveGuvenlikMd",
+  "title":"Phone",
+  "bgcolor":"default",
+  "color":"black",
+  "order":"11"
+}
+{
+  "displayname":"Evrak/Kargo Ofisi",
+  "description":"#1127",
+  "telephonenumber":"1127",
+  "mobile":"90332 224 06 00",
+  "company":"DHAD",
+  "department":"DestekHizmetleriveGuvenlikMd",
+  "title":"Phone",
+  "bgcolor":"secondary",
+  "color":"white",
+  "order":"12"
+}
+{
+  "displayname":"Ulaştırma birimi",
+  "description":"#1129",
+  "telephonenumber":"1129",
+  "mobile":"90332 224 06 00",
+  "company":"DHAD",
+  "department":"DestekHizmetleriveGuvenlikMd",
+  "title":"Phone",
+  "bgcolor":"secondary",
+  "color":"white",
+  "order":"13"
+}
+{
+  "displayname":"BT DESTEK",
+  "description":"#1500",
+  "telephonenumber":"1500",
+  "mobile":"90332 224 06 00",
+  "company":"DHAD",
+  "department":"BilgiTeknolojileriMd",
+  "title":"Phone",
+  "bgcolor":"secondary",
+  "color":"white",
+  "order":"14"
+}
+{
+  "displayname":"Üretim Alanı",
+  "description":"#1523",
+  "telephonenumber":"1523",
+  "mobile":"90332 224 06 00",
+  "company":"UretimDir",
+  "department":"UretimMd",
+  "title":"Phone",
+  "bgcolor":"secondary",
+  "color":"white",
+  "order":"15"
+}
+{
+  "displayname":"Giriş Kalite",
+  "description":"#1520",
+  "telephonenumber":"1520",
+  "mobile":"90332 224 06 00",
+  "company":"KaliteYonetimiDir",
+  "department":"TedarikveUretimKaliteMd",
+  "title":"Phone",
+  "bgcolor":"secondary",
+  "color":"white",
+  "order":"16"
+}
+{
+  "displayname":"İmalat",
+  "description":"#1530",
+  "telephonenumber":"1530",
+  "mobile":"90332 224 06 00",
+  "company":"UretimDir",
+  "department":"ImalatMd",
+  "title":"Phone",
+  "bgcolor":"secondary",
+  "color":"white",
+  "order":"17"
+}

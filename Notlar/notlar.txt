@@ -1,0 +1,39 @@
+
+FAR'a demirbaş ekle->normal şekilde demirbaş ekle ekranı açılır, FAR kapalı olur.
+
+Zimmetle - OK
+set_fixture action yapılacak - OK
+set_fxt_debit action yapılacak. - OK 
+Demirbaşlar Listesi -OK
+	Demirbaş Etiketi yazdır->OK
+Muhasebe Demirbaş Kayıtları Listesi -OK
+Hareketler listesi görüntülenecek. ->OK
+	- Tüm demirbaşlar hareket listesi->OK
+	- Seçilen Demirbaşın hareket listesi ->OK
+	- Demirbaşlarım->OK
+	- Personel Demirbaş hareketleri->OK
+Demirbaş tipleri -> OK
+Demirbaş zimmet tutanağı->OK
+
+Sync-user da sadece değişenler getirilecek...
+
+SSL ile çalışma uyarlanacak->OK
+Mongodb erişimi 8.2.12'ye göre uyarlanacak.->OK
+
+referrer_page doğru çalışmıyor.->OK
+Şifremi unuttum->OK. Yerinde test edilecek...
+
+???msds-memberOfTransitive
+
+Datatables Advanced filtering için link:
+www.ihbc.org.uk/consultationsdb_new/examples/plug-ins/range_filtering.html
+
+Yedekleme:
+1. Yedekleme konumu ayarı.
+2. Yedekleme konumuna Ayar yedeklemesi-Save.
+3. Data yedeklemesi-Tümü veya Tarih bazlı
+4. Restore-Tümü ya da tarih bazlı
+5. Dosyaların yedeklenmesi-Formlar,Resimler, vb.
+
+
+
