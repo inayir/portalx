@@ -8,7 +8,7 @@
 error_reporting(0); //$log="";
 header('Content-Type: text/html; charset=utf-8');
 include("../set_mng.php");
-include($docroot."/sess.php");
+include($docroot."/sess.php"); $_SESSION['referrer_page']="";
 $liste=Array('displayname','description','mail','title','company','department','telephonenumber','mobile','manager','physicaldeliveryofficename'); 
 
 @$searched=$_POST["sea"];  //

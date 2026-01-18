@@ -2,21 +2,6 @@
 /*
 	LDAP'tan telefon kayıtlarını getirir.
 */
-function array_orderby(){
-    $args = func_get_args();
-    $data = array_shift($args);
-    foreach ($args as $n => $field) {
-        if (is_string($field)) {
-            $tmp = array();
-            foreach ($data as $key => $row)
-                $tmp[$key] = $row[$field];
-            $args[$n] = $tmp;
-            }
-    }
-    $args[] = &$data;
-    call_user_func_array('array_multisort', $args);
-    return array_pop($args);
-}
 function searchSubArray(Array $array, $key, $value) {   
     foreach ($array as $subarray){  
         if (isset($subarray[$key]) && $subarray[$key] == $value)
@@ -28,8 +13,9 @@ error_reporting(0); //$log="";
 header('Content-Type: text/html; charset=utf-8');
 $docroot=$_SERVER['DOCUMENT_ROOT'];
 include($docroot."/config/config.php"); 
+include($docroot."/app/php_functions.php");
 //echo "PB Kaynağı:".$ini['pbsource']; exit;
-include($docroot."/sess.php");
+include($docroot."/sess.php"); $_SESSION['referrer_page']="";
 define('LDAP_SERVER', $ini['ldap_server']);  
 $conn=ldap_connect('ldap://'.LDAP_SERVER); 
 if($conn){ // OK
@@ -85,7 +71,7 @@ $filter = '(objectCategory=person)';
 $ldap_search_result = ldap_search($conn, $dn, $filter, $liste);  //
 if ($ldap_search_result){
 	$entries = ldap_get_entries($conn, $ldap_search_result); //var_dump($entries);	
-	$sorted = array_orderby($entries, 'displayname', SORT_ASC);	
+	$sorted = xarray_sort($entries, 'displayname', SORT_ASC);	
 	$json='[';
 	$s=0;
 	for($i=0; $i<$sorted['count']; $i++){	
