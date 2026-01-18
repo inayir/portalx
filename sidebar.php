@@ -175,11 +175,18 @@ if(@$_SESSION['y_admin']==1||@$_SESSION['y_ayar01']==1||@$_SESSION['y_addinfoduy
 					<li><a class="dropdown-item" href="/Corporate/Phone_add.php">
 						<i class="fas fa-fw fa-phone"></i>
 						<span><?php echo $gtext['speed_dials'];/*Hızlı Aramalar*/?></span>
-					</a></li>
-                        <li><a class="dropdown-item" href="/Corporate/Places.php">
-							<i class="fas fa-fw fa-place-of-worship"></i>
-							<span><?php echo $gtext['places'];/*Yerler*/?></span>
-						</a></li><?php	
+						</a>
+					</li>
+					<li><a class="dropdown-item" href="/Corporate/Places.php">
+						<i class="fas fa-fw fa-place-of-worship"></i>
+						<span><?php echo $gtext['places'];/*Yerler*/?></span>
+						</a>
+					</li>
+					<li><a class="dropdown-item" href="/admin/backup_restore.php">
+						<i class="fas fa-fw fa-star"></i>
+						<span><?php echo $gtext['backup']."-".$gtext['restore'];/*Backup-Restore*/?></span>
+						</a>
+					</li><?php	
 					if(@$ini['usersource']=='LDAP'){ ?>
 						<li><a class="dropdown-item" href="/AD/Sync_AD.php">
 							<i class="fas fa-fw fa-users"></i>
