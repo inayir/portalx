@@ -1,14 +1,14 @@
+<!DOCTYPE html>
 <?php
 /*
 	For a new page
 */
-include("../set_mng.php");  //for Mongo DB connection, if needed. If not; write first line: include('/get_ini.php');
+include("set_mng.php");  //for Mongo DB connection, if needed. If not; write first line: include('/get_ini.php');
 include($docroot."/sess.php");
 if($user==""){ //if auth pages needed...
 	header('Location: /login.php');
 }
 ?>
-<!DOCTYPE html>
 <html lang="en">
 <head>
 
@@ -18,17 +18,34 @@ if($user==""){ //if auth pages needed...
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title><?php echo $gtext['title']; ?></title>
+    <title><?php echo $ini['title']; ?></title>
 
     <!-- Custom fonts for this template-->
     <link href="/vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
     <link
- href="/vendor/googleapis/Nunito.css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
+        href="/vendor/googleapis/Nunito.css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
         rel="stylesheet">
+	<!--JQuery-->
+    <script src="/vendor/jquery/jquery.js"></script>
+    <!-- Bootstrap core JavaScript-->
+	<link href="/vendor/bootstrap/bootstrap.min.css" rel="stylesheet">
+    <script src="/vendor/bootstrap/bootstrap.bundle.min.js"></script> 
 
     <!-- Custom styles for this template-->
-    <link href="css/sb-admin-2.css" rel="stylesheet">
+    <link href="/css/sb-admin-2.css" rel="stylesheet">
+	<script src="/js/sb-admin-2.js"></script>
+	<!-- Core plugin JavaScript-->
+    <script src="/vendor/jquery-easing/jquery.easing.min.js"></script>
 
+<style>
+.title {
+	text-shadow: 3px 2px 1px #000;
+}
+.carousel-control-prev-icon{width: 50px;height: 50px; border-radius:50%; border:2px solid white}
+.carousel-control-next-icon{width: 50px;height: 50px; border-radius:50%; border:2px solid white}
+</style>
+
+<?php include($docroot."/set_page.php"); ?>
 </head>
 
 <body id="page-top">
@@ -100,19 +117,19 @@ if($user==""){ //if auth pages needed...
     </a>
 
     <!-- Logout Modal-->
-    <div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+    <div class="modal fade" id="logoutModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
         aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="exampleModalLabel">Ready to Leave?</h5>
-                    <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                    <button class="close" type="button" data-bs-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">×</span>
                     </button>
                 </div>
                 <div class="modal-body">Select "Logout" below if you are ready to end your current session.</div>
                 <div class="modal-footer">
-                    <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
+                    <button class="btn btn-secondary" type="button" data-bs-dismiss="modal">Cancel</button>
                     <a class="btn btn-primary" href="login.html">Logout</a>
                 </div>
             </div>
@@ -121,13 +138,13 @@ if($user==""){ //if auth pages needed...
 
     <!-- Bootstrap core JavaScript-->
     <script src="/vendor/jquery/jquery.min.js"></script>
-    <script src="/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="/vendor/bootstrap/bootstrap.bundle.min.js"></script>
 
     <!-- Core plugin JavaScript-->
     <script src="/vendor/jquery-easing/jquery.easing.min.js"></script>
 
     <!-- Custom scripts for all pages-->
-    <script src="js/sb-admin-2.min.js"></script>
+    <script src="js/sb-admin-2.js"></script>
 
     <!-- Page level plugins -->
     <script src="/vendor/chart.js/Chart.min.js"></script>

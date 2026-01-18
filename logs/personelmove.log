@@ -1,8 +1,0 @@
-2025-05-09 14:33:19;
-Moving;username: vi̇kinci;
-   dn: CN=Veli Ikinci,OU=DestekHizmetleriveGuvenlikMd,OU=Mali_IslerDir,OU=ASELSANKONYA,DC=aselsankonya,DC=com,DC=tr;LDAP;
-newdn: CN=Veli Ikinci,OU=BilgiTeknolojileriMd,OU=Mali_IslerDir,OU=ASELSANKONYA,DC=aselsankonya,DC=com,DC=tr;user moved.;
-ÇıkarılaMAdı! grdn:CN=KONYA_Kullanicilari,OU=Custom,OU=ASELSANKONYA,DC=aselsankonya,DC=com,DC=tr grinfo:CN=Veli Ikinci,OU=BilgiTeknolojileriMd,OU=Mali_IslerDir,OU=ASELSANKONYA,DC=aselsankonya,DC=com,DC=tr
-
- data GüncelleneMEdi;
- *DB;Güncellendi;
