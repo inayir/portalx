@@ -1,16 +1,17 @@
 <TR> PortalX
 Küçük-orta boy işletmelerde firma içi iletişim için bir arayüz üretmek, işletmek zorlukla karşılanmaktadır. 
 Bu ihtiyacı karşılamak ve işletme verimliliğine katkı sağlamak üzere PortalX tasarlanmıştır. 
-Yönetilebilen haber, duyuru sayfaları, yemek menüleri, servis listeleri, demirbaşlar ve iletişim panosu bulunmaktadır. 
-Yedekleme ve yedekten geri alma işlemleri otomatize edilmiştir. Kurum dokümanlarının paylaşılabildiği bir ortam olarak hizmet verebilir. 
+Yönetilebilen haber, duyuru sayfaları, telefon rehberi, yemek menüleri, servis listeleri, demirbaşlar ve iletişim panosu bulunmaktadır. 
+Kurum dokümanlarının paylaşılabildiği bir ortam olarak hizmet verebilir. Yardım masası uygulaması da yakında yayımlanacaktır.
 PortalX içinde LDAP/Active Directory işlemlerini yapmak üzere basitleştirilmiş bir yönetim arayüzü eklenmiştir. 
-PortalX içinde firma demirbaş kayıtları tutulabilmektedir. 
+  PortalX içinde firma demirbaş kayıtları tutulabilmektedir. 
+  Yedekleme ve yedekten geri alma işlemleri otomatize edilmiştir. 
 PortalX kurulumdan hemen sonrasında kullanılabilir halde tasarlanmıştır. 
-Kurulum ve işletmeye alma aşamalarında minimum destek ihtiyacı olacak şekildedir. 
-Yaygın bir dille kodlanmış olması sebebiyle daha sonra üstünde değişiklik yapılmaya uygundur. 
-PortalX açık kaynak kodlu bir yazılımdır ve açık kaynak lisansı (MIT) ile lisanslanmıştır ve tamamen ücretsizdir. 
-Bunun için kodun içindeki 3.LICENSE.txt belgesine bakılmalıdır. 
-Kurulum install.txt belgesinde anlatılan sıra izlenerek kurulacaktır. 
+  Kurulum ve işletmeye alma aşamalarında minimum destek ihtiyacı olacak şekildedir. 
+  Yaygın bir dille kodlanmış olması sebebiyle daha sonra üstünde değişiklik yapılmaya uygundur. 
+  PortalX açık kaynak kodlu bir yazılımdır ve açık kaynak lisansı (MIT) ile lisanslanmıştır ve tamamen ücretsizdir. 
+  Bunun için kodun içindeki 3.LICENSE.txt belgesine bakılmalıdır. 
+  Kurulum install.txt belgesinde anlatılan sıra izlenerek kurulacaktır. 
 Diğer konularda bilgi için User Guide belgesine bakınız.
 
 <EN> PortalX 
@@ -18,11 +19,13 @@ Diğer konularda bilgi için User Guide belgesine bakınız.
 PortalX was designed to meet this need and contribute to business efficiency. 
 • A simplified management interface has been added to perform LDAP/Active Directory operations within PortalX. 
 • PortalX have pages to add/edit/debit Fixtures records. 
-• There are manageable news, announcement pages, food menus, shuttle lists, fixtures and communication boards. Backup and restore processes are automated. It can serve as an environment where institutional documents can be shared. 
+• There are manageable news, announcement pages, phone book, food menus, shuttle lists, fixtures and communication boards. It can serve as an environment where institutional documents can be shared. 
+• Backup and restore processes are automated. 
 • The PortalX is designed to be usable immediately after installation. It requires minimum support during the installation and commissioning phases. 
 • It is a completely open source software. Since it is coded in a common language, it is suitable for modifications later. 
 • PortalX is licensed under an open source license (MIT) and is completely free. For this, please refer to the 3. LICENSE.txt document in the code. Installing It will be installed by following the order described in the install.txt document. 
 For other information, see the User Guide.
+
 
 
 
